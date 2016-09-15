@@ -5,4 +5,11 @@ include Makefile.common
 
 .PHONY: test
 test:
-	RUBYOPT=-w $(BUNDLER) exec ./tests/ts_all.rb
+	RUBYOPT=-w TZ=Europe/Vienna $(BUNDLER) exec ./test/suite_all.rb -v
+
+.PHONY: cov
+cov:
+	RUBYOPT=-w TZ=Europe/Vienna COVERAGE=1 $(BUNDLER) exec ./test/suite_all.rb -v
+
+doc:
+	rdoc lib/termkit
