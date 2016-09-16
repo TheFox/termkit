@@ -9,7 +9,7 @@ module TheFox
 		class View
 			
 			##
-			# The +name+ variable is only for debugging.
+			# The +name+ variable is *for* *debugging* *only*.
 			attr_accessor :name
 			attr_accessor :parent_view
 			attr_accessor :subviews
@@ -81,6 +81,8 @@ module TheFox
 				@subviews.delete(view)
 			end
 			
+			##
+			# Draw a single Point to the current view.
 			def draw_point(point, content)
 				case point
 				when Array, Hash
@@ -155,6 +157,8 @@ module TheFox
 				return true
 			end
 			
+			##
+			# Redraw to Parent View based on the visibility trend of +is_visible=+.
 			def redraw_parent(visibility_trend)
 				puts "#{@name} -- redraw parent, #{visibility_trend}"
 				
@@ -169,12 +173,8 @@ module TheFox
 							end
 						end
 					elsif visibility_trend == -1
-						#@parent_view.redraw_zindex()
-						
 						@grid_cache.each do |y_pos, row|
 							row.each do |x_pos, content|
-								
-								
 								parent_x_pos = x_pos + @position.x
 								parent_y_pos = y_pos + @position.y
 								
@@ -198,9 +198,10 @@ module TheFox
 					else
 					end
 				end
-				
 			end
 			
+			##
+			# Erase a single Point of the Grid Cache.
 			def grid_cache_erase_point(point)
 				puts "#{@name} -- erase point, #{point}"
 				
@@ -215,6 +216,9 @@ module TheFox
 				end
 			end
 			
+			##
+			# Redraw a single Point based on the zindexes of the subviews.
+			# Happens when a subview added, removed, hides, or zindex changes.
 			def redraw_zindex(point)
 				puts "#{@name} -- redraw zindex, #{point}"
 				

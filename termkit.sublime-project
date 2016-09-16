@@ -3,7 +3,7 @@
 		{
 			"path": ".",
 			"name": "TermKit",
-			"folder_exclude_patterns": [ "coverage", "releases" ],
+			"folder_exclude_patterns": [ "coverage", "doc", "releases" ],
 			"file_exclude_patterns": [ ]
 		}
 	]

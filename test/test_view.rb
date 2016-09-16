@@ -101,7 +101,6 @@ class TestView < MiniTest::Test
 	end
 	
 	def test_draw_point
-		
 		puts
 		puts '-- Simple ----------'
 		

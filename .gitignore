@@ -2,6 +2,7 @@
 .setup
 CHANGELOG-*.txt
 /coverage/
+/doc/
 Gemfile.lock
 /releases/
 /tmp/
