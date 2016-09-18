@@ -6,10 +6,11 @@ module TheFox
 		
 		##
 		# Base View class
+		#
+		# A View is an abstraction of any view object.
 		class View
 			
-			##
-			# The +name+ variable is *for* *debugging* *only*.
+			# The `name` variable is **for debugging only**.
 			attr_accessor :name
 			attr_accessor :parent_view
 			attr_accessor :subviews

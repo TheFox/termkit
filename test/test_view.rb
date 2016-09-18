@@ -366,8 +366,6 @@ class TestView < MiniTest::Test
 		assert_equal('B', view1.grid_cache[0][1].char)
 		assert_equal('C', view1.grid_cache[0][2].char)
 		
-		
-		
 		# pp view1.pp_grid_cache
 		
 		view3.zindex = 10
