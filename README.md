@@ -15,6 +15,7 @@ or via `Gemfile`:
 
 ## Project Links
 
+- [Homepage](https://termkit.fox21.at/)
 - [TermKit Gem](https://rubygems.org/gems/termkit)
 - [Travis CI Repository](https://travis-ci.org/TheFox/termkit)
 
