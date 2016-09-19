@@ -16,8 +16,8 @@ module TheFox
 				@view = view
 			end
 			
-			def render
-				
+			def render(area = nil)
+				@view.render(area)
 			end
 			
 		end
