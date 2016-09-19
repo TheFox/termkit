@@ -415,15 +415,48 @@ module TheFox
 				end
 			end
 			
-			def render
-				puts "#{@name} -- render"
+			def render(area = nil)
+				puts "#{@name} -- render area=#{area ? 'Y' : 'N'}"
 				
-				grid_filtered = @grid_cache
-					.map{ |y_pos, row|
-						[y_pos, row.select{ |x_pos, content| content.needs_rendering }]
-					}
-					.to_h
-					.select{ |y_pos, row| row.count > 0 }
+				grid_filtered = {}
+				
+				if area.nil? || area.has_default_values?
+					grid_filtered = @grid_cache
+						.map{ |y_pos, row|
+							[y_pos, row.select{ |x_pos, content| content.needs_rendering }]
+						}
+						.to_h
+						.select{ |y_pos, row| row.count > 0 }
+				else
+					
+					grid_filtered = @grid_cache
+					
+					grid_filtered = grid_filtered
+						.select{ |y_pos, row|
+							y_pos >= area.y
+						}
+						.map{ |y_pos, row|
+							[y_pos, row.select{ |x_pos, content| x_pos >= area.x }]
+						}
+						.to_h
+					
+					if area.height
+						grid_filtered = grid_filtered
+							.select{ |y_pos, row|
+								y_pos <= area.y_max
+							}
+					end
+					
+					if area.width
+						grid_filtered = grid_filtered
+							.map{ |y_pos, row|
+								[y_pos, row.select{ |x_pos, content| x_pos <= area.x_max }]
+							}
+							.to_h
+					end
+					
+				end
+				
 				
 				grid_filtered.each do |y_pos, row|
 					row.each do |x_pos, content|

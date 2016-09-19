@@ -640,8 +640,6 @@ class TestView < MiniTest::Test
 		
 		assert_instance_of(Hash, rendered)
 		assert_equal(0, rendered.count)
-		
-		#pp rendered.map{ |y_pos, row| row.values.map{ |content| content.char } }.flatten
 	end
 	
 	def test_render_subview_base
@@ -725,7 +723,6 @@ class TestView < MiniTest::Test
 		# puts '-' * 30
 		# puts '-' * 30
 		
-		# pp rendered.map{ |y_pos, row| row.values.map{ |content| content.char } }.flatten
 		# pp view1.pp_grid_cache
 	end
 	
@@ -936,6 +933,246 @@ class TestView < MiniTest::Test
 		
 		
 		pp view1.pp_grid_cache
+		pp rendered.map{ |y, row| row.map{ |x, content| "#{x}:#{y}=>'#{content.char}'" } }.flatten
+	end
+	
+	def test_render_area_base1
+		view1 = View.new('view1')
+		view1.is_visible = true
+		
+		rendered = view1.render
+		assert_instance_of(Hash, rendered)
+		assert_equal(0, rendered.count)
+		
+		view1.draw_point([0, 0], 'A')
+		view1.draw_point([1, 0], 'B')
+		view1.draw_point([2, 0], 'C')
+		view1.draw_point([3, 0], 'D')
+		
+		view1.draw_point([0, 1], 'B')
+		view1.draw_point([1, 1], 'C')
+		view1.draw_point([2, 1], 'D')
+		view1.draw_point([3, 1], 'E')
+		
+		view1.draw_point([0, 2], 'C')
+		view1.draw_point([1, 2], 'D')
+		view1.draw_point([2, 2], 'E')
+		view1.draw_point([3, 2], 'F')
+		
+		view1.draw_point([0, 3], 'D')
+		view1.draw_point([1, 3], 'E')
+		view1.draw_point([2, 3], 'F')
+		view1.draw_point([3, 3], 'G')
+		
+		
+		rendered = view1.render(Rect.new(0, 0))
+		
+		assert_equal(4, rendered.count)
+		assert_equal(4, rendered[0].count)
+		assert_equal(4, rendered[1].count)
+		assert_equal(4, rendered[2].count)
+		assert_equal(4, rendered[3].count)
+		
+		assert_equal('A', rendered[0][0].char)
+		assert_equal('B', rendered[0][1].char)
+		assert_equal('C', rendered[0][2].char)
+		assert_equal('D', rendered[0][3].char)
+		
+		assert_equal('B', rendered[1][0].char)
+		assert_equal('C', rendered[1][1].char)
+		assert_equal('D', rendered[1][2].char)
+		assert_equal('E', rendered[1][3].char)
+		
+		assert_equal('C', rendered[2][0].char)
+		assert_equal('D', rendered[2][1].char)
+		assert_equal('E', rendered[2][2].char)
+		assert_equal('F', rendered[2][3].char)
+		
+		assert_equal('D', rendered[3][0].char)
+		assert_equal('E', rendered[3][1].char)
+		assert_equal('F', rendered[3][2].char)
+		assert_equal('G', rendered[3][3].char)
+		
+		pp rendered.map{ |y, row| row.map{ |x, content| "#{x}:#{y}=>'#{content.char}'" } }.flatten
+	end
+	
+	def test_render_area_base2
+		view1 = View.new('view1')
+		view1.is_visible = true
+		
+		rendered = view1.render
+		assert_instance_of(Hash, rendered)
+		assert_equal(0, rendered.count)
+		
+		view1.draw_point([0, 0], 'A')
+		view1.draw_point([1, 0], 'B')
+		view1.draw_point([2, 0], 'C')
+		view1.draw_point([3, 0], 'D')
+		
+		view1.draw_point([0, 1], 'B')
+		view1.draw_point([1, 1], 'C')
+		view1.draw_point([2, 1], 'D')
+		view1.draw_point([3, 1], 'E')
+		
+		view1.draw_point([0, 2], 'C')
+		view1.draw_point([1, 2], 'D')
+		view1.draw_point([2, 2], 'E')
+		view1.draw_point([3, 2], 'F')
+		
+		view1.draw_point([0, 3], 'D')
+		view1.draw_point([1, 3], 'E')
+		view1.draw_point([2, 3], 'F')
+		view1.draw_point([3, 3], 'G')
+		
+		
+		rendered = view1.render(Rect.new(1, 2))
+		
+		assert_equal(2, rendered.count)
+		assert_nil(rendered[0])
+		assert_nil(rendered[1])
+		assert_equal(3, rendered[2].count)
+		assert_equal(3, rendered[3].count)
+		
+		# assert_equal('A', rendered[0][0].char)
+		# assert_equal('B', rendered[0][1].char)
+		# assert_equal('C', rendered[0][2].char)
+		# assert_equal('D', rendered[0][3].char)
+		
+		# assert_equal('B', rendered[1][0].char)
+		# assert_equal('C', rendered[1][1].char)
+		# assert_equal('D', rendered[1][2].char)
+		# assert_equal('E', rendered[1][3].char)
+		
+		# assert_equal('C', rendered[2][0].char)
+		assert_equal('D', rendered[2][1].char)
+		assert_equal('E', rendered[2][2].char)
+		assert_equal('F', rendered[2][3].char)
+		
+		# assert_equal('D', rendered[3][0].char)
+		assert_equal('E', rendered[3][1].char)
+		assert_equal('F', rendered[3][2].char)
+		assert_equal('G', rendered[3][3].char)
+		
+		pp rendered.map{ |y, row| row.map{ |x, content| "#{x}:#{y}=>'#{content.char}'" } }.flatten
+	end
+	
+	def test_render_area_base3
+		view1 = View.new('view1')
+		view1.is_visible = true
+		
+		rendered = view1.render
+		assert_instance_of(Hash, rendered)
+		assert_equal(0, rendered.count)
+		
+		view1.draw_point([0, 0], 'A')
+		view1.draw_point([1, 0], 'B')
+		view1.draw_point([2, 0], 'C')
+		view1.draw_point([3, 0], 'D')
+		
+		view1.draw_point([0, 1], 'B')
+		view1.draw_point([1, 1], 'C')
+		view1.draw_point([2, 1], 'D')
+		view1.draw_point([3, 1], 'E')
+		
+		view1.draw_point([0, 2], 'C')
+		view1.draw_point([1, 2], 'D')
+		view1.draw_point([2, 2], 'E')
+		view1.draw_point([3, 2], 'F')
+		
+		view1.draw_point([0, 3], 'D')
+		view1.draw_point([1, 3], 'E')
+		view1.draw_point([2, 3], 'F')
+		view1.draw_point([3, 3], 'G')
+		
+		
+		rendered = view1.render(Rect.new(1, 2, 2, 1))
+		
+		assert_equal(1, rendered.count)
+		assert_nil(rendered[0])
+		assert_nil(rendered[1])
+		assert_equal(2, rendered[2].count)
+		assert_nil(rendered[3])
+		
+		# assert_equal('A', rendered[0][0].char)
+		# assert_equal('B', rendered[0][1].char)
+		# assert_equal('C', rendered[0][2].char)
+		# assert_equal('D', rendered[0][3].char)
+		
+		# assert_equal('B', rendered[1][0].char)
+		# assert_equal('C', rendered[1][1].char)
+		# assert_equal('D', rendered[1][2].char)
+		# assert_equal('E', rendered[1][3].char)
+		
+		# assert_equal('C', rendered[2][0].char)
+		assert_equal('D', rendered[2][1].char)
+		assert_equal('E', rendered[2][2].char)
+		# assert_equal('F', rendered[2][3].char)
+		
+		# assert_equal('D', rendered[3][0].char)
+		# assert_equal('E', rendered[3][1].char)
+		# assert_equal('F', rendered[3][2].char)
+		# assert_equal('G', rendered[3][3].char)
+		
+		pp rendered.map{ |y, row| row.map{ |x, content| "#{x}:#{y}=>'#{content.char}'" } }.flatten
+	end
+	
+	def test_render_area_base4
+		view1 = View.new('view1')
+		view1.is_visible = true
+		
+		rendered = view1.render
+		assert_instance_of(Hash, rendered)
+		assert_equal(0, rendered.count)
+		
+		view1.draw_point([0, 0], 'A')
+		view1.draw_point([1, 0], 'B')
+		view1.draw_point([2, 0], 'C')
+		view1.draw_point([3, 0], 'D')
+		
+		view1.draw_point([0, 1], 'B')
+		view1.draw_point([1, 1], 'C')
+		view1.draw_point([2, 1], 'D')
+		view1.draw_point([3, 1], 'E')
+		
+		view1.draw_point([0, 2], 'C')
+		view1.draw_point([1, 2], 'D')
+		view1.draw_point([2, 2], 'E')
+		view1.draw_point([3, 2], 'F')
+		
+		view1.draw_point([0, 3], 'D')
+		view1.draw_point([1, 3], 'E')
+		view1.draw_point([2, 3], 'F')
+		view1.draw_point([3, 3], 'G')
+		
+		
+		rendered = view1.render(Rect.new(0, 0, 1, 1))
+		
+		assert_equal(1, rendered.count)
+		assert_equal(1, rendered[0].count)
+		assert_nil(rendered[1])
+		assert_nil(rendered[2])
+		assert_nil(rendered[3])
+		
+		assert_equal('A', rendered[0][0].char)
+		# assert_equal('B', rendered[0][1].char)
+		# assert_equal('C', rendered[0][2].char)
+		# assert_equal('D', rendered[0][3].char)
+		
+		# assert_equal('B', rendered[1][0].char)
+		# assert_equal('C', rendered[1][1].char)
+		# assert_equal('D', rendered[1][2].char)
+		# assert_equal('E', rendered[1][3].char)
+		
+		# assert_equal('C', rendered[2][0].char)
+		# assert_equal('D', rendered[2][1].char)
+		# assert_equal('E', rendered[2][2].char)
+		# assert_equal('F', rendered[2][3].char)
+		
+		# assert_equal('D', rendered[3][0].char)
+		# assert_equal('E', rendered[3][1].char)
+		# assert_equal('F', rendered[3][2].char)
+		# assert_equal('G', rendered[3][3].char)
+		
 		pp rendered.map{ |y, row| row.map{ |x, content| "#{x}:#{y}=>'#{content.char}'" } }.flatten
 	end
 	
