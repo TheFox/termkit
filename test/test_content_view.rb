@@ -8,6 +8,11 @@ class TestViewContent < MiniTest::Test
 	
 	include TheFox::TermKit
 	
+	def test_view_content
+		content1 = ViewContent.new('A')
+		assert_equal(true, content1.needs_rendering)
+	end
+	
 	def test_to_s
 		char = 'A'
 		

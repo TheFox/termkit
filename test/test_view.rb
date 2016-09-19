@@ -144,12 +144,12 @@ class TestView < MiniTest::Test
 		view1.is_visible = true
 		
 		view2 = View.new('view2')
-		view2.position = Point.new(1, 0)
+		view2.position = Point.new(2, 0)
 		view2.is_visible = true
 		view1.add_subview(view2)
 		
 		view3 = View.new('view3')
-		view3.position = Point.new(1, 0)
+		view3.position = Point.new(3, 0)
 		view3.is_visible = true
 		view2.add_subview(view3)
 		
@@ -164,8 +164,12 @@ class TestView < MiniTest::Test
 		# pp view3.pp_grid_cache
 		
 		assert_equal('C', view3.grid_cache[0][0].char)
-		assert_equal('C', view2.grid_cache[0][1].char)
-		assert_equal('C', view1.grid_cache[0][2].char)
+		assert_equal('C', view2.grid_cache[0][3].char)
+		assert_equal('C', view1.grid_cache[0][5].char)
+		
+		pp view3.grid_cache.map{ |y, row| row.map{ |x, content| "#{x}:#{y}=>'#{content.char}'" } }.flatten
+		pp view2.grid_cache.map{ |y, row| row.map{ |x, content| "#{x}:#{y}=>'#{content.char}'" } }.flatten
+		pp view1.grid_cache.map{ |y, row| row.map{ |x, content| "#{x}:#{y}=>'#{content.char}'" } }.flatten
 	end
 	
 	def test_draw_point_subviews_chain2
@@ -269,9 +273,6 @@ class TestView < MiniTest::Test
 	end
 	
 	def test_draw_point_visible_true
-		puts
-		puts '-- Visible true ----'
-		
 		view1 = View.new('view1')
 		view1.is_visible = true
 		
@@ -294,14 +295,17 @@ class TestView < MiniTest::Test
 		
 		view2.is_visible = true
 		
-		# pp view1.grid_cache[0]
+		# pp view1.pp_grid_cache
+		
 		assert_equal('A', view1.grid_cache[0][0].char)
 		assert_equal('B', view1.grid_cache[0][1].char)
 		
 		view2.is_visible = false
 		
+		# pp view1.pp_grid_cache
+		
 		assert_equal('A', view1.grid_cache[0][0].char)
-		assert_nil(view1.grid_cache[0][1])
+		assert_equal(' ', view1.grid_cache[0][1].char)
 	end
 	
 	def test_draw_point_zindex_base
@@ -434,15 +438,15 @@ class TestView < MiniTest::Test
 		assert_equal('C', view1.grid_cache[0][2].char)
 		assert_equal('D', view1.grid_cache[0][3].char)
 		
-		puts '-' * 20
-		puts '-' * 20
-		puts '-' * 20
+		# puts '-' * 20
+		# puts '-' * 20
+		# puts '-' * 20
 		
 		view4.zindex = 0
 		
-		puts '-' * 20
-		puts '-' * 20
-		puts '-' * 20
+		# puts '-' * 20
+		# puts '-' * 20
+		# puts '-' * 20
 		
 		assert_equal('A', view1.grid_cache[0][0].char)
 		assert_equal('B', view1.grid_cache[0][1].char)
@@ -518,21 +522,429 @@ class TestView < MiniTest::Test
 		assert_raises(NotImplementedError){ view1.draw_point(Point.new(0, 0), nil) }
 	end
 	
+	def test_redraw_zindex_base
+		view1 = View.new('view1')
+		view1.draw_point([0, 0], 'A')
+		view1.draw_point([1, 0], 'B')
+		
+		# Should return nil because nothing changed.
+		assert_nil(view1.redraw_zindex(Point.new(0, 0)))
+		
+		# Should return nil because nothing changed.
+		assert_nil(view1.redraw_zindex(Point.new(1, 0)))
+		
+		# Should return nil because this point is empty on @grid.
+		assert_nil(view1.redraw_zindex(Point.new(2, 0)))
+	end
+	
+	def test_redraw_zindex_subview
+		view1 = View.new('view1')
+		view1.draw_point([0, 0], 'A')
+		view1.draw_point([1, 0], 'B')
+		
+		view2 = View.new('view2')
+		view2.position = Point.new(2, 3)
+		view2.is_visible = true
+		
+		view1.add_subview(view2)
+		
+		# Should return nil because nothing changed.
+		assert_nil(view1.redraw_zindex(Point.new(0, 0)))
+		
+		# Should return nil because nothing changed.
+		assert_nil(view1.redraw_zindex(Point.new(1, 0)))
+		
+		# Should return nil because this point is empty on all layers.
+		assert_nil(view1.redraw_zindex(Point.new(2, 0)))
+		
+		view1.draw_point([2, 3], 'C')
+		assert_nil(view1.redraw_zindex(Point.new(2, 3)))
+		
+		
+		view2.grid_cache[0] = view2.grid[0] = { }
+		
+		view2.grid_cache[0][0] = view2.grid[0][0] = ViewContent.new('D', view2)
+		assert_equal(view2.grid[0][0], view1.redraw_zindex(Point.new(2, 3)))
+		assert_nil(view1.redraw_zindex(Point.new(2, 3)))
+		
+		view2.grid_cache[0][1] = view2.grid[0][1] = ViewContent.new('E', view2)
+		assert_equal(view2.grid[0][1], view1.redraw_zindex(Point.new(3, 3)))
+		assert_nil(view1.redraw_zindex(Point.new(3, 3)))
+	end
+	
 	def test_set_grid_cache
 		content1 = ViewContent.new('A')
 		content2 = ViewContent.new('B')
+		content3 = ViewContent.new('B')
+		
+		content1.needs_rendering = false
+		content2.needs_rendering = false
+		content3.needs_rendering = false
 		
 		view1 = View.new('view1')
 		
-		assert_equal(true, view1.set_grid_cache(Point.new(0, 0), content1))
-		assert_equal(false, view1.set_grid_cache(Point.new(0, 0), content1))
-		assert_equal(true, view1.set_grid_cache(Point.new(0, 0), content2))
+		# assert_equal(true, view1.set_grid_cache(Point.new(0, 0), content1))
+		assert_instance_of(ViewContent, view1.set_grid_cache(Point.new(0, 0), content1))
+		assert_equal(true, content1.needs_rendering)
+		
+		# assert_equal(false, view1.set_grid_cache(Point.new(0, 0), content1))
+		assert_nil(view1.set_grid_cache(Point.new(0, 0), content1))
+		assert_equal(true, content1.needs_rendering)
+		
+		# assert_equal(true, view1.set_grid_cache(Point.new(0, 0), content2))
+		assert_instance_of(ViewContent, view1.set_grid_cache(Point.new(0, 0), content2))
+		assert_equal(true, content2.needs_rendering)
+		
+		# assert_equal(false, view1.set_grid_cache(Point.new(0, 0), content3))
+		assert_nil(view1.set_grid_cache(Point.new(0, 0), content3))
+		assert_equal(false, content3.needs_rendering)
 	end
 	
-	def test_render
+	def test_render_simple
 		view1 = View.new('view1')
+		view1.is_visible = true
 		
-		view1.render
+		view1.draw_point([0, 0], 'A')
+		view1.draw_point([1, 0], 'B')
+		view1.draw_point([2, 0], 'C')
+		
+		rendered = view1.render
+		
+		assert_instance_of(Hash, rendered)
+		assert_instance_of(Hash, rendered[0])
+		assert_equal(1, rendered.count)
+		assert_equal(3, rendered[0].count)
+		assert_equal('A', rendered[0][0].char)
+		assert_equal('B', rendered[0][1].char)
+		assert_equal('C', rendered[0][2].char)
+		
+		
+		rendered = view1.render
+		
+		assert_instance_of(Hash, rendered)
+		assert_equal(0, rendered.count)
+		
+		
+		view1.draw_point([3, 0], 'D')
+		view1.draw_point([4, 0], 'E')
+		
+		rendered = view1.render
+		
+		assert_equal(1, rendered.count)
+		assert_equal(2, rendered[0].count)
+		assert_equal('D', rendered[0][3].char)
+		assert_equal('E', rendered[0][4].char)
+		
+		
+		rendered = view1.render
+		
+		assert_instance_of(Hash, rendered)
+		assert_equal(0, rendered.count)
+		
+		#pp rendered.map{ |y_pos, row| row.values.map{ |content| content.char } }.flatten
+	end
+	
+	def test_render_subview_base
+		view1 = View.new('view1')
+		view1.is_visible = true
+		
+		view1.draw_point([0, 0], 'A')
+		view1.draw_point([1, 0], 'B')
+		view1.draw_point([2, 0], 'C')
+		
+		
+		view2 = View.new('view2')
+		view2.is_visible = true
+		view2.position = Point.new(2, 0)
+		view2.draw_point([0, 0], 'D')
+		
+		view1.add_subview(view2)
+		
+		assert_equal(true, view1.grid[0][0].needs_rendering)
+		assert_equal(true, view1.grid[0][1].needs_rendering)
+		assert_equal(true, view1.grid[0][2].needs_rendering)
+		
+		rendered = view1.render
+		
+		assert_instance_of(Hash, rendered)
+		assert_equal(1, rendered.count)
+		assert_equal(3, rendered[0].count)
+		
+		assert_equal(false, view1.grid[0][0].needs_rendering)
+		assert_equal(false, view1.grid[0][1].needs_rendering)
+		assert_equal(false, view1.grid[0][2].needs_rendering)
+		
+		assert_equal('A', rendered[0][0].char)
+		assert_equal('B', rendered[0][1].char)
+		assert_equal('D', rendered[0][2].char)
+		
+		
+		rendered = view1.render
+		
+		assert_instance_of(Hash, rendered)
+		assert_equal(0, rendered.count)
+		
+		
+		view2.draw_point([1, 0], 'E')
+		
+		rendered = view1.render
+		
+		assert_instance_of(Hash, rendered)
+		assert_equal(1, rendered.count)
+		assert_equal(1, rendered[0].count)
+		assert_equal('E', rendered[0][3].char)
+		
+		
+		puts '-' * 30
+		puts '-' * 30
+		puts '-' * 30
+		
+		view2.is_visible = false
+		
+		puts '-' * 30
+		puts '-' * 30
+		puts '-' * 30
+		
+		rendered = view1.render
+		
+		assert_instance_of(Hash, rendered)
+		assert_equal(1, rendered.count)
+		assert_equal(2, rendered[0].count)
+		assert_equal('C', rendered[0][2].char)
+		assert_equal(' ', rendered[0][3].char)
+		
+		
+		rendered = view1.render
+		
+		assert_instance_of(Hash, rendered)
+		assert_equal(0, rendered.count)
+		
+		
+		
+		# puts '-' * 30
+		# puts '-' * 30
+		# puts '-' * 30
+		
+		# pp rendered.map{ |y_pos, row| row.values.map{ |content| content.char } }.flatten
+		# pp view1.pp_grid_cache
+	end
+	
+	def test_render_subview_chain1
+		view1 = View.new('view1')
+		view1.is_visible = true
+		
+		view2 = View.new('view2')
+		view2.is_visible = true
+		view2.position = Point.new(3, 0)
+		
+		view3 = View.new('view3')
+		view3.is_visible = true
+		view3.position = Point.new(4, 0)
+		
+		view1.add_subview(view2)
+		view2.add_subview(view3)
+		
+		
+		view1.draw_point([0, 0], 'A')
+		view1.draw_point([1, 0], 'B')
+		
+		view2.draw_point([0, 0], 'C')
+		view2.draw_point([1, 0], 'D')
+		
+		view3.draw_point([0, 0], 'E')
+		view3.draw_point([1, 0], 'F')
+		
+		rendered = view1.render
+		
+		assert_instance_of(Hash, rendered)
+		assert_equal(1, rendered.count)
+		assert_equal(6, rendered[0].count)
+		assert_equal('A', rendered[0][0].char)
+		assert_equal('B', rendered[0][1].char)
+		assert_equal('C', rendered[0][3].char)
+		assert_equal('D', rendered[0][4].char)
+		assert_equal('E', rendered[0][7].char)
+		assert_equal('F', rendered[0][8].char)
+		
+		puts '-' * 30
+		puts '-' * 30
+		puts '-' * 30
+		
+		view3.is_visible = false
+		
+		puts '-' * 30
+		puts '-' * 30
+		puts '-' * 30
+		
+		rendered = view1.render
+		
+		
+		assert_equal(' ', rendered[0][7].char)
+		assert_equal(' ', rendered[0][8].char)
+		
+		
+		rendered = view1.render
+		
+		assert_instance_of(Hash, rendered)
+		assert_equal(0, rendered.count)
+		
+		
+		
+		pp view1.pp_grid_cache
+		pp rendered.map{ |y, row| row.map{ |x, content| "#{x}:#{y}=>'#{content.char}'" } }.flatten
+	end
+	
+	def test_render_subview_chain2
+		view1 = View.new('view1')
+		view1.is_visible = true
+		
+		view2 = View.new('view2')
+		view2.is_visible = true
+		view2.position = Point.new(2, 0)
+		
+		view3 = View.new('view3')
+		view3.is_visible = true
+		view3.position = Point.new(2, 0)
+		
+		view1.add_subview(view2)
+		view2.add_subview(view3)
+		
+		
+		view1.draw_point([0, 0], 'A')
+		view1.draw_point([1, 0], 'B')
+		
+		view2.draw_point([0, 0], 'C')
+		view2.draw_point([1, 0], 'D')
+		
+		view3.draw_point([0, 0], 'E')
+		view3.draw_point([1, 0], 'F')
+		
+		rendered = view1.render
+		
+		puts '-' * 30
+		puts '-' * 30
+		puts '-' * 30
+		
+		view2.is_visible = false
+		
+		puts '-' * 30
+		puts '-' * 30
+		puts '-' * 30
+		
+		rendered = view1.render
+		
+		assert_equal(' ', rendered[0][2].char)
+		assert_equal(' ', rendered[0][3].char)
+		assert_equal(' ', rendered[0][4].char)
+		assert_equal(' ', rendered[0][5].char)
+		
+		
+		rendered = view1.render
+		
+		assert_equal(0, rendered.count)
+		
+		
+		view2.is_visible = true
+		
+		rendered = view1.render
+		
+		assert_equal('C', rendered[0][2].char)
+		assert_equal('D', rendered[0][3].char)
+		assert_equal('E', rendered[0][4].char)
+		assert_equal('F', rendered[0][5].char)
+		
+		
+		pp view1.pp_grid_cache
+		pp rendered.map{ |y, row| row.map{ |x, content| "#{x}:#{y}=>'#{content.char}'" } }.flatten
+	end
+	
+	def test_render_subview_chain3
+		view1 = View.new('view1')
+		view1.is_visible = true
+		
+		view2 = View.new('view2')
+		view2.is_visible = true
+		view2.position = Point.new(2, 0)
+		
+		view3 = View.new('view3')
+		view3.is_visible = true
+		view3.position = Point.new(2, 0)
+		view3.zindex = 10
+		
+		view4 = View.new('view4')
+		view4.is_visible = true
+		view4.position = Point.new(2, 0)
+		view4.zindex = 20
+		
+		view1.add_subview(view2)
+		view2.add_subview(view3)
+		view2.add_subview(view4)
+		
+		
+		view1.draw_point([0, 0], 'A')
+		view1.draw_point([1, 0], 'B')
+		
+		view2.draw_point([0, 0], 'C')
+		view2.draw_point([1, 0], 'D')
+		
+		view3.draw_point([0, 0], 'E')
+		view3.draw_point([1, 0], 'F')
+		
+		view4.draw_point([1, 0], 'G')
+		
+		rendered = view1.render
+		
+		puts '-' * 30
+		puts '-' * 30
+		puts '-' * 30
+		
+		view2.is_visible = false
+		
+		puts '-' * 30
+		puts '-' * 30
+		puts '-' * 30
+		
+		rendered = view1.render
+		
+		assert_equal(' ', rendered[0][2].char)
+		assert_equal(' ', rendered[0][3].char)
+		assert_equal(' ', rendered[0][4].char)
+		assert_equal(' ', rendered[0][5].char)
+		
+		
+		rendered = view1.render
+		
+		assert_equal(0, rendered.count)
+		
+		
+		view2.is_visible = true
+		
+		rendered = view1.render
+		
+		
+		assert_equal('C', rendered[0][2].char)
+		assert_equal('D', rendered[0][3].char)
+		assert_equal('E', rendered[0][4].char)
+		assert_equal('G', rendered[0][5].char)
+		
+		
+		view4.is_visible = false
+		
+		rendered = view1.render
+		
+		assert_equal('F', rendered[0][5].char)
+		
+		
+		pp view1.pp_grid_cache
+		pp rendered.map{ |y, row| row.map{ |x, content| "#{x}:#{y}=>'#{content.char}'" } }.flatten
+	end
+	
+	def test_to_s
+		view1 = View.new
+		assert_nil(view1.to_s)
+		
+		view1 = View.new('view1')
+		assert_equal('view1', view1.to_s)
 	end
 	
 end

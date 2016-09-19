@@ -6,10 +6,12 @@ module TheFox
 			
 			attr_accessor :char
 			attr_accessor :view
+			attr_accessor :needs_rendering
 			
 			def initialize(char, view = nil)
 				@char = char[0]
 				@view = view
+				@needs_rendering = true
 			end
 			
 			def to_s

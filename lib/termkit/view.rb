@@ -1,5 +1,6 @@
 
 require 'termkit/view/content_view'
+require 'termkit/view/content_view_clear'
 
 require 'termkit/view/view'
 require 'termkit/view/view_text'

@@ -175,8 +175,6 @@ module TheFox
 				
 				
 				if is_foreign_point
-					x_pos += content.view.position.x
-					y_pos += content.view.position.y
 				else
 					if !@grid[y_pos]
 						@grid[y_pos] = {}
@@ -191,7 +189,7 @@ module TheFox
 				
 				puts "#{@name} -- subviews: #{@subviews.count}"
 				
-				changed = false
+				changed = nil
 				
 				if @subviews.count == 0
 					changed = set_grid_cache(new_point, content)
@@ -218,10 +216,10 @@ module TheFox
 			def parent_draw_point(point, content)
 				if !@parent_view.nil? && is_visible?
 					
-					#point
+					new_point = Point.new(point.x + @position.x, point.y + @position.y)
 					
-					puts "#{@name} -- draw parent: #{@parent_view.name} #{point.x}:#{point.y}"
-					@parent_view.draw_point(point, content)
+					puts "#{@name} -- draw parent: #{@parent_view.name} (#{point.x}:#{point.y}) #{new_point.x}:#{new_point.y}"
+					@parent_view.draw_point(new_point, content)
 				end
 			end
 			
@@ -232,36 +230,63 @@ module TheFox
 				
 				if !@parent_view.nil?
 					if visibility_trend == 1
+						
 						@grid_cache.each do |y_pos, row|
 							row.each do |x_pos, content|
-								puts "#{@name} -- redraw parent,  1, #{x_pos}:#{y_pos}"
+								puts "#{@name} -- redraw parent, draw, #{x_pos}:#{y_pos}"
 								
 								point = Point.new(x_pos, y_pos)
-								@parent_view.draw_point(point, content)
+								parent_draw_point(point, content)
 							end
 						end
+						
 					elsif visibility_trend == -1
+						
 						@grid_cache.each do |y_pos, row|
 							row.each do |x_pos, content|
-								parent_x_pos = x_pos + @position.x
-								parent_y_pos = y_pos + @position.y
+								puts "#{@name} -- redraw parent, hide (#{@position.x}:#{@position.y}) #{x_pos}:#{y_pos}"
 								
-								puts "#{@name} -- redraw parent, -1, #{parent_x_pos}:#{parent_y_pos}"
+								view = @parent_view
+								view_x_pos = x_pos + @position.x
+								view_y_pos = y_pos + @position.y
 								
-								point = Point.new(parent_x_pos, parent_y_pos)
-								
-								if @parent_view.grid_cache[parent_y_pos] && 
-									@parent_view.grid_cache[parent_y_pos][parent_x_pos] &&
-									@parent_view.grid_cache[parent_y_pos][parent_x_pos] == content
+								# Erase the content on all parent views.
+								while !view.nil?
+									puts "#{@name} -- redraw parent, hide #{x_pos}:#{y_pos}, #{view}  #{view_x_pos}:#{view_y_pos}"
 									
-									puts "#{@name} -- redraw parent, -1, #{parent_x_pos}:#{parent_y_pos}, erase"
-									@parent_view.grid_cache_erase_point(point)
-								else
-									puts "#{@name} -- redraw parent, -1, #{parent_x_pos}:#{parent_y_pos}, not the same"
+									view_content = view.grid_cache[view_y_pos] && view.grid_cache[view_y_pos][view_x_pos] ? view.grid_cache[view_y_pos][view_x_pos] : nil
+									# view_content = view.grid[view_y_pos] && view.grid[view_y_pos][view_x_pos] ? view.grid[view_y_pos][view_x_pos] : nil
+									
+									if view_content
+										
+										puts "#{@name} -- redraw parent, hide #{x_pos}:#{y_pos}, #{view}  #{view_x_pos}:#{view_y_pos}, content '#{view_content}'"
+										
+										# Erase the content on the parent view only when the content is viewable on the parent view.
+										if view_content == content
+											puts "#{@name} -- redraw parent, hide #{x_pos}:#{y_pos}, #{view}  #{view_x_pos}:#{view_y_pos}, same"
+											
+											view.grid_cache_erase_point(Point.new(view_x_pos, view_y_pos))
+										else
+											puts "#{@name} -- redraw parent, hide #{x_pos}:#{y_pos}, #{view}  #{view_x_pos}:#{view_y_pos}, not same"
+											
+											# Break when reaching a foreign layer (view). This can happen when this view
+											# has a lower zindex and is concealed by another view.
+											break
+										end
+										
+									else
+										puts "#{@name} -- redraw parent, hide #{x_pos}:#{y_pos}, #{view}  #{view_x_pos}:#{view_y_pos}, empty"
+									end
+									
+									
+									view_x_pos += view.position.x
+									view_y_pos += view.position.y
+									view = view.parent_view
 								end
+								
 							end
 						end
-					else
+						
 					end
 				end
 			end
@@ -275,10 +300,23 @@ module TheFox
 				puts "#{@name} -- erase point, #{x_pos}:#{y_pos}"
 				
 				if @grid_cache[y_pos] && @grid_cache[y_pos][x_pos]
-					#@grid_cache[y_pos][x_pos] = nil
+					puts "#{@name} -- erase point, #{x_pos}:#{y_pos}, ok found"
+					
 					@grid_cache[y_pos].delete(x_pos)
 					
-					redraw_zindex(point)
+					changed = redraw_zindex(point)
+					
+					puts "#{@name} -- erase point, #{x_pos}:#{y_pos}, changed=#{changed ? 'Y' : 'N'}"
+					
+					# When nothing has changed
+					if !changed
+						puts "#{@name} -- erase point, #{x_pos}:#{y_pos}, nothing changed"
+						
+						content = ClearViewContent.new(nil, self)
+						set_grid_cache(point, content)
+					end
+				else
+					puts "#{@name} -- erase point, #{x_pos}:#{y_pos}, not found"
 				end
 			end
 			
@@ -301,7 +339,7 @@ module TheFox
 						
 						content = subview.grid_cache[subview_y_pos] && subview.grid_cache[subview_y_pos][subview_x_pos]
 						
-						# puts "#{@name} -- find #{subview_x_pos}:#{subview_y_pos} on cached grid in '#{subview}': '#{content}'"
+						puts "#{@name} -- find #{subview_x_pos}:#{subview_y_pos} on cached grid in '#{subview}': '#{content}'"
 						
 						!content.nil?
 					}
@@ -311,7 +349,6 @@ module TheFox
 				
 				view = views.last
 				
-				changed = false
 				content = nil
 				
 				if view.nil?
@@ -323,25 +360,19 @@ module TheFox
 					if @grid[y_pos] && @grid[y_pos][x_pos]
 						puts "#{@name} -- redraw zindex, found something on the grid: '#{@grid[y_pos][x_pos]}'"
 						content = @grid[y_pos][x_pos]
-						changed = set_grid_cache(point, content)
-					else
-						puts "#{@name} -- redraw zindex, nothing on the grid"
 					end
 				else
-					puts "#{@name} -- redraw zindex, last view: '#{view}'"
+					subview_x_pos = x_pos - view.position.x
+					subview_y_pos = y_pos - view.position.y
 					
-					if @grid_cache[y_pos] && @grid_cache[y_pos][x_pos]
-						subview_x_pos = x_pos - view.position.x
-						subview_y_pos = y_pos - view.position.y
-						
-						content = view.grid_cache[subview_y_pos][subview_x_pos]
-						
-						puts "#{@name} -- redraw zindex, view '#{view}', point #{subview_x_pos}:#{subview_y_pos}: '#{content}'"
-						
-						changed = set_grid_cache(point, content)
-					else
-						puts "#{@name} -- redraw zindex, nothing on the cached grid"
-					end
+					puts "#{@name} -- redraw zindex, last view: '#{view}' #{subview_x_pos}:#{subview_y_pos}"
+					
+					content = view.grid_cache[subview_y_pos][subview_x_pos]
+				end
+				
+				changed = nil
+				if !content.nil?
+					changed = set_grid_cache(point, content)
 				end
 				
 				if changed
@@ -360,27 +391,58 @@ module TheFox
 					@grid_cache[y_pos] = {}
 				end
 				
-				changed = if @grid_cache[y_pos][x_pos]
+				changed =
+					if @grid_cache[y_pos][x_pos]
 						if @grid_cache[y_pos][x_pos] == content
 							false
 						else
-							true
+							if @grid_cache[y_pos][x_pos].char == content.char
+								@grid_cache[y_pos][x_pos] = content
+								false
+							else
+								true
+							end
 						end
 					else
 						true
 					end
 				
-				if changed
-					@grid_cache[y_pos][x_pos] = content
-				end
-				
 				puts "#{@name} -- set grid #{x_pos}:#{y_pos} '#{content}' changed=#{changed ? 'Y' : 'N'}"
 				
-				changed
+				if changed
+					content.needs_rendering = true
+					@grid_cache[y_pos][x_pos] = content
+				end
 			end
 			
 			def render
+				puts "#{@name} -- render"
 				
+				grid_filtered = @grid_cache
+					.map{ |y_pos, row|
+						[y_pos, row.select{ |x_pos, content| content.needs_rendering }]
+					}
+					.to_h
+					.select{ |y_pos, row| row.count > 0 }
+				
+				grid_filtered.each do |y_pos, row|
+					row.each do |x_pos, content|
+						puts "content A '#{content}'"
+						content.needs_rendering = false
+						
+						if content.is_a?(ClearViewContent)
+							puts "content A '#{content}', remove ClearViewContent"
+							@grid_cache[y_pos].delete(x_pos)
+						end
+					end
+				end
+				
+				@grid.values.map{ |row| row.values }.flatten.select{ |content| content.needs_rendering }.each do |content|
+					puts "content B '#{content}'"
+					content.needs_rendering = false
+				end
+				
+				grid_filtered
 			end
 			
 			def to_s
