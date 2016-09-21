@@ -47,8 +47,10 @@ module TheFox
 			def to_s
 				x_s = x.nil? ? 'NIL' : x
 				y_s = y.nil? ? 'NIL' : y
+				
 				w_s = width.nil? ? 'NIL' : width
 				h_s = height.nil? ? 'NIL' : height
+				
 				"#<#{self.class} #{x_s}:#{y_s} #{w_s}:#{h_s}>"
 			end
 			

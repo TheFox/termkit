@@ -17,6 +17,11 @@ module TheFox
 			attr_accessor :grid
 			attr_accessor :grid_cache
 			attr_reader :position
+			
+			# Defines a maximum width and height for a view to be rendered.
+			attr_accessor :size
+			
+			# Defines the stack order. The view with the highest zindex will pop-up on the parent view.
 			attr_reader :zindex
 			
 			def initialize(name = nil)
@@ -30,6 +35,7 @@ module TheFox
 				
 				@is_visible = false
 				@position = Point.new(0, 0)
+				@size = nil
 				@zindex = 1
 			end
 			
@@ -417,6 +423,13 @@ module TheFox
 			
 			def render(area = nil)
 				# puts "#{@name} -- render area=#{area ? 'Y' : 'N'}"
+				
+				if !@size.nil?
+					if area.nil?
+						area = Rect.new(0, 0)
+						area.size = @size
+					end
+				end
 				
 				grid_filtered = @grid_cache
 				

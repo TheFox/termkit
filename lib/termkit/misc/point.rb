@@ -33,6 +33,7 @@ module TheFox
 			def to_s
 				x_s = x.nil? ? 'NIL' : x
 				y_s = y.nil? ? 'NIL' : y
+				
 				"#<#{self.class} x=#{x_s} y=#{y_s}>"
 			end
 			

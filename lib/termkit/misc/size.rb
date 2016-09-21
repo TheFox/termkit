@@ -15,6 +15,7 @@ module TheFox
 			def to_s
 				w_s = @width.nil? ? 'NIL' : @width.to_s
 				h_s = @height.nil? ? 'NIL' : @height.to_s
+				
 				"#<#{self.class} w=#{w_s} h=#{h_s}>"
 			end
 			
