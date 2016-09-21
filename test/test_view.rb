@@ -109,9 +109,6 @@ class TestView < MiniTest::Test
 	end
 	
 	def test_draw_point_simple
-		puts
-		puts '-- Simple ----------'
-		
 		view1 = View.new('view1')
 		view1.is_visible = true
 		
@@ -167,9 +164,9 @@ class TestView < MiniTest::Test
 		assert_equal('C', view2.grid_cache[0][3].char)
 		assert_equal('C', view1.grid_cache[0][5].char)
 		
-		pp view3.grid_cache.map{ |y, row| row.map{ |x, content| "#{x}:#{y}=>'#{content.char}'" } }.flatten
-		pp view2.grid_cache.map{ |y, row| row.map{ |x, content| "#{x}:#{y}=>'#{content.char}'" } }.flatten
-		pp view1.grid_cache.map{ |y, row| row.map{ |x, content| "#{x}:#{y}=>'#{content.char}'" } }.flatten
+		# pp view3.grid_cache.map{ |y, row| row.map{ |x, content| "#{x}:#{y}=>'#{content.char}'" } }.flatten
+		# pp view2.grid_cache.map{ |y, row| row.map{ |x, content| "#{x}:#{y}=>'#{content.char}'" } }.flatten
+		# pp view1.grid_cache.map{ |y, row| row.map{ |x, content| "#{x}:#{y}=>'#{content.char}'" } }.flatten
 	end
 	
 	def test_draw_point_subviews_chain2
@@ -251,9 +248,6 @@ class TestView < MiniTest::Test
 	end
 	
 	def test_draw_point_visible_false
-		puts
-		puts '-- Visible false ---'
-		
 		view1 = View.new('view1')
 		view1.is_visible = true
 		
@@ -309,9 +303,6 @@ class TestView < MiniTest::Test
 	end
 	
 	def test_draw_point_zindex_base
-		puts
-		puts '-- Zindex ----------'
-		
 		view1 = View.new('view1')
 		view1.is_visible = true
 		
@@ -693,15 +684,15 @@ class TestView < MiniTest::Test
 		assert_equal('E', rendered[0][3].char)
 		
 		
-		puts '-' * 30
-		puts '-' * 30
-		puts '-' * 30
+		# puts '-' * 30
+		# puts '-' * 30
+		# puts '-' * 30
 		
 		view2.is_visible = false
 		
-		puts '-' * 30
-		puts '-' * 30
-		puts '-' * 30
+		# puts '-' * 30
+		# puts '-' * 30
+		# puts '-' * 30
 		
 		rendered = view1.render
 		
@@ -763,15 +754,15 @@ class TestView < MiniTest::Test
 		assert_equal('E', rendered[0][7].char)
 		assert_equal('F', rendered[0][8].char)
 		
-		puts '-' * 30
-		puts '-' * 30
-		puts '-' * 30
+		# puts '-' * 30
+		# puts '-' * 30
+		# puts '-' * 30
 		
 		view3.is_visible = false
 		
-		puts '-' * 30
-		puts '-' * 30
-		puts '-' * 30
+		# puts '-' * 30
+		# puts '-' * 30
+		# puts '-' * 30
 		
 		rendered = view1.render
 		
@@ -787,8 +778,8 @@ class TestView < MiniTest::Test
 		
 		
 		
-		pp view1.pp_grid_cache
-		pp rendered.map{ |y, row| row.map{ |x, content| "#{x}:#{y}=>'#{content.char}'" } }.flatten
+		# pp view1.pp_grid_cache
+		# pp rendered.map{ |y, row| row.map{ |x, content| "#{x}:#{y}=>'#{content.char}'" } }.flatten
 	end
 	
 	def test_render_subview_chain2
@@ -818,15 +809,15 @@ class TestView < MiniTest::Test
 		
 		rendered = view1.render
 		
-		puts '-' * 30
-		puts '-' * 30
-		puts '-' * 30
+		# puts '-' * 30
+		# puts '-' * 30
+		# puts '-' * 30
 		
 		view2.is_visible = false
 		
-		puts '-' * 30
-		puts '-' * 30
-		puts '-' * 30
+		# puts '-' * 30
+		# puts '-' * 30
+		# puts '-' * 30
 		
 		rendered = view1.render
 		
@@ -851,8 +842,8 @@ class TestView < MiniTest::Test
 		assert_equal('F', rendered[0][5].char)
 		
 		
-		pp view1.pp_grid_cache
-		pp rendered.map{ |y, row| row.map{ |x, content| "#{x}:#{y}=>'#{content.char}'" } }.flatten
+		# pp view1.pp_grid_cache
+		# pp rendered.map{ |y, row| row.map{ |x, content| "#{x}:#{y}=>'#{content.char}'" } }.flatten
 	end
 	
 	def test_render_subview_chain3
@@ -891,15 +882,15 @@ class TestView < MiniTest::Test
 		
 		rendered = view1.render
 		
-		puts '-' * 30
-		puts '-' * 30
-		puts '-' * 30
+		# puts '-' * 30
+		# puts '-' * 30
+		# puts '-' * 30
 		
 		view2.is_visible = false
 		
-		puts '-' * 30
-		puts '-' * 30
-		puts '-' * 30
+		# puts '-' * 30
+		# puts '-' * 30
+		# puts '-' * 30
 		
 		rendered = view1.render
 		
@@ -932,8 +923,8 @@ class TestView < MiniTest::Test
 		assert_equal('F', rendered[0][5].char)
 		
 		
-		pp view1.pp_grid_cache
-		pp rendered.map{ |y, row| row.map{ |x, content| "#{x}:#{y}=>'#{content.char}'" } }.flatten
+		# pp view1.pp_grid_cache
+		# pp rendered.map{ |y, row| row.map{ |x, content| "#{x}:#{y}=>'#{content.char}'" } }.flatten
 	end
 	
 	def test_render_area_base1
@@ -993,7 +984,7 @@ class TestView < MiniTest::Test
 		assert_equal('F', rendered[3][2].char)
 		assert_equal('G', rendered[3][3].char)
 		
-		pp rendered.map{ |y, row| row.map{ |x, content| "#{x}:#{y}=>'#{content.char}'" } }.flatten
+		# pp rendered.map{ |y, row| row.map{ |x, content| "#{x}:#{y}=>'#{content.char}'" } }.flatten
 	end
 	
 	def test_render_area_base2
@@ -1053,7 +1044,7 @@ class TestView < MiniTest::Test
 		assert_equal('F', rendered[3][2].char)
 		assert_equal('G', rendered[3][3].char)
 		
-		pp rendered.map{ |y, row| row.map{ |x, content| "#{x}:#{y}=>'#{content.char}'" } }.flatten
+		# pp rendered.map{ |y, row| row.map{ |x, content| "#{x}:#{y}=>'#{content.char}'" } }.flatten
 	end
 	
 	def test_render_area_base3
@@ -1113,7 +1104,7 @@ class TestView < MiniTest::Test
 		# assert_equal('F', rendered[3][2].char)
 		# assert_equal('G', rendered[3][3].char)
 		
-		pp rendered.map{ |y, row| row.map{ |x, content| "#{x}:#{y}=>'#{content.char}'" } }.flatten
+		# pp rendered.map{ |y, row| row.map{ |x, content| "#{x}:#{y}=>'#{content.char}'" } }.flatten
 	end
 	
 	def test_render_area_base4
@@ -1173,7 +1164,7 @@ class TestView < MiniTest::Test
 		# assert_equal('F', rendered[3][2].char)
 		# assert_equal('G', rendered[3][3].char)
 		
-		pp rendered.map{ |y, row| row.map{ |x, content| "#{x}:#{y}=>'#{content.char}'" } }.flatten
+		# pp rendered.map{ |y, row| row.map{ |x, content| "#{x}:#{y}=>'#{content.char}'" } }.flatten
 	end
 	
 	def test_render_area_base5
@@ -1419,7 +1410,7 @@ class TestView < MiniTest::Test
 		
 		rendered = view1.render(Rect.new(0, 1, nil, 2))
 		
-		pp rendered.map{ |y, row| row.map{ |x, content| "#{x}:#{y}=>'#{content.char}'" } }.flatten
+		# pp rendered.map{ |y, row| row.map{ |x, content| "#{x}:#{y}=>'#{content.char}'" } }.flatten
 		
 		assert_equal(2, rendered.count)
 		assert_nil(rendered[0])

@@ -83,14 +83,14 @@ module TheFox
 			def zindex=(zindex)
 				@zindex = zindex
 				
-				puts "#{@name} -- set zindex #{zindex} p=#{@parent_view.nil? ? 'N' : 'Y'}"
+				# puts "#{@name} -- set zindex #{zindex} p=#{@parent_view.nil? ? 'N' : 'Y'}"
 				
 				if !@parent_view.nil?
 					@grid_cache.each do |y_pos, row|
 						row.each do |x_pos, content|
 							point = Point.new(x_pos + @position.x, y_pos + @position.y)
 							
-							puts "#{@name} -- set zindex #{zindex}, #{point.x}:#{point.y}"
+							# puts "#{@name} -- set zindex #{zindex}, #{point.x}:#{point.y}"
 							
 							@parent_view.redraw_zindex(point)
 						end
@@ -113,7 +113,7 @@ module TheFox
 					row.each do |x_pos, content|
 						point = Point.new(x_pos + subview.position.x, y_pos + subview.position.y)
 						
-						puts "#{@name} -- add_subview, redraw_zindex #{point.x}:#{point.y}"
+						# puts "#{@name} -- add_subview, redraw_zindex #{point.x}:#{point.y}"
 						
 						redraw_zindex(point)
 					end
@@ -136,7 +136,7 @@ module TheFox
 					row.each do |x_pos, content|
 						point = Point.new(x_pos + subview.position.x, y_pos + subview.position.y)
 						
-						puts "#{@name} -- remove_subview, grid_cache_erase_point #{point.x}:#{point.y}"
+						# puts "#{@name} -- remove_subview, grid_cache_erase_point #{point.x}:#{point.y}"
 						
 						grid_cache_erase_point(point)
 					end
@@ -170,8 +170,8 @@ module TheFox
 				y_pos = point.y
 				
 				
-				puts
-				puts "#{@name} -- draw '#{content}'"
+				# puts
+				# puts "#{@name} -- draw '#{content}'"
 				
 				
 				if is_foreign_point
@@ -185,23 +185,23 @@ module TheFox
 				
 				new_point = Point.new(x_pos, y_pos)
 				
-				puts "#{@name} -- draw '#{content}' #{x_pos}:#{y_pos} foreign=#{is_foreign_point ? 'Y' : 'N'} from=#{content.view.name}"
+				# puts "#{@name} -- draw '#{content}' #{x_pos}:#{y_pos} foreign=#{is_foreign_point ? 'Y' : 'N'} from=#{content.view.name}"
 				
-				puts "#{@name} -- subviews: #{@subviews.count}"
+				# puts "#{@name} -- subviews: #{@subviews.count}"
 				
 				changed = nil
 				
 				if @subviews.count == 0
 					changed = set_grid_cache(new_point, content)
 				else
-					puts "#{@name} -- has subviews"
+					# puts "#{@name} -- has subviews"
 					
 					if @grid_cache[y_pos] && @grid_cache[y_pos][x_pos]
-						puts "#{@name} -- found something on cached grid"
+						# puts "#{@name} -- found something on cached grid"
 						
 						redraw_zindex(new_point)
 					else
-						puts "#{@name} -- draw free point"
+						# puts "#{@name} -- draw free point"
 						changed = set_grid_cache(new_point, content)
 					end
 				end
@@ -218,7 +218,7 @@ module TheFox
 					
 					new_point = Point.new(point.x + @position.x, point.y + @position.y)
 					
-					puts "#{@name} -- draw parent: #{@parent_view.name} (#{point.x}:#{point.y}) #{new_point.x}:#{new_point.y}"
+					# puts "#{@name} -- draw parent: #{@parent_view.name} (#{point.x}:#{point.y}) #{new_point.x}:#{new_point.y}"
 					@parent_view.draw_point(new_point, content)
 				end
 			end
@@ -226,14 +226,14 @@ module TheFox
 			##
 			# Redraw to Parent View based on the visibility trend.
 			def redraw_parent(visibility_trend)
-				puts "#{@name} -- redraw parent, #{visibility_trend}"
+				# puts "#{@name} -- redraw parent, #{visibility_trend}"
 				
 				if !@parent_view.nil?
 					if visibility_trend == 1
 						
 						@grid_cache.each do |y_pos, row|
 							row.each do |x_pos, content|
-								puts "#{@name} -- redraw parent, draw, #{x_pos}:#{y_pos}"
+								# puts "#{@name} -- redraw parent, draw, #{x_pos}:#{y_pos}"
 								
 								point = Point.new(x_pos, y_pos)
 								parent_draw_point(point, content)
@@ -244,7 +244,7 @@ module TheFox
 						
 						@grid_cache.each do |y_pos, row|
 							row.each do |x_pos, content|
-								puts "#{@name} -- redraw parent, hide (#{@position.x}:#{@position.y}) #{x_pos}:#{y_pos}"
+								# puts "#{@name} -- redraw parent, hide (#{@position.x}:#{@position.y}) #{x_pos}:#{y_pos}"
 								
 								view = @parent_view
 								view_x_pos = x_pos + @position.x
@@ -252,22 +252,22 @@ module TheFox
 								
 								# Erase the content on all parent views.
 								while !view.nil?
-									puts "#{@name} -- redraw parent, hide #{x_pos}:#{y_pos}, #{view}  #{view_x_pos}:#{view_y_pos}"
+									# puts "#{@name} -- redraw parent, hide #{x_pos}:#{y_pos}, #{view}  #{view_x_pos}:#{view_y_pos}"
 									
 									view_content = view.grid_cache[view_y_pos] && view.grid_cache[view_y_pos][view_x_pos] ? view.grid_cache[view_y_pos][view_x_pos] : nil
 									# view_content = view.grid[view_y_pos] && view.grid[view_y_pos][view_x_pos] ? view.grid[view_y_pos][view_x_pos] : nil
 									
 									if view_content
 										
-										puts "#{@name} -- redraw parent, hide #{x_pos}:#{y_pos}, #{view}  #{view_x_pos}:#{view_y_pos}, content '#{view_content}'"
+										# puts "#{@name} -- redraw parent, hide #{x_pos}:#{y_pos}, #{view}  #{view_x_pos}:#{view_y_pos}, content '#{view_content}'"
 										
 										# Erase the content on the parent view only when the content is viewable on the parent view.
 										if view_content == content
-											puts "#{@name} -- redraw parent, hide #{x_pos}:#{y_pos}, #{view}  #{view_x_pos}:#{view_y_pos}, same"
+											# puts "#{@name} -- redraw parent, hide #{x_pos}:#{y_pos}, #{view}  #{view_x_pos}:#{view_y_pos}, same"
 											
 											view.grid_cache_erase_point(Point.new(view_x_pos, view_y_pos))
 										else
-											puts "#{@name} -- redraw parent, hide #{x_pos}:#{y_pos}, #{view}  #{view_x_pos}:#{view_y_pos}, not same"
+											# puts "#{@name} -- redraw parent, hide #{x_pos}:#{y_pos}, #{view}  #{view_x_pos}:#{view_y_pos}, not same"
 											
 											# Break when reaching a foreign layer (view). This can happen when this view
 											# has a lower zindex and is concealed by another view.
@@ -275,7 +275,7 @@ module TheFox
 										end
 										
 									else
-										puts "#{@name} -- redraw parent, hide #{x_pos}:#{y_pos}, #{view}  #{view_x_pos}:#{view_y_pos}, empty"
+										# puts "#{@name} -- redraw parent, hide #{x_pos}:#{y_pos}, #{view}  #{view_x_pos}:#{view_y_pos}, empty"
 									end
 									
 									
@@ -297,26 +297,26 @@ module TheFox
 				x_pos = point.x
 				y_pos = point.y
 				
-				puts "#{@name} -- erase point, #{x_pos}:#{y_pos}"
+				# puts "#{@name} -- erase point, #{x_pos}:#{y_pos}"
 				
 				if @grid_cache[y_pos] && @grid_cache[y_pos][x_pos]
-					puts "#{@name} -- erase point, #{x_pos}:#{y_pos}, ok found"
+					# puts "#{@name} -- erase point, #{x_pos}:#{y_pos}, ok found"
 					
 					@grid_cache[y_pos].delete(x_pos)
 					
 					changed = redraw_zindex(point)
 					
-					puts "#{@name} -- erase point, #{x_pos}:#{y_pos}, changed=#{changed ? 'Y' : 'N'}"
+					# puts "#{@name} -- erase point, #{x_pos}:#{y_pos}, changed=#{changed ? 'Y' : 'N'}"
 					
 					# When nothing has changed
 					if !changed
-						puts "#{@name} -- erase point, #{x_pos}:#{y_pos}, nothing changed"
+						# puts "#{@name} -- erase point, #{x_pos}:#{y_pos}, nothing changed"
 						
 						content = ClearViewContent.new(nil, self)
 						set_grid_cache(point, content)
 					end
 				else
-					puts "#{@name} -- erase point, #{x_pos}:#{y_pos}, not found"
+					# puts "#{@name} -- erase point, #{x_pos}:#{y_pos}, not found"
 				end
 			end
 			
@@ -327,7 +327,7 @@ module TheFox
 				x_pos = point.x
 				y_pos = point.y
 				
-				puts "#{@name} -- redraw zindex #{x_pos}:#{y_pos}"
+				# puts "#{@name} -- redraw zindex #{x_pos}:#{y_pos}"
 				
 				views = @subviews
 					.select{ |subview| subview.is_visible? }
@@ -339,13 +339,13 @@ module TheFox
 						
 						content = subview.grid_cache[subview_y_pos] && subview.grid_cache[subview_y_pos][subview_x_pos]
 						
-						puts "#{@name} -- find #{subview_x_pos}:#{subview_y_pos} on cached grid in '#{subview}': '#{content}'"
+						# puts "#{@name} -- find #{subview_x_pos}:#{subview_y_pos} on cached grid in '#{subview}': '#{content}'"
 						
 						!content.nil?
 					}
 					.sort{ |subview1, subview2| subview1.zindex <=> subview2.zindex }
 				
-				pp views.map{ |subview| subview.name }
+				# pp views.map{ |subview| subview.name }
 				
 				view = views.last
 				
@@ -355,17 +355,17 @@ module TheFox
 					# When no subview was found draw the current view,
 					# if a point on the current view's grid exist.
 					
-					puts "#{@name} -- redraw zindex, no view"
+					# puts "#{@name} -- redraw zindex, no view"
 					
 					if @grid[y_pos] && @grid[y_pos][x_pos]
-						puts "#{@name} -- redraw zindex, found something on the grid: '#{@grid[y_pos][x_pos]}'"
+						# puts "#{@name} -- redraw zindex, found something on the grid: '#{@grid[y_pos][x_pos]}'"
 						content = @grid[y_pos][x_pos]
 					end
 				else
 					subview_x_pos = x_pos - view.position.x
 					subview_y_pos = y_pos - view.position.y
 					
-					puts "#{@name} -- redraw zindex, last view: '#{view}' #{subview_x_pos}:#{subview_y_pos}"
+					# puts "#{@name} -- redraw zindex, last view: '#{view}' #{subview_x_pos}:#{subview_y_pos}"
 					
 					content = view.grid_cache[subview_y_pos][subview_x_pos]
 				end
@@ -376,7 +376,7 @@ module TheFox
 				end
 				
 				if changed
-					puts "#{@name} -- redraw zindex, changed"
+					# puts "#{@name} -- redraw zindex, changed"
 					parent_draw_point(point, content)
 				end
 				
@@ -407,7 +407,7 @@ module TheFox
 						true
 					end
 				
-				puts "#{@name} -- set grid #{x_pos}:#{y_pos} '#{content}' changed=#{changed ? 'Y' : 'N'}"
+				# puts "#{@name} -- set grid #{x_pos}:#{y_pos} '#{content}' changed=#{changed ? 'Y' : 'N'}"
 				
 				if changed
 					content.needs_rendering = true
@@ -416,7 +416,7 @@ module TheFox
 			end
 			
 			def render(area = nil)
-				puts "#{@name} -- render area=#{area ? 'Y' : 'N'}"
+				# puts "#{@name} -- render area=#{area ? 'Y' : 'N'}"
 				
 				grid_filtered = @grid_cache
 				
@@ -461,7 +461,7 @@ module TheFox
 				
 				grid_filtered.each do |y_pos, row|
 					row.each do |x_pos, content|
-						puts "render #{x_pos}:#{y_pos} '#{content}'"
+						# puts "render #{x_pos}:#{y_pos} '#{content}'"
 						content.needs_rendering = false
 						
 						if content.is_a?(ClearViewContent)
@@ -472,7 +472,7 @@ module TheFox
 				end
 				
 				# @grid.values.map{ |row| row.values }.flatten.select{ |content| content.needs_rendering }.each do |content|
-				# 	puts "render '#{content}'"
+					# puts "render '#{content}'"
 				# 	content.needs_rendering = false
 				# end
 				
