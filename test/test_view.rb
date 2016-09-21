@@ -2,7 +2,7 @@
 
 require 'minitest/autorun'
 require 'termkit'
-require 'pp'
+# require 'pp'
 
 
 class TestView < MiniTest::Test
@@ -112,7 +112,7 @@ class TestView < MiniTest::Test
 		view1 = View.new('view1')
 		view1.is_visible = true
 		
-		assert_equal(true, view1.draw_point([0, 0], 'A'))
+		assert_instance_of(ViewContent, view1.draw_point([0, 0], 'A'))
 		assert_equal('A', view1.grid[0][0].char)
 		assert_equal('A', view1.grid_cache[0][0].char)
 	end
@@ -126,8 +126,8 @@ class TestView < MiniTest::Test
 		view2.is_visible = true
 		view1.add_subview(view2)
 		
-		assert_equal(true, view1.draw_point([0, 0], 'A'))
-		assert_equal(true, view2.draw_point([0, 0], 'B'))
+		assert_instance_of(ViewContent, view1.draw_point([0, 0], 'A'))
+		assert_instance_of(ViewContent, view2.draw_point([0, 0], 'B'))
 		
 		assert_equal('A', view1.grid[0][0].char)
 		assert_nil(view1.grid[0][1])
@@ -150,11 +150,11 @@ class TestView < MiniTest::Test
 		view3.is_visible = true
 		view2.add_subview(view3)
 		
-		# assert_equal(true, view1.draw_point([0, 0], 'A'))
-		# assert_equal(true, view1.draw_point([1, 0], 'A'))
-		# assert_equal(true, view2.draw_point([0, 0], 'B'))
-		# assert_equal(true, view2.draw_point([1, 0], 'B'))
-		assert_equal(true, view3.draw_point([0, 0], 'C'))
+		# assert_instance_of(ViewContent, view1.draw_point([0, 0], 'A'))
+		# assert_instance_of(ViewContent, view1.draw_point([1, 0], 'A'))
+		# assert_instance_of(ViewContent, view2.draw_point([0, 0], 'B'))
+		# assert_instance_of(ViewContent, view2.draw_point([1, 0], 'B'))
+		assert_instance_of(ViewContent, view3.draw_point([0, 0], 'C'))
 		
 		# pp view1.pp_grid_cache
 		# pp view2.pp_grid_cache
@@ -183,11 +183,11 @@ class TestView < MiniTest::Test
 		view3.is_visible = true
 		view2.add_subview(view3)
 		
-		assert_equal(true, view1.draw_point([0, 0], 'A'))
-		assert_equal(true, view1.draw_point([1, 0], 'A'))
-		assert_equal(true, view2.draw_point([0, 0], 'B'))
-		assert_equal(true, view2.draw_point([1, 0], 'B'))
-		assert_equal(true, view3.draw_point([0, 0], 'C'))
+		assert_instance_of(ViewContent, view1.draw_point([0, 0], 'A'))
+		assert_instance_of(ViewContent, view1.draw_point([1, 0], 'A'))
+		assert_instance_of(ViewContent, view2.draw_point([0, 0], 'B'))
+		assert_instance_of(ViewContent, view2.draw_point([1, 0], 'B'))
+		assert_instance_of(ViewContent, view3.draw_point([0, 0], 'C'))
 		
 		# pp view1.pp_grid_cache
 		# pp view2.pp_grid_cache
@@ -215,7 +215,7 @@ class TestView < MiniTest::Test
 		view3.is_visible = true
 		view2.add_subview(view3)
 		
-		assert_equal(true, view3.draw_point([0, 0], 'C'))
+		assert_instance_of(ViewContent, view3.draw_point([0, 0], 'C'))
 		
 		# pp view1.pp_grid_cache
 		# pp view2.pp_grid_cache
@@ -225,8 +225,8 @@ class TestView < MiniTest::Test
 		assert_equal('C', view2.grid_cache[0][1].char)
 		assert_equal('C', view1.grid_cache[0][2].char)
 		
-		assert_equal(true, view2.draw_point([1, 0], 'B'))
-		assert_equal(true, view2.draw_point([0, 0], 'B'))
+		assert_nil(view2.draw_point([1, 0], 'B'))
+		assert_instance_of(ViewContent, view2.draw_point([0, 0], 'B'))
 		
 		# pp view1.pp_grid_cache
 		# pp view2.pp_grid_cache
@@ -239,8 +239,8 @@ class TestView < MiniTest::Test
 		assert_equal('B', view2.grid_cache[0][0].char)
 		assert_equal('B', view1.grid_cache[0][1].char)
 		
-		assert_equal(true, view1.draw_point([1, 0], 'A'))
-		assert_equal(true, view1.draw_point([0, 0], 'A'))
+		assert_nil(view1.draw_point([1, 0], 'A'))
+		assert_instance_of(ViewContent, view1.draw_point([0, 0], 'A'))
 		
 		# pp view1.pp_grid_cache
 		# pp view2.pp_grid_cache
@@ -256,8 +256,8 @@ class TestView < MiniTest::Test
 		view2.is_visible = false
 		view1.add_subview(view2)
 		
-		assert_equal(true, view1.draw_point([0, 0], 'A'))
-		assert_equal(true, view2.draw_point([0, 0], 'B'))
+		assert_instance_of(ViewContent, view1.draw_point([0, 0], 'A'))
+		assert_instance_of(ViewContent, view2.draw_point([0, 0], 'B'))
 		
 		assert_equal('A', view1.grid[0][0].char)
 		assert_nil(view1.grid[0][1])
@@ -275,8 +275,8 @@ class TestView < MiniTest::Test
 		view2.is_visible = false
 		view1.add_subview(view2)
 		
-		assert_equal(true, view1.draw_point([0, 0], 'A'))
-		assert_equal(true, view2.draw_point([0, 0], 'B'))
+		assert_instance_of(ViewContent, view1.draw_point([0, 0], 'A'))
+		assert_instance_of(ViewContent, view2.draw_point([0, 0], 'B'))
 		
 		assert_equal('A', view1.grid[0][0].char)
 		assert_nil(view1.grid[0][1])
@@ -324,10 +324,10 @@ class TestView < MiniTest::Test
 		view4.zindex = 3
 		view1.add_subview(view4)
 		
-		assert_equal(true, view1.draw_point([0, 0], 'A'))
-		assert_equal(true, view2.draw_point([0, 0], 'B'))
-		assert_equal(true, view2.draw_point([1, 0], 'C'))
-		assert_equal(true, view3.draw_point([0, 0], 'D'))
+		assert_instance_of(ViewContent, view1.draw_point([0, 0], 'A'))
+		assert_instance_of(ViewContent, view2.draw_point([0, 0], 'B'))
+		assert_instance_of(ViewContent, view2.draw_point([1, 0], 'C'))
+		assert_instance_of(ViewContent, view3.draw_point([0, 0], 'D'))
 		
 		assert_equal('A', view1.grid_cache[0][0].char)
 		assert_equal('B', view1.grid_cache[0][1].char)
@@ -350,12 +350,12 @@ class TestView < MiniTest::Test
 		view3.zindex = 20
 		view1.add_subview(view3)
 		
-		assert_equal(true, view1.draw_point([0, 0], 'A'))
-		assert_equal(true, view1.draw_point([1, 0], 'A'))
-		assert_equal(true, view1.draw_point([2, 0], 'A'))
-		assert_equal(true, view2.draw_point([0, 0], 'B'))
-		assert_equal(true, view2.draw_point([1, 0], 'B'))
-		assert_equal(true, view3.draw_point([0, 0], 'C'))
+		assert_instance_of(ViewContent, view1.draw_point([0, 0], 'A'))
+		assert_instance_of(ViewContent, view1.draw_point([1, 0], 'A'))
+		assert_instance_of(ViewContent, view1.draw_point([2, 0], 'A'))
+		assert_instance_of(ViewContent, view2.draw_point([0, 0], 'B'))
+		assert_instance_of(ViewContent, view2.draw_point([1, 0], 'B'))
+		assert_instance_of(ViewContent, view3.draw_point([0, 0], 'C'))
 		
 		assert_equal('A', view1.grid_cache[0][0].char)
 		assert_equal('B', view1.grid_cache[0][1].char)
@@ -401,17 +401,17 @@ class TestView < MiniTest::Test
 		view4.zindex = 20
 		view2.add_subview(view4)
 		
-		assert_equal(true, view1.draw_point([0, 0], 'A'))
-		assert_equal(true, view1.draw_point([1, 0], 'A'))
-		assert_equal(true, view1.draw_point([2, 0], 'A'))
-		# assert_equal(true, view1.draw_point([3, 0], 'A'))
-		assert_equal(true, view2.draw_point([0, 0], 'B'))
-		assert_equal(true, view2.draw_point([1, 0], 'B'))
-		assert_equal(true, view2.draw_point([2, 0], 'B'))
-		# assert_equal(true, view2.draw_point([3, 0], 'B'))
-		assert_equal(true, view3.draw_point([0, 0], 'C'))
-		assert_equal(true, view4.draw_point([0, 0], 'D'))
-		assert_equal(true, view4.draw_point([1, 0], 'D'))
+		assert_instance_of(ViewContent, view1.draw_point([0, 0], 'A'))
+		assert_instance_of(ViewContent, view1.draw_point([1, 0], 'A'))
+		assert_instance_of(ViewContent, view1.draw_point([2, 0], 'A'))
+		# assert_instance_of(ViewContent, view1.draw_point([3, 0], 'A'))
+		assert_instance_of(ViewContent, view2.draw_point([0, 0], 'B'))
+		assert_instance_of(ViewContent, view2.draw_point([1, 0], 'B'))
+		assert_instance_of(ViewContent, view2.draw_point([2, 0], 'B'))
+		# assert_instance_of(ViewContent, view2.draw_point([3, 0], 'B'))
+		assert_instance_of(ViewContent, view3.draw_point([0, 0], 'C'))
+		assert_instance_of(ViewContent, view4.draw_point([0, 0], 'D'))
+		assert_instance_of(ViewContent, view4.draw_point([1, 0], 'D'))
 		
 		# pp view1.pp_grid_cache
 		
@@ -454,9 +454,9 @@ class TestView < MiniTest::Test
 		view1 = View.new('view1')
 		view1.is_visible = true
 		
-		assert_equal(true, view1.draw_point([0, 0], 'A'))
-		assert_equal(true, view1.draw_point([1, 0], 'B'))
-		assert_equal(true, view1.draw_point([2, 0], 'C'))
+		assert_instance_of(ViewContent, view1.draw_point([0, 0], 'A'))
+		assert_instance_of(ViewContent, view1.draw_point([1, 0], 'B'))
+		assert_instance_of(ViewContent, view1.draw_point([2, 0], 'C'))
 		
 		assert_equal('A', view1.grid_cache[0][0].char)
 		assert_equal('B', view1.grid_cache[0][1].char)
@@ -466,7 +466,7 @@ class TestView < MiniTest::Test
 		view2.position = Point.new(2, 0)
 		view2.is_visible = true
 		
-		assert_equal(true, view2.draw_point([0, 0], 'D'))
+		assert_instance_of(ViewContent, view2.draw_point([0, 0], 'D'))
 		
 		view1.add_subview(view2)
 		
@@ -479,15 +479,15 @@ class TestView < MiniTest::Test
 		view1 = View.new('view1')
 		view1.is_visible = true
 		
-		assert_equal(true, view1.draw_point([0, 0], 'A'))
-		assert_equal(true, view1.draw_point([1, 0], 'B'))
-		assert_equal(true, view1.draw_point([2, 0], 'C'))
+		assert_instance_of(ViewContent, view1.draw_point([0, 0], 'A'))
+		assert_instance_of(ViewContent, view1.draw_point([1, 0], 'B'))
+		assert_instance_of(ViewContent, view1.draw_point([2, 0], 'C'))
 		
 		view2 = View.new('view2')
 		view2.position = Point.new(2, 0)
 		view2.is_visible = true
 		
-		assert_equal(true, view2.draw_point([0, 0], 'D'))
+		assert_instance_of(ViewContent, view2.draw_point([0, 0], 'D'))
 		
 		view1.add_subview(view2)
 		
@@ -567,28 +567,29 @@ class TestView < MiniTest::Test
 		content1 = ViewContent.new('A')
 		content2 = ViewContent.new('B')
 		content3 = ViewContent.new('B')
+		content4 = ViewContent.new('B')
 		
 		content1.needs_rendering = false
 		content2.needs_rendering = false
 		content3.needs_rendering = false
+		content4.needs_rendering = true
 		
 		view1 = View.new('view1')
 		
-		# assert_equal(true, view1.set_grid_cache(Point.new(0, 0), content1))
 		assert_instance_of(ViewContent, view1.set_grid_cache(Point.new(0, 0), content1))
 		assert_equal(true, content1.needs_rendering)
 		
-		# assert_equal(false, view1.set_grid_cache(Point.new(0, 0), content1))
 		assert_nil(view1.set_grid_cache(Point.new(0, 0), content1))
 		assert_equal(true, content1.needs_rendering)
 		
-		# assert_equal(true, view1.set_grid_cache(Point.new(0, 0), content2))
 		assert_instance_of(ViewContent, view1.set_grid_cache(Point.new(0, 0), content2))
 		assert_equal(true, content2.needs_rendering)
 		
-		# assert_equal(false, view1.set_grid_cache(Point.new(0, 0), content3))
 		assert_nil(view1.set_grid_cache(Point.new(0, 0), content3))
 		assert_equal(false, content3.needs_rendering)
+		
+		assert_nil(view1.set_grid_cache(Point.new(0, 0), content4))
+		assert_equal(false, content4.needs_rendering)
 	end
 	
 	def test_render_simple

@@ -2,14 +2,20 @@
 module TheFox
 	module TermKit
 		
+		##
+		# Basic Text View class. View sub-class.
+		#
+		# Provides functionalities to draw text.
 		class TextView < View
 			
-			def initialize(text = nil)
-				super("text_view")
+			def initialize(text = nil, name = 'text_view')
+				super(name)
 				
 				#puts 'TextView->initialize'
 				
-				draw_text(text)
+				if !text.nil?
+					draw_text(text)
+				end
 			end
 			
 			def text=(text)
@@ -20,10 +26,34 @@ module TheFox
 				draw_text(text)
 			end
 			
-			private
-			
 			def draw_text(text)
+				changes = 0
 				
+				y_pos = 0
+				text.split("\n").each do |line|
+					x_pos = 0
+					
+					# puts "line '#{line}'"
+					
+					line.split('').each do |char|
+						# puts "c '#{char}'"
+						
+						content = draw_point(Point.new(x_pos, y_pos), char)
+						if !content.nil?
+							changes += 1
+						end
+						
+						# puts "    c '#{char}' #{changes}"
+						
+						x_pos += 1
+					end
+					
+					# puts "line '#{line}', changes #{changes}"
+					
+					y_pos += 1
+				end
+				
+				changes
 			end
 			
 		end

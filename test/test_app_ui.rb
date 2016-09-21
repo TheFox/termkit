@@ -52,10 +52,10 @@ class TestUIApp < MiniTest::Test
 		assert_raises(ArgumentError){ app1.set_active_controller(nil) }
 	end
 	
-	def test_draw_line
-		app1 = Test::UIApp.new
-		assert_raises(NotImplementedError){ app1.draw_line(nil, nil) }
-	end
+	# def test_draw_line
+	# 	app1 = Test::UIApp.new
+	# 	assert_raises(NotImplementedError){ app1.draw_line(nil, nil) }
+	# end
 	
 	def test_draw_point
 		app1 = Test::UIApp.new

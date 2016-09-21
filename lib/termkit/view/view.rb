@@ -223,7 +223,7 @@ module TheFox
 					parent_draw_point(new_point, content)
 				end
 				
-				return true
+				changed
 			end
 			
 			# Draw a point on the parent View (`@parent_view`).
@@ -422,6 +422,7 @@ module TheFox
 							false
 						else
 							if @grid_cache[y_pos][x_pos].char == content.char
+								content.needs_rendering = false
 								@grid_cache[y_pos][x_pos] = content
 								false
 							else
