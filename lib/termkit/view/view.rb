@@ -418,18 +418,18 @@ module TheFox
 			def render(area = nil)
 				puts "#{@name} -- render area=#{area ? 'Y' : 'N'}"
 				
-				grid_filtered = {}
+				grid_filtered = @grid_cache
+				
+				grid_filtered = grid_filtered
+					.map{ |y_pos, row|
+						[y_pos, row.select{ |x_pos, content| content.needs_rendering }]
+					}
+					.to_h
+					
 				
 				if area.nil? || area.has_default_values?
-					grid_filtered = @grid_cache
-						.map{ |y_pos, row|
-							[y_pos, row.select{ |x_pos, content| content.needs_rendering }]
-						}
-						.to_h
-						.select{ |y_pos, row| row.count > 0 }
-				else
 					
-					grid_filtered = @grid_cache
+				else
 					
 					grid_filtered = grid_filtered
 						.select{ |y_pos, row|
@@ -457,23 +457,24 @@ module TheFox
 					
 				end
 				
+				grid_filtered = grid_filtered.select{ |y_pos, row| row.count > 0 }
 				
 				grid_filtered.each do |y_pos, row|
 					row.each do |x_pos, content|
-						puts "content A '#{content}'"
+						puts "render #{x_pos}:#{y_pos} '#{content}'"
 						content.needs_rendering = false
 						
 						if content.is_a?(ClearViewContent)
-							puts "content A '#{content}', remove ClearViewContent"
+							# puts "render '#{content}', remove ClearViewContent"
 							@grid_cache[y_pos].delete(x_pos)
 						end
 					end
 				end
 				
-				@grid.values.map{ |row| row.values }.flatten.select{ |content| content.needs_rendering }.each do |content|
-					puts "content B '#{content}'"
-					content.needs_rendering = false
-				end
+				# @grid.values.map{ |row| row.values }.flatten.select{ |content| content.needs_rendering }.each do |content|
+				# 	puts "render '#{content}'"
+				# 	content.needs_rendering = false
+				# end
 				
 				grid_filtered
 			end
