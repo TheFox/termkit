@@ -2,6 +2,8 @@
 module TheFox
 	module TermKit
 		
+		##
+		# Typically used to handle user keystrokes.
 		class KeyEvent
 			
 			attr_accessor :key

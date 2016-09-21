@@ -2,6 +2,8 @@
 module TheFox
 	module TermKit
 		
+		##
+		# A single point on a x-y-grid.
 		class Point
 			
 			attr_accessor :x

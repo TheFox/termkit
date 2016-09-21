@@ -5,6 +5,7 @@ require 'curses'
 module TheFox
 	module TermKit
 		
+		# Default Curses read input timeout.
 		CURSES_TIMEOUT = 200
 		
 		class CursesApp < UIApp
@@ -25,6 +26,8 @@ module TheFox
 				Curses.timeout = @curses_timeout
 			end
 			
+			##
+			# See UIApp `run_cycle()` method.
 			def run_cycle
 				super()
 				
@@ -33,29 +36,41 @@ module TheFox
 				handle_user_input
 			end
 			
-			def draw_line(point, content)
-				draw_point(point, content)
-			end
+			##
+			# See UIApp `draw_line()` method.
+			# def draw_line(point, content)
+			# 	draw_point(point, content)
+			# end
 			
+			##
+			# See UIApp `draw_point()` method.
 			def draw_point(point, content)
 				Curses.setpos(point.y, point.x)
 				Curses.addstr(content)
 			end
 			
+			##
+			# See UIApp `ui_refresh()` method.
 			def ui_refresh
 				Curses.refresh
 			end
 			
+			##
+			# See UIApp `ui_max_x()` method.
 			def ui_max_x
 				Curses.cols
 			end
 			
+			##
+			# See UIApp `ui_max_y()` method.
 			def ui_max_y
 				Curses.rows
 			end
 			
 			protected
 			
+			##
+			# See UIApp `ui_init()` method.
 			def ui_init
 				#puts "CursesApp->ui_init '#{@curses_timeout}'"
 				
@@ -82,6 +97,8 @@ module TheFox
 				Curses.refresh
 			end
 			
+			##
+			# See UIApp `ui_close()` method.
 			def ui_close
 				#puts "CursesApp->ui_close"
 				

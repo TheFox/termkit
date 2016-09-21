@@ -2,6 +2,8 @@
 module TheFox
 	module TermKit
 		
+		##
+		# Controller sub-class.
 		class AppController < Controller
 			
 			def initialize(app)

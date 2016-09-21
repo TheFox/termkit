@@ -2,9 +2,14 @@
 module TheFox
 	module TermKit
 		
+		##
+		# A composition of the Point class (`@origin` attribute) and the Size class (`@size` attribute).
 		class Rect
 			
+			# Point instance.
 			attr_accessor :origin
+			
+			# Size instance.
 			attr_accessor :size
 			
 			def initialize(x = nil, y = nil, width = nil, height = nil)

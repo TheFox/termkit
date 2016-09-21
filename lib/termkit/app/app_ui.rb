@@ -19,6 +19,8 @@ module TheFox
 				ui_init
 			end
 			
+			##
+			# See App `run_cycle()` method.
 			def run_cycle
 				super()
 				
@@ -48,6 +50,8 @@ module TheFox
 				@active_controller.active
 			end
 			
+			##
+			# Handles the actual rendering and drawing of the UI layer. Calls `draw_point()` for all points of `@active_controller`.
 			def render
 				logger.debug('--- RENDER ---')
 				
@@ -75,10 +79,14 @@ module TheFox
 				ui_refresh
 			end
 			
-			def draw_line(point, content)
-				raise NotImplementedError
-			end
+			# def draw_line(point, content)
+			# 	raise NotImplementedError
+			# end
 			
+			##
+			# Needs to be implemented by the sub-class.
+			#
+			# For example, CursesApp is a sub-class of UIApp. CursesApp uses `Curses.setpos` and `Curses.addstr` in `draw_point()` to draw the points.
 			def draw_point(point, content)
 				raise NotImplementedError
 			end

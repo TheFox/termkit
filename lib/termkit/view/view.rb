@@ -10,18 +10,25 @@ module TheFox
 		# A View is an abstraction of any view object.
 		class View
 			
-			# The `name` variable is **for debugging only**.
+			# The `name` variable is **FOR DEBUGGING ONLY**.
 			attr_accessor :name
 			attr_accessor :parent_view
 			attr_accessor :subviews
+			
+			# Holds the content points for this View. A single point content is an instance of ViewContent class.
 			attr_accessor :grid
+			
+			# Will be used for the actual rendering.  
+			# The `@grid_cache` variable can hold *foreign* content points (see ViewContent) as well as own content points.
+			# Foreign content points are owned by subviews which are shown on this View as well. If a View has subviews but no own content on the `@grid` the `@grid_cache` variable holds only content points from its subviews. The View not just holds the content points of the subviews but also the content points of the subviews of subviews and so on. Through the deepest level of subviews. If you draw a point on a View calling `draw_point()` the point will also be drawn on the parent view through the top view. `@grid` holds only ViewContents of its own View. Not so the `@grid_cache` variable which also holds foreign content points.
 			attr_accessor :grid_cache
+			
 			attr_reader :position
 			
-			# Defines a maximum width and height for a view to be rendered.
+			# Defines a maximum `width` and `height` (see Size) for a View to be rendered.
 			attr_accessor :size
 			
-			# Defines the stack order. The view with the highest zindex will pop-up on the parent view.
+			# Defines the stack order. This variable will only be used when the View has a parent view. The subview on the parent view with the highest zindex will be shown on the parent view. See `redraw_zindex()` method for details.
 			attr_reader :zindex
 			
 			def initialize(name = nil)
@@ -219,6 +226,7 @@ module TheFox
 				return true
 			end
 			
+			# Draw a point on the parent View (`@parent_view`).
 			def parent_draw_point(point, content)
 				if !@parent_view.nil? && is_visible?
 					
@@ -230,7 +238,11 @@ module TheFox
 			end
 			
 			##
-			# Redraw to Parent View based on the visibility trend.
+			# Redraw to Parent View based on the visibility trend.  
+			# The visibility trend is `0` for unchanged, `-1` will hide, `1` will appear.
+			#
+			# - `-1` means `is_visible` was set from `true` to `false`.
+			# - `1` means `is_visible` was set from `false` to `true`.
 			def redraw_parent(visibility_trend)
 				# puts "#{@name} -- redraw parent, #{visibility_trend}"
 				
@@ -298,7 +310,9 @@ module TheFox
 			end
 			
 			##
-			# Erase a single Point of the Grid Cache.
+			# Erase a single Point of the cached Grid (`@grid_cache`).
+			#
+			# First call `redraw_zindex(point)` to redraw the `point`. If the `point` didn't change use a new ClearViewContent instance and set it only on `@grid_cache`. Not on `@grid` because this clearing point instance will be removed by `render()`.
 			def grid_cache_erase_point(point)
 				x_pos = point.x
 				y_pos = point.y
@@ -327,8 +341,10 @@ module TheFox
 			end
 			
 			##
-			# Redraw a single Point based on the zindexes of the subviews.
-			# Happens when a subview added, removed, hides, or zindex changes.
+			# Redraw a single Point based on the `zindexes` of the subviews.  
+			# Happens when a subview added, removed, hides, `zindex` changes, or draws.
+			#
+			# The subview with the highest `zindex` will be selected to set the content for this `point`. When no subview exists or all subviews are hidden look-up the Point on the `@grid` variable to set the Point on `@grid_cache`.
 			def redraw_zindex(point)
 				x_pos = point.x
 				y_pos = point.y
@@ -389,6 +405,9 @@ module TheFox
 				changed
 			end
 			
+			##
+			# Set a single Point on the cached Grid (`@grid_cache`).  
+			# This method returns `true` only if the content of the `point` has changed.
 			def set_grid_cache(point, content)
 				x_pos = point.x
 				y_pos = point.y
@@ -421,6 +440,10 @@ module TheFox
 				end
 			end
 			
+			##
+			# Renders a View.
+			#
+			# Only ViewContents which needs a rendering (see ViewContent, `needs_rendering` attribute) will be returned. `needs_rendering` attribute is set to `false` by `render()`.
 			def render(area = nil)
 				# puts "#{@name} -- render area=#{area ? 'Y' : 'N'}"
 				
