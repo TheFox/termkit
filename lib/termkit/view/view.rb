@@ -5,7 +5,7 @@ module TheFox
 	module TermKit
 		
 		##
-		# Base View class
+		# Base View class.
 		#
 		# A View is an abstraction of any view object.
 		class View
@@ -20,13 +20,13 @@ module TheFox
 			
 			# Will be used for the actual rendering.  
 			# The `@grid_cache` variable can hold *foreign* content points (see ViewContent) as well as own content points.
-			# Foreign content points are owned by subviews which are shown on this View as well. If a View has subviews but no own content on the `@grid` the `@grid_cache` variable holds only content points from its subviews. The View not just holds the content points of the subviews but also the content points of the subviews of subviews and so on. Through the deepest level of subviews. If you draw a point on a View calling `draw_point()` the point will also be drawn on the parent view through the top view. `@grid` holds only ViewContents of its own View. Not so the `@grid_cache` variable which also holds foreign content points.
+			# Foreign content points are owned by subviews that are shown on this View as well. If a View has subviews but no own content on the `@grid` the `@grid_cache` variable holds only content points from its subviews. The View not just holds the content points of the subviews but also the content points of the subviews of subviews and so on. Through the deepest level of subviews. If you draw a point on a View calling `draw_point()` the point will also be drawn on the parent view through the top view. `@grid` holds only ViewContents of its own View. Not so the `@grid_cache` variable that also holds foreign content points.
 			attr_accessor :grid_cache
 			
 			attr_reader :position
 			
 			# Defines a maximum `width` and `height` (see Size) for a View to be rendered.
-			attr_accessor :size
+			attr_reader :size
 			
 			# Defines the stack order. This variable will only be used when the View has a parent view. The subview on the parent view with the highest zindex will be shown on the parent view. See `redraw_zindex()` method for details.
 			attr_reader :zindex
@@ -91,6 +91,14 @@ module TheFox
 				end
 				
 				@position = position
+			end
+			
+			def size=(size)
+				if !size.is_a?(Size)
+					raise ArgumentError, "Argument is not a Size -- #{size.class} given"
+				end
+				
+				@size = size
 			end
 			
 			def zindex=(zindex)
@@ -444,7 +452,7 @@ module TheFox
 			##
 			# Renders a View.
 			#
-			# Only ViewContents which needs a rendering (see ViewContent, `needs_rendering` attribute) will be returned. `needs_rendering` attribute is set to `false` by `render()`.
+			# Only ViewContents that needs a rendering (see ViewContent, `needs_rendering` attribute) will be returned. `needs_rendering` attribute is set to `false` by `render()`.
 			def render(area = nil)
 				# puts "#{@name} -- render area=#{area ? 'Y' : 'N'}"
 				

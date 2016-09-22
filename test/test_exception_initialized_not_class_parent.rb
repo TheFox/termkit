@@ -3,7 +3,6 @@
 require 'minitest/autorun'
 require 'termkit'
 
-
 class TestParentClassNotInitializedException < MiniTest::Test
 	
 	include TheFox::TermKit::Exception

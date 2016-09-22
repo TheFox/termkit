@@ -3,7 +3,6 @@
 require 'minitest/autorun'
 require 'termkit'
 
-
 class TestCellTableView < MiniTest::Test
 	
 	include TheFox::TermKit

@@ -4,7 +4,6 @@ require 'minitest/autorun'
 require 'termkit'
 # require 'pp'
 
-
 class TestView < MiniTest::Test
 	
 	include TheFox::TermKit
@@ -47,6 +46,12 @@ class TestView < MiniTest::Test
 		view1 = View.new
 		
 		assert_raises(ArgumentError){ view1.position = 'INVALID' }
+	end
+	
+	def test_size_exception
+		view1 = View.new
+		
+		assert_raises(ArgumentError){ view1.size = 'INVALID' }
 	end
 	
 	def test_add_subview

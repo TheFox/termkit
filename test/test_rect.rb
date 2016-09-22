@@ -2,8 +2,7 @@
 
 require 'minitest/autorun'
 require 'termkit'
-require 'pp'
-
+# require 'pp'
 
 class TestRect < MiniTest::Test
 	

@@ -3,7 +3,6 @@
 require 'minitest/autorun'
 require 'termkit'
 
-
 class TestPoint < MiniTest::Test
 	
 	include TheFox::TermKit

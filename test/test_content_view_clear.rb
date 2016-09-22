@@ -3,7 +3,6 @@
 require 'minitest/autorun'
 require 'termkit'
 
-
 class TestClearViewContent < MiniTest::Test
 	
 	include TheFox::TermKit
