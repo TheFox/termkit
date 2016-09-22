@@ -54,6 +54,44 @@ class TestView < MiniTest::Test
 		assert_raises(ArgumentError){ view1.size = 'INVALID' }
 	end
 	
+	def test_width1
+		view1 = View.new
+		assert_equal(0, view1.width)
+		
+		view1.draw_point([0, 0], 'A')
+		assert_equal(1, view1.width)
+	end
+	
+	def test_width2
+		view1 = View.new
+		
+		view1.draw_point([3, 0], 'A')
+		# puts "'#{view1.width}'"
+		assert_equal(1, view1.width)
+		
+		view1.draw_point([2, 1], 'A')
+		view1.draw_point([3, 1], 'A')
+		# puts "'#{view1.width}'"
+		assert_equal(2, view1.width)
+		
+		view1.draw_point([1, 3], 'B')
+		view1.draw_point([6, 3], 'B')
+		# puts "'#{view1.width}'"
+		assert_equal(6, view1.width)
+	end
+	
+	def test_height
+		view1 = View.new
+		assert_equal(0, view1.height)
+		
+		view1.draw_point([0, 3], 'A')
+		assert_equal(1, view1.height)
+		
+		view1.draw_point([1, 2], 'A')
+		view1.draw_point([1, 4], 'A')
+		assert_equal(3, view1.height)
+	end
+	
 	def test_add_subview
 		view1 = View.new
 		view2 = View.new

@@ -1,5 +1,6 @@
 
 require 'thefox-ext'
+require 'pp'
 
 module TheFox
 	module TermKit
@@ -48,6 +49,7 @@ module TheFox
 			
 			##
 			# FOR DEBUG ONLY
+			# :nocov:
 			def pp_grid
 				@grid.map{ |y_pos, row|
 					[y_pos, row.map{ |x_pos, content| [x_pos, content.char] }.to_h]
@@ -66,6 +68,7 @@ module TheFox
 					]
 				}.to_h
 			end
+			# :nocov:
 			
 			def is_visible=(is_visible)
 				trend = 0
@@ -116,6 +119,40 @@ module TheFox
 							@parent_view.redraw_zindex(point)
 						end
 					end
+				end
+			end
+			
+			def width
+				keys = @grid_cache.map{ |y_pos, row| row.keys }.flatten
+				min = keys.min.to_i
+				max = keys.max.to_i
+				
+				# puts "min '#{min}'"
+				# puts "max '#{max}'"
+				# puts
+				
+				if keys.count > 0
+					max - min + 1
+				else
+					0
+				end
+			end
+			
+			def height
+				keys = @grid_cache.keys
+				# pp keys
+				
+				min = keys.min.to_i
+				max = keys.max.to_i
+				
+				# puts "min '#{min}'"
+				# puts "max '#{max}'"
+				# puts
+				
+				if keys.count > 0
+					max - min + 1
+				else
+					0
 				end
 			end
 			
