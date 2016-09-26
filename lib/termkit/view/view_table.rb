@@ -17,7 +17,7 @@ module TheFox
 			# attr_reader :page
 			attr_reader :page_begin
 			attr_reader :page_height
-			attr_reader :page_height_total
+			attr_reader :cells_height_total
 			attr_reader :page_direction
 			# attr_reader :page_needs_refresh
 			
@@ -36,7 +36,7 @@ module TheFox
 				# @page = []
 				@page_begin = 0
 				@page_height = 0
-				@page_height_total = 0
+				@cells_height_total = 0
 				@page_direction = 0
 				# @page_needs_refresh = true
 			end
@@ -100,7 +100,7 @@ module TheFox
 					# puts "#{cell_n} #{y_pos} #{cell}"
 				end
 				
-				@page_height_total = y_pos
+				@cells_height_total = y_pos
 				
 				calc_cursor
 				calc_page
@@ -115,6 +115,10 @@ module TheFox
 				calc_page
 			end
 			
+			def is_cursor_at_bottom?
+				@cursor_position == @cells_height_total - 1
+			end
+			
 			private
 			
 			def calc_page_height
@@ -125,9 +129,9 @@ module TheFox
 			end
 			
 			def calc_cursor
-				puts "calc_cursor @cursor_position '#{@cursor_position}' '#{@page_height_total}'"
-				if @cursor_position > @page_height_total - 1
-					@cursor_position = @page_height_total - 1
+				puts "calc_cursor @cursor_position '#{@cursor_position}' '#{@cells_height_total}'"
+				if @cursor_position > @cells_height_total - 1
+					@cursor_position = @cells_height_total - 1
 				end
 				if @cursor_position < 0
 					@cursor_position = 0
@@ -147,7 +151,7 @@ module TheFox
 					cds = '^'
 				end
 				
-				puts "cursor new '#{@cursor_position}' '#{@cursor_position_old}' '#{cursor_direction}' '#{cds}'"
+				puts "cursor n='#{@cursor_position}' o='#{@cursor_position_old}' d='#{cursor_direction}' t='#{cds}'"
 			end
 			
 			def calc_page
@@ -173,9 +177,17 @@ module TheFox
 					@page_begin = @cursor_position
 				end
 				
+				page_begin_max = @cells_height_total - @page_height
+				if page_begin_max < 0
+					page_begin_max = 0
+				end
+				if @page_begin > page_begin_max
+					@page_begin = page_begin_max
+				end
+				
 				page_end = @page_begin + @page_height - 1
 				
-				puts "page   new '#{@page_begin}' '#{page_end}' '#{pds}'"
+				puts "page   b='#{@page_begin}' (#{page_begin_max}) e='#{page_end}' t='#{pds}'"
 			end
 			
 			def draw_data
