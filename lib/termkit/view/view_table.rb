@@ -16,6 +16,7 @@ module TheFox
 			attr_reader :cursor_direction
 			# attr_reader :page
 			attr_reader :page_begin
+			attr_reader :page_end
 			attr_reader :page_height
 			attr_reader :cells_height_total
 			attr_reader :page_direction
@@ -35,6 +36,7 @@ module TheFox
 				
 				# @page = []
 				@page_begin = 0
+				@page_end = 0
 				@page_height = 0
 				@cells_height_total = 0
 				@page_direction = 0
@@ -45,6 +47,8 @@ module TheFox
 				super(size)
 				
 				calc_page_height
+				calc_cursor
+				calc_page
 			end
 			
 			def header=(header)
@@ -124,12 +128,13 @@ module TheFox
 			def calc_page_height
 				return if @size.nil? || @size.height.nil?
 				
-				# puts "calc_page_height '#{@size.height}' - '#{@header_height}'"
+				puts "calc_page_height '#{@size.height}' - '#{@header_height}'"
 				@page_height = @size.height - @header_height
 			end
 			
 			def calc_cursor
-				puts "calc_cursor @cursor_position '#{@cursor_position}' '#{@cells_height_total}'"
+				# puts "calc_cursor @cursor_position '#{@cursor_position}' '#{@cells_height_total}'"
+				
 				if @cursor_position > @cells_height_total - 1
 					@cursor_position = @cells_height_total - 1
 				end
@@ -185,9 +190,9 @@ module TheFox
 					@page_begin = page_begin_max
 				end
 				
-				page_end = @page_begin + @page_height - 1
+				@page_end = @page_begin + @page_height - 1
 				
-				puts "page   b='#{@page_begin}' (#{page_begin_max}) e='#{page_end}' t='#{pds}'"
+				puts "page   b='#{@page_begin}' (#{page_begin_max}) e='#{@page_end}' h='#{@page_height}' t='#{pds}'"
 			end
 			
 			def draw_data

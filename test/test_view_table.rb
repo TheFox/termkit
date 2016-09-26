@@ -17,7 +17,7 @@ class TestTableView < MiniTest::Test
 		view1 = TableView.new
 		assert_equal(0, view1.page_height)
 		
-		view1.size = Size.new(3, 5)
+		view1.size = Size.new(nil, 5)
 		assert_equal(5, view1.page_height)
 		
 		
@@ -43,7 +43,7 @@ class TestTableView < MiniTest::Test
 		view1.header = header
 		assert_equal(0, view1.page_height)
 		
-		view1.size = Size.new(3, 6)
+		view1.size = Size.new(nil, 6)
 		assert_equal(4, view1.page_height)
 	end
 	
@@ -54,7 +54,7 @@ class TestTableView < MiniTest::Test
 	
 	def test_cursor_position_scroll1
 		view1 = TableView.new('view1')
-		view1.size = Size.new(5, 3)
+		view1.size = Size.new(nil, 3)
 		
 		assert_equal(0, view1.cells_height_total)
 		assert_equal(0, view1.cursor_position)
@@ -207,7 +207,7 @@ class TestTableView < MiniTest::Test
 	
 	def test_cursor_position_scroll2
 		view1 = TableView.new('view1')
-		view1.size = Size.new(5, 3)
+		view1.size = Size.new(nil, 3)
 		view1.data = ['row A', 'row B', 'row C', 'row D', 'row E', 'row F', 'row G']
 		
 		assert_equal(7, view1.cells_height_total)
@@ -229,7 +229,7 @@ class TestTableView < MiniTest::Test
 	
 	def test_cursor_position_change_data1
 		view1 = TableView.new('view1')
-		view1.size = Size.new(5, 3)
+		view1.size = Size.new(nil, 3)
 		
 		view1.data = ['row A', 'row B', 'row C', 'row D', 'row E']
 		view1.cursor_position = 4
@@ -264,7 +264,7 @@ class TestTableView < MiniTest::Test
 	
 	def test_cursor_position_change_data2
 		view1 = TableView.new('view1')
-		view1.size = Size.new(5, 3)
+		view1.size = Size.new(nil, 3)
 		
 		view1.data = ['row A', 'row B', 'row C', 'row D', 'row E']
 		view1.cursor_position = 3
@@ -297,9 +297,61 @@ class TestTableView < MiniTest::Test
 		assert_equal(0, view1.page_begin)
 	end
 	
+	def test_cursor_position_change_size1
+		view1 = TableView.new('view1')
+		view1.data = ['row A', 'row B', 'row C', 'row D', 'row E']
+		view1.cursor_position = 0
+		
+		view1.size = Size.new(nil, 3)
+		assert_equal(0, view1.cursor_position)
+		assert_equal(0, view1.page_begin)
+		assert_equal(2, view1.page_end)
+		
+		view1.size = Size.new(nil, 2)
+		assert_equal(0, view1.cursor_position)
+		assert_equal(0, view1.page_begin)
+		assert_equal(1, view1.page_end)
+		
+		view1.size = Size.new(nil, 1)
+		assert_equal(0, view1.cursor_position)
+		assert_equal(0, view1.page_begin)
+		assert_equal(0, view1.page_end)
+		
+		view1.size = Size.new(nil, 4)
+		assert_equal(0, view1.cursor_position)
+		assert_equal(0, view1.page_begin)
+		assert_equal(3, view1.page_end)
+	end
+	
+	def test_cursor_position_change_size2
+		view1 = TableView.new('view1')
+		view1.data = ['row A', 'row B', 'row C', 'row D', 'row E', 'row F', 'row G']
+		view1.cursor_position = 2
+		
+		view1.size = Size.new(nil, 3)
+		assert_equal(2, view1.cursor_position)
+		assert_equal(2, view1.page_begin)
+		assert_equal(4, view1.page_end)
+		
+		view1.size = Size.new(nil, 2)
+		assert_equal(2, view1.cursor_position)
+		assert_equal(2, view1.page_begin)
+		assert_equal(3, view1.page_end)
+		
+		view1.size = Size.new(nil, 1)
+		assert_equal(2, view1.cursor_position)
+		assert_equal(2, view1.page_begin)
+		assert_equal(2, view1.page_end)
+		
+		view1.size = Size.new(nil, 4)
+		assert_equal(2, view1.cursor_position)
+		assert_equal(2, view1.page_begin)
+		assert_equal(5, view1.page_end)
+	end
+	
 	def test_is_cursor_at_bottom
 		view1 = TableView.new('view1')
-		view1.size = Size.new(5, 3)
+		view1.size = Size.new(nil, 3)
 		view1.data = ['row A', 'row B', 'row C', 'row D', 'row E']
 		assert_equal(false, view1.is_cursor_at_bottom?)
 		
