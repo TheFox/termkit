@@ -52,6 +52,48 @@ class TestTableView < MiniTest::Test
 		assert_raises(ArgumentError){ view1.header = 'INVALID' }
 	end
 	
+	def test_data1
+		view1 = TableView.new('view1')
+		
+		view1.data = ['row A', 'row B', 'row C']
+		cells = view1.cells
+		assert_equal(3, cells.count)
+		assert_instance_of(CellTableView, cells[0])
+		assert_instance_of(CellTableView, cells[1])
+		assert_instance_of(CellTableView, cells[2])
+		assert_equal('cell_1', cells[0].name)
+		assert_equal('cell_2', cells[1].name)
+		assert_equal('cell_3', cells[2].name)
+	end
+	
+	def test_data2
+		view2 = TextView.new
+		view2.is_visible = true
+		view2.text = 'Foo Bar'
+		
+		cell1 = CellTableView.new(view2)
+		cell1.name = 'cell_x'
+		
+		
+		view1 = TableView.new('view1')
+		
+		view1.data = ['row A', 'row B', cell1]
+		cells = view1.cells
+		assert_equal(3, cells.count)
+		assert_instance_of(CellTableView, cells[0])
+		assert_instance_of(CellTableView, cells[1])
+		assert_instance_of(CellTableView, cells[2])
+		assert_equal('cell_1', cells[0].name)
+		assert_equal('cell_2', cells[1].name)
+		assert_equal('cell_x', cells[2].name)
+	end
+	
+	def test_data_exception
+		view1 = TableView.new
+		assert_raises(ArgumentError){ view1.data = 'INVALID' }
+		assert_raises(NotImplementedError){ view1.data = [1234] }
+	end
+	
 	def test_cursor_position_scroll1
 		view1 = TableView.new('view1')
 		view1.size = Size.new(nil, 3)
@@ -382,11 +424,5 @@ class TestTableView < MiniTest::Test
 		
 	# 	assert_equal(3, rendered.count)
 	# end
-	
-	def test_render_exception
-		view1 = TableView.new
-		assert_raises(ArgumentError){ view1.data = 'INVALID' }
-		assert_raises(NotImplementedError){ view1.data = [1234] }
-	end
 	
 end

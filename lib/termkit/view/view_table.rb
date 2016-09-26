@@ -77,12 +77,14 @@ module TheFox
 				cell_n = 0
 				y_pos = 0
 				@data.each do |row|
+					# puts "row '#{row}'"
+					
 					cell = nil
 					cell_n += 1
 					
 					case row
 					when String
-						text_view = TextView.new()
+						text_view = TextView.new
 						text_view.is_visible = true
 						text_view.text = row
 						
