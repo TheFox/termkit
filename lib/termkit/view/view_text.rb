@@ -8,7 +8,8 @@ module TheFox
 		# Provides functionalities to draw text.
 		class TextView < View
 			
-			def initialize(text = nil, name = 'text_view')
+			def initialize(text = nil, name = nil)
+				name = "TextView_#{object_id}" if name.nil?
 				super(name)
 				
 				#puts 'TextView->initialize'

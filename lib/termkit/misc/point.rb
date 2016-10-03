@@ -32,11 +32,34 @@ module TheFox
 				@y = y
 			end
 			
+			def ==(point)
+				@x == point.x && @y == point.y
+			end
+			
 			def to_s
+				"#{@x}:#{@y}"
+			end
+			
+			def to_a
+				[@x, @y]
+			end
+			
+			def inspect
 				x_s = x.nil? ? 'NIL' : x
 				y_s = y.nil? ? 'NIL' : y
 				
-				"#<#{self.class} x=#{x_s} y=#{y_s}>"
+				"<Point x=#{x_s} y=#{y_s}>"
+			end
+			
+			def self.from_s(s)
+				x, y =
+					s
+					.split(/[:,]/, 2)
+					.map{ |pos|
+						pos.nil? || pos == '' ? nil : pos.to_i
+					}
+				
+				new(x, y)
 			end
 			
 		end

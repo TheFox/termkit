@@ -25,6 +25,10 @@ module TheFox
 				@char
 			end
 			
+			def inspect
+				"<#{self.class.name.split('::').last} c='#{@char}' r?=#{@needs_rendering ? 'Y' : 'N'} v=#{@view}>"
+			end
+			
 		end
 		
 	end

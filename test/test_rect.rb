@@ -42,23 +42,23 @@ class TestRect < MiniTest::Test
 	
 	def test_max
 		rect1 = Rect.new
-		assert_equal(nil, rect1.x_max)
-		assert_equal(nil, rect1.y_max)
+		assert_equal(-1, rect1.x_max)
+		assert_equal(-1, rect1.y_max)
 		
 		rect1 = Rect.new(1, 1)
-		assert_equal(nil, rect1.x_max)
-		assert_equal(nil, rect1.y_max)
+		assert_equal(-1, rect1.x_max)
+		assert_equal(-1, rect1.y_max)
 		
 		rect1 = Rect.new(1, nil, 3)
 		assert_equal(3, rect1.x_max)
-		assert_equal(nil, rect1.y_max)
+		assert_equal(-1, rect1.y_max)
 		
 		rect1 = Rect.new(1, 2, 3, 4)
 		assert_equal(3, rect1.x_max)
 		assert_equal(5, rect1.y_max)
 		
 		rect1 = Rect.new(nil, 5, nil, 6)
-		assert_equal(nil, rect1.x_max)
+		assert_equal(-1, rect1.x_max)
 		assert_equal(10, rect1.y_max)
 	end
 	
@@ -80,19 +80,19 @@ class TestRect < MiniTest::Test
 	
 	def test_to_s
 		rect1 = Rect.new
-		assert_equal('#<TheFox::TermKit::Rect NIL:NIL NIL:NIL>', rect1.to_s)
+		assert_equal('<Rect x=NIL y=NIL w=NIL h=NIL>', rect1.to_s)
 		
 		rect1 = Rect.new(7)
-		assert_equal('#<TheFox::TermKit::Rect 7:NIL NIL:NIL>', rect1.to_s)
+		assert_equal('<Rect x=7 y=NIL w=NIL h=NIL>', rect1.to_s)
 		
 		rect1 = Rect.new(7, 21)
-		assert_equal('#<TheFox::TermKit::Rect 7:21 NIL:NIL>', rect1.to_s)
+		assert_equal('<Rect x=7 y=21 w=NIL h=NIL>', rect1.to_s)
 		
 		rect1 = Rect.new(7, 21, 24)
-		assert_equal('#<TheFox::TermKit::Rect 7:21 24:NIL>', rect1.to_s)
+		assert_equal('<Rect x=7 y=21 w=24 h=NIL>', rect1.to_s)
 		
 		rect1 = Rect.new(7, 21, 24, 42)
-		assert_equal('#<TheFox::TermKit::Rect 7:21 24:42>', rect1.to_s)
+		assert_equal('<Rect x=7 y=21 w=24 h=42>', rect1.to_s)
 	end
 	
 end

@@ -29,7 +29,7 @@ module TheFox
 			# Defines a maximum `width` and `height` (see Size) for a View to be rendered.
 			attr_reader :size
 			
-			# Defines the stack order. This variable will only be used when the View has a parent view. The subview on the parent view with the highest zindex will be shown on the parent view. See `redraw_zindex()` method for details.
+			# Defines the stack order. This variable will only be used when the View has a parent view. The subview on the parent view with the highest zindex will be shown on the parent view. See `redraw_point_zindex()` method for details.
 			attr_reader :zindex
 			
 			def initialize(name = nil)
@@ -93,7 +93,74 @@ module TheFox
 					raise ArgumentError, "Argument is not a Point -- #{position.class} given"
 				end
 				
-				@position = position
+				# puts "#{@name} -- position= #{@position}, #{position}"
+				
+				if @position != position
+					# puts "#{@name} -- position= diff"
+					
+					if @parent_view.nil?
+						@position = position
+					else
+						# Keep old position.
+						old_position = @position
+						
+						# Move it.
+						@position = position
+						
+						area = Rect.new(nil, nil, width, height)
+						
+						# Redraw new position.
+						area.origin = position
+						changes_new = @parent_view.redraw_area_zindex(area)
+						# changes_new.each do |y_pos, row|
+						# 	row.each do |x_pos, content|
+						# 		# puts "#{@name} -- position= changes A #{x_pos}:#{y_pos} #{content.inspect}"
+								
+						# 		if content.nil?
+						# 			has_grid = @parent_view.grid[y_pos] && @parent_view.grid[y_pos][x_pos]
+						# 			has_grid_cache = @parent_view.grid_cache[y_pos] && @parent_view.grid_cache[y_pos][x_pos]
+									
+						# 			# puts "#{@name} -- position= content is nil G=#{has_grid ? 'Y' : 'N'} GC=#{has_grid_cache ? 'Y' : 'N'} #{has_grid_cache.inspect}"
+									
+						# 		end
+						# 	end
+						# end
+						#changes_new_a = changes_new.map{ |y_pos, row| row.keys.map{ |x_pos| "#{x_pos}:#{y_pos}" } }.flatten
+						changes_new_a = changes_new.map{ |y_pos, row| row.keys.map{ |x_pos| Point.new(x_pos, y_pos).to_s } }.flatten
+						# pp changes_new_a
+						
+						# puts '-' * 10
+						
+						# Redraw old position.
+						area.origin = old_position
+						changes_old = @parent_view.redraw_area_zindex(area)
+						# changes_old.each do |y_pos, row|
+						# 	row.each do |x_pos, content|
+						# 		puts "#{@name} -- position= changes B #{x_pos}:#{y_pos} #{content.inspect}"
+						# 	end
+						# end
+						# changes_old_a = changes_old.map{ |y_pos, row| row.keys.map{ |x_pos| "#{x_pos}:#{y_pos}" } }.flatten
+						changes_old_a = changes_old.map{ |y_pos, row| row.keys.map{ |x_pos| Point.new(x_pos, y_pos).to_s } }.flatten
+						# pp changes_old_a
+						
+						# pp changes_old_a - changes_new_a
+						# pp changes_new_a - changes_old_a
+						
+						(changes_old_a - changes_new_a).each do |point_s|
+							point = Point.from_s(point_s)
+							x_pos, y_pos = point.to_a
+							
+							
+							has_grid = @parent_view.grid[y_pos] && @parent_view.grid[y_pos][x_pos]
+							has_grid_cache = @parent_view.grid_cache[y_pos] && @parent_view.grid_cache[y_pos][x_pos]
+							
+							changed = @parent_view.grid_cache_erase_point(point)
+							
+							
+							#puts "#{@name} -- position= changes C G=#{has_grid ? 'Y' : 'N'} GC=#{has_grid_cache ? 'Y' : 'N'} #{has_grid_cache.inspect} #{changed.inspect}"
+						end
+					end
+				end
 			end
 			
 			def size=(size)
@@ -116,7 +183,7 @@ module TheFox
 							
 							# puts "#{@name} -- set zindex #{zindex}, #{point.x}:#{point.y}"
 							
-							@parent_view.redraw_zindex(point)
+							@parent_view.redraw_point_zindex(point)
 						end
 					end
 				end
@@ -171,9 +238,9 @@ module TheFox
 					row.each do |x_pos, content|
 						point = Point.new(x_pos + subview.position.x, y_pos + subview.position.y)
 						
-						# puts "#{@name} -- add_subview, redraw_zindex #{point.x}:#{point.y}"
+						# puts "#{@name} -- add_subview, redraw_point_zindex #{point.x}:#{point.y}"
 						
-						redraw_zindex(point)
+						redraw_point_zindex(point)
 					end
 				end
 				
@@ -201,6 +268,12 @@ module TheFox
 				end
 				
 				r_subview
+			end
+			
+			def remove_subviews
+				@subviews.each do |subview|
+					remove_subview(subview)
+				end
 			end
 			
 			##
@@ -257,7 +330,7 @@ module TheFox
 					if @grid_cache[y_pos] && @grid_cache[y_pos][x_pos]
 						# puts "#{@name} -- found something on cached grid"
 						
-						redraw_zindex(new_point)
+						redraw_point_zindex(new_point)
 					else
 						# puts "#{@name} -- draw free point"
 						changed = set_grid_cache(new_point, content)
@@ -291,7 +364,7 @@ module TheFox
 			def redraw_parent(visibility_trend)
 				# puts "#{@name} -- redraw parent, #{visibility_trend}"
 				
-				if !@parent_view.nil?
+				unless @parent_view.nil?
 					if visibility_trend == 1
 						
 						@grid_cache.each do |y_pos, row|
@@ -354,10 +427,21 @@ module TheFox
 				end
 			end
 			
+			def grid_erase
+				@grid.each do |y_pos, row|
+					row.each do |x_pos, content|
+						#puts "clean #{x_pos}:#{y_pos} '#{content}'"
+						
+						@grid[y_pos][x_pos] = ClearViewContent.new(nil, self)
+						grid_cache_erase_point(Point.new(x_pos, y_pos))
+					end
+				end
+			end
+			
 			##
 			# Erase a single Point of the cached Grid (`@grid_cache`).
 			#
-			# First call `redraw_zindex(point)` to redraw the `point`. If the `point` didn't change use a new ClearViewContent instance and set it only on `@grid_cache`. Not on `@grid` because this clearing point instance will be removed by `render()`.
+			# First call `redraw_point_zindex(point)` to redraw the `point`. If the `point` didn't change use a new ClearViewContent instance and set it only on `@grid_cache`. Not on `@grid` because this clearing point instance will be removed by `render()`.
 			def grid_cache_erase_point(point)
 				x_pos = point.x
 				y_pos = point.y
@@ -369,9 +453,9 @@ module TheFox
 					
 					@grid_cache[y_pos].delete(x_pos)
 					
-					changed = redraw_zindex(point)
+					changed = redraw_point_zindex(point)
 					
-					# puts "#{@name} -- erase point, #{x_pos}:#{y_pos}, changed=#{changed ? 'Y' : 'N'}"
+					# puts "#{@name} -- erase point, #{x_pos}:#{y_pos}, changed=#{changed ? 'Y' : 'N'} (#{changed.inspect})"
 					
 					# When nothing has changed
 					if !changed
@@ -390,11 +474,11 @@ module TheFox
 			# Happens when a subview added, removed, hides, `zindex` changes, or draws.
 			#
 			# The subview with the highest `zindex` will be selected to set the content for this `point`. When no subview exists or all subviews are hidden look-up the Point on the `@grid` variable to set the Point on `@grid_cache`.
-			def redraw_zindex(point)
+			def redraw_point_zindex(point)
 				x_pos = point.x
 				y_pos = point.y
 				
-				# puts "#{@name} -- redraw zindex #{x_pos}:#{y_pos}"
+				# puts "#{@name} -- redraw point zindex, #{point}"
 				
 				views = @subviews
 					.select{ |subview| subview.is_visible? }
@@ -406,7 +490,7 @@ module TheFox
 						
 						content = subview.grid_cache[subview_y_pos] && subview.grid_cache[subview_y_pos][subview_x_pos]
 						
-						# puts "#{@name} -- find #{subview_x_pos}:#{subview_y_pos} on cached grid in '#{subview}': '#{content}'"
+						#puts "#{@name} -- find #{subview_x_pos}:#{subview_y_pos} on cached grid in '#{subview}': '#{content}'"
 						
 						!content.nil?
 					}
@@ -422,19 +506,21 @@ module TheFox
 					# When no subview was found draw the current view,
 					# if a point on the current view's grid exist.
 					
-					# puts "#{@name} -- redraw zindex, no view"
+					# puts "#{@name} -- redraw point zindex, no view found"
 					
 					if @grid[y_pos] && @grid[y_pos][x_pos]
-						# puts "#{@name} -- redraw zindex, found something on the grid: '#{@grid[y_pos][x_pos]}'"
+						# puts "#{@name} -- redraw point zindex, found something on the grid: '#{@grid[y_pos][x_pos]}'"
 						content = @grid[y_pos][x_pos]
+					else
+						# puts "#{@name} -- redraw point zindex, nothing on grid @ #{x_pos}:#{y_pos}"
 					end
 				else
 					subview_x_pos = x_pos - view.position.x
 					subview_y_pos = y_pos - view.position.y
 					
-					# puts "#{@name} -- redraw zindex, last view: '#{view}' #{subview_x_pos}:#{subview_y_pos}"
-					
 					content = view.grid_cache[subview_y_pos][subview_x_pos]
+					
+					# puts "#{@name} -- redraw point zindex, last view: '#{view}' #{subview_x_pos}:#{subview_y_pos}  #{content.inspect}"
 				end
 				
 				changed = nil
@@ -443,11 +529,33 @@ module TheFox
 				end
 				
 				if changed
-					# puts "#{@name} -- redraw zindex, changed"
+					# puts "#{@name} -- redraw point zindex, changed"
 					parent_draw_point(point, content)
 				end
 				
 				changed
+			end
+			
+			def redraw_area_zindex(area)
+				if !area.is_a?(Rect)
+					raise ArgumentError, "Argument is not a Rect -- #{area.class} given"
+				end
+				
+				# puts "#{@name} -- redraw area  zindex, #{area}"
+				
+				changes = {}
+				area.y_range.each do |y_pos|
+					area.x_range.each do |x_pos|
+						# puts "#{@name} -- redraw area  zindex, #{x_pos}:#{y_pos}"
+						
+						unless changes[y_pos]
+							changes[y_pos] = {}
+						end
+						
+						changes[y_pos][x_pos] = redraw_point_zindex(Point.new(x_pos, y_pos))
+					end
+				end
+				changes
 			end
 			
 			##
@@ -466,7 +574,7 @@ module TheFox
 						if @grid_cache[y_pos][x_pos] == content
 							false
 						else
-							if @grid_cache[y_pos][x_pos].char == content.char
+							if @grid_cache[y_pos][x_pos].char == content.char && @grid_cache[y_pos][x_pos].class == content.class
 								content.needs_rendering = false
 								@grid_cache[y_pos][x_pos] = content
 								false
@@ -543,12 +651,17 @@ module TheFox
 				
 				grid_filtered.each do |y_pos, row|
 					row.each do |x_pos, content|
-						# puts "render #{x_pos}:#{y_pos} '#{content}'"
+						# puts "render #{x_pos}:#{y_pos} '#{content}' (#{content.class})"
 						content.needs_rendering = false
 						
 						if content.is_a?(ClearViewContent)
-							# puts "render '#{content}', remove ClearViewContent"
+							# puts "render remove grid_cache ClearViewContent"
 							@grid_cache[y_pos].delete(x_pos)
+							
+							if @grid[y_pos] && @grid[y_pos][x_pos] && @grid[y_pos][x_pos].is_a?(ClearViewContent)
+								# puts "render remove grid ClearViewContent"
+								@grid[y_pos].delete(x_pos)
+							end
 						end
 					end
 				end
@@ -563,6 +676,10 @@ module TheFox
 			
 			def to_s
 				@name
+			end
+			
+			def inspect
+				"<View name=#{@name} w=#{width}>"
 			end
 			
 		end

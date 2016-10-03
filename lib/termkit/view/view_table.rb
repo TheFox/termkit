@@ -98,8 +98,9 @@ module TheFox
 					
 					@cells.push(cell)
 					
-					cell.is_visible = true
-					cell.position = Point.new(0, y_pos)
+					cell.is_visible = false
+					# cell.position = Point.new(0, y_pos)
+					add_subview(cell)
 					
 					y_pos += cell.height
 					
@@ -110,7 +111,7 @@ module TheFox
 				
 				calc_cursor
 				calc_page
-				draw_data
+				draw_cells
 			end
 			
 			def cursor_position=(cursor_position)
@@ -119,6 +120,7 @@ module TheFox
 				
 				calc_cursor
 				calc_page
+				draw_cells
 			end
 			
 			def is_cursor_at_bottom?
@@ -130,7 +132,7 @@ module TheFox
 			def calc_page_height
 				return if @size.nil? || @size.height.nil?
 				
-				puts "calc_page_height '#{@size.height}' - '#{@header_height}'"
+				# puts "calc_page_height '#{@size.height}' - '#{@header_height}'"
 				@page_height = @size.height - @header_height
 			end
 			
@@ -158,17 +160,15 @@ module TheFox
 					cds = '^'
 				end
 				
-				puts "cursor n='#{@cursor_position}' o='#{@cursor_position_old}' d='#{cursor_direction}' t='#{cds}'"
+				# puts "cursor n='#{@cursor_position}' o='#{@cursor_position_old}' d='#{cursor_direction}' t='#{cds}'"
 			end
 			
 			def calc_page
-				page_end_old = @page_begin + @page_height - 1
-				
 				# -1 up
 				#  0 unchanged
 				# +1 down
 				pds = '='
-				if @cursor_position > page_end_old
+				if @cursor_position > @page_end
 					@page_direction = 1
 					pds = 'v'
 				elsif @cursor_position < @page_begin
@@ -194,11 +194,45 @@ module TheFox
 				
 				@page_end = @page_begin + @page_height - 1
 				
-				puts "page   b='#{@page_begin}' (#{page_begin_max}) e='#{@page_end}' h='#{@page_height}' t='#{pds}'"
+				#puts "page   b=#{@page_begin} e=#{@page_end} m=#{page_begin_max} e=#{@page_end} h=#{@page_height} t=#{pds}"
 			end
 			
-			def draw_data
+			def draw_cells
+				#remove_subviews
+				#grid_erase
 				
+				page_range = Range.new(@page_begin, @page_end)
+				# puts "page_range: #{page_range} (#{@page_height})"
+				
+				affected_cells = @cells[page_range]
+				
+				(@cells - affected_cells).select{ |cell| cell.is_visible? }.each do |cell|
+					# puts "  - hide #{cell} y=#{cell.position.y}"
+					cell.is_visible = false
+				end
+				
+				y_pos = 0
+				affected_cells.each do |cell|
+					# puts "  + draw #{cell} y=#{y_pos}"
+					
+					cell.is_visible = true
+					cell.position = Point.new(0, y_pos)
+					
+					# if @grid_cache[y_pos]
+					# 	puts "  ->  :#{y_pos} ok"
+					# 	@grid_cache[y_pos].select{ |x_pos, content| x_pos >= cell_width }.each do |x_pos, content|
+					# 		puts "  -> #{x_pos}:#{y_pos} erase"
+					# 		grid_cache_erase_point(Point.new(x_pos, y_pos))
+					# 	end
+					# end
+					
+					#add_subview(cell)
+					
+					y_pos += cell.height
+				end
+				
+				# puts
+				# puts
 			end
 			
 		end

@@ -5,7 +5,7 @@ module TheFox
 		class CellTableView < View
 			
 			def initialize(subview)
-				super()
+				super("CellTableView_#{object_id}")
 				
 				add_subview(subview)
 			end

@@ -413,16 +413,276 @@ class TestTableView < MiniTest::Test
 		assert_equal(false, view1.is_cursor_at_bottom?)
 	end
 	
-	# def test_render1
-	# 	view1 = TableView.new('view1')
-	# 	view1.size = Size.new(3, 5)
-	# 	view1.data = ['row A1', 'row B2', 'row C3', 'row D4', 'row E5']
+	def test_render_simple1
+		view1 = TableView.new('view1')
+		view1.data = ['row A1', 'row B2', 'row C3', 'row D4', 'row E5']
 		
-	# 	rendered = view1.render
+		rendered = view1.render
 		
-	# 	pp rendered.map{ |y, row| row.map{ |x, content| "#{x}:#{y}=>'#{content.char}'" } }.flatten
+		assert_instance_of(Hash, rendered)
+		assert_equal(5, rendered.count)
+		assert_equal(6, rendered[0].count)
+		assert_equal(6, rendered[1].count)
+		assert_equal(6, rendered[2].count)
+		assert_equal(6, rendered[3].count)
+		assert_equal(6, rendered[4].count)
 		
-	# 	assert_equal(3, rendered.count)
-	# end
+		assert_equal('r', rendered[0][0].char)
+		assert_equal('o', rendered[0][1].char)
+		assert_equal('w', rendered[0][2].char)
+		assert_equal(' ', rendered[0][3].char)
+		assert_equal('A', rendered[0][4].char)
+		assert_equal('1', rendered[0][5].char)
+		
+		assert_equal('r', rendered[1][0].char)
+		assert_equal('o', rendered[1][1].char)
+		assert_equal('w', rendered[1][2].char)
+		assert_equal(' ', rendered[1][3].char)
+		assert_equal('B', rendered[1][4].char)
+		assert_equal('2', rendered[1][5].char)
+		
+		assert_equal('r', rendered[2][0].char)
+		assert_equal('o', rendered[2][1].char)
+		assert_equal('w', rendered[2][2].char)
+		assert_equal(' ', rendered[2][3].char)
+		assert_equal('C', rendered[2][4].char)
+		assert_equal('3', rendered[2][5].char)
+		
+		assert_equal('r', rendered[3][0].char)
+		assert_equal('o', rendered[3][1].char)
+		assert_equal('w', rendered[3][2].char)
+		assert_equal(' ', rendered[3][3].char)
+		assert_equal('D', rendered[3][4].char)
+		assert_equal('4', rendered[3][5].char)
+		
+		assert_equal('r', rendered[4][0].char)
+		assert_equal('o', rendered[4][1].char)
+		assert_equal('w', rendered[4][2].char)
+		assert_equal(' ', rendered[4][3].char)
+		assert_equal('E', rendered[4][4].char)
+		assert_equal('5', rendered[4][5].char)
+		
+		# pp rendered.map{ |y, row| row.map{ |x, content| "#{x}:#{y}=>'#{content.char}'" } }.flatten
+	end
+	
+	def test_render_simple2
+		view1 = TableView.new('view1')
+		view1.size = Size.new(5, 3)
+		view1.data = ['row A1', 'row B2', 'row C3', 'row D4', 'row E5']
+		
+		rendered = view1.render
+		
+		assert_instance_of(Hash, rendered)
+		assert_equal(3, rendered.count)
+		assert_equal(5, rendered[0].count)
+		assert_equal(5, rendered[1].count)
+		assert_equal(5, rendered[2].count)
+		
+		assert_equal('r', rendered[0][0].char)
+		assert_equal('o', rendered[0][1].char)
+		assert_equal('w', rendered[0][2].char)
+		assert_equal(' ', rendered[0][3].char)
+		assert_equal('A', rendered[0][4].char)
+		
+		assert_equal('r', rendered[1][0].char)
+		assert_equal('o', rendered[1][1].char)
+		assert_equal('w', rendered[1][2].char)
+		assert_equal(' ', rendered[1][3].char)
+		assert_equal('B', rendered[1][4].char)
+		
+		assert_equal('r', rendered[2][0].char)
+		assert_equal('o', rendered[2][1].char)
+		assert_equal('w', rendered[2][2].char)
+		assert_equal(' ', rendered[2][3].char)
+		assert_equal('C', rendered[2][4].char)
+		
+		# pp rendered.map{ |y, row| row.map{ |x, content| "#{x}:#{y}=>'#{content.char}'" } }.flatten
+	end
+	
+	def test_render_scroll1
+		view1 = TableView.new('view1')
+		view1.size = Size.new(nil, 3)
+		view1.data = ['row A1', 'row B2', 'row C3', 'row D4', 'row E']
+		
+		view1.render
+		view1.cursor_position = 4
+		
+		rendered = view1.render
+		# pp rendered
+		
+		assert_instance_of(Hash, rendered)
+		assert_equal(3, rendered.count)
+		assert_equal(6, rendered[0].count)
+		assert_equal(6, rendered[1].count)
+		assert_equal(6, rendered[2].count)
+		
+		assert_equal('r', rendered[0][0].char)
+		assert_equal('o', rendered[0][1].char)
+		assert_equal('w', rendered[0][2].char)
+		assert_equal(' ', rendered[0][3].char)
+		assert_equal('C', rendered[0][4].char)
+		assert_equal('3', rendered[0][5].char)
+		
+		assert_equal('r', rendered[1][0].char)
+		assert_equal('o', rendered[1][1].char)
+		assert_equal('w', rendered[1][2].char)
+		assert_equal(' ', rendered[1][3].char)
+		assert_equal('D', rendered[1][4].char)
+		assert_equal('4', rendered[1][5].char)
+		
+		assert_equal('r', rendered[2][0].char)
+		assert_equal('o', rendered[2][1].char)
+		assert_equal('w', rendered[2][2].char)
+		assert_equal(' ', rendered[2][3].char)
+		assert_equal('E', rendered[2][4].char)
+		assert_equal(' ', rendered[2][5].char)
+		
+		
+		view1.cursor_position = 0
+		rendered = view1.render
+		
+		assert_equal(3, rendered.count)
+		assert_equal(6, rendered[0].count)
+		assert_equal(6, rendered[1].count)
+		assert_equal(6, rendered[2].count)
+		
+		assert_equal('r', rendered[0][0].char)
+		assert_equal('o', rendered[0][1].char)
+		assert_equal('w', rendered[0][2].char)
+		assert_equal(' ', rendered[0][3].char)
+		assert_equal('A', rendered[0][4].char)
+		assert_equal('1', rendered[0][5].char)
+		
+		assert_equal('r', rendered[1][0].char)
+		assert_equal('o', rendered[1][1].char)
+		assert_equal('w', rendered[1][2].char)
+		assert_equal(' ', rendered[1][3].char)
+		assert_equal('B', rendered[1][4].char)
+		assert_equal('2', rendered[1][5].char)
+		
+		assert_equal('r', rendered[2][0].char)
+		assert_equal('o', rendered[2][1].char)
+		assert_equal('w', rendered[2][2].char)
+		assert_equal(' ', rendered[2][3].char)
+		assert_equal('C', rendered[2][4].char)
+		assert_equal('3', rendered[2][5].char)
+		
+		# pp rendered
+		# pp rendered.map{ |y, row| row.map{ |x, content| "#{x}:#{y} => '#{content.char}'" } }.flatten
+	end
+	
+	def test_render_scroll2
+		view1 = TableView.new('view1')
+		view1.size = Size.new(nil, 3)
+		view1.data = ['A', 'AB', 'ABC', 'AB', 'A']
+		
+		# puts %(--- init done ---)
+		# puts
+		
+		view1.cursor_position = 0
+		rendered = view1.render
+		
+		
+		view1.cursor_position = 1
+		rendered = view1.render
+		assert_equal(0, rendered.count)
+		
+		
+		view1.cursor_position = 2
+		rendered = view1.render
+		assert_equal(0, rendered.count)
+		
+		
+		# puts %(--- set 3 ---)
+		view1.cursor_position = 3
+		rendered = view1.render
+		
+		assert_equal(3, rendered.count)
+		assert_equal(2, rendered[0].count)
+		assert_equal(3, rendered[1].count)
+		assert_equal(3, rendered[2].count)
+		
+		assert_equal('A', rendered[0][0].char)
+		assert_equal('B', rendered[0][1].char)
+		assert_equal('A', rendered[1][0].char)
+		assert_equal('B', rendered[1][1].char)
+		assert_equal('C', rendered[1][2].char)
+		assert_equal('A', rendered[2][0].char)
+		assert_equal('B', rendered[2][1].char)
+		assert_equal(' ', rendered[2][2].char)
+		
+		
+		# puts %(--- set 4 ---)
+		view1.cursor_position = 4
+		rendered = view1.render
+		
+		assert_equal(3, rendered.count)
+		assert_equal(3, rendered[0].count)
+		assert_equal(3, rendered[1].count)
+		assert_equal(2, rendered[2].count)
+		
+		assert_equal('A', rendered[0][0].char)
+		assert_equal('B', rendered[0][1].char)
+		assert_equal('C', rendered[0][2].char)
+		assert_equal('A', rendered[1][0].char)
+		assert_equal('B', rendered[1][1].char)
+		assert_equal(' ', rendered[1][2].char)
+		assert_equal('A', rendered[2][0].char)
+		assert_equal(' ', rendered[2][1].char)
+		
+		
+		# puts %(--- set 3 ---)
+		view1.cursor_position = 3
+		rendered = view1.render
+		assert_equal(0, rendered.count)
+		
+		
+		# puts %(--- set 2 ---)
+		view1.cursor_position = 2
+		rendered = view1.render
+		assert_equal(0, rendered.count)
+		
+		
+		# puts %(--- set 1 ---)
+		view1.cursor_position = 1
+		rendered = view1.render
+		
+		assert_equal(3, rendered.count)
+		assert_equal(3, rendered[0].count)
+		assert_equal(3, rendered[1].count)
+		assert_equal(2, rendered[2].count)
+		
+		assert_equal('A', rendered[0][0].char)
+		assert_equal('B', rendered[0][1].char)
+		assert_equal(' ', rendered[0][2].char)
+		assert_equal('A', rendered[1][0].char)
+		assert_equal('B', rendered[1][1].char)
+		assert_equal('C', rendered[1][2].char)
+		assert_equal('A', rendered[2][0].char)
+		assert_equal('B', rendered[2][1].char)
+		
+		
+		# puts %(--- set 0 ---)
+		view1.cursor_position = 0
+		rendered = view1.render
+		
+		assert_equal(3, rendered.count)
+		assert_equal(2, rendered[0].count)
+		assert_equal(3, rendered[1].count)
+		assert_equal(3, rendered[2].count)
+		
+		assert_equal('A', rendered[0][0].char)
+		assert_equal(' ', rendered[0][1].char)
+		assert_equal('A', rendered[1][0].char)
+		assert_equal('B', rendered[1][1].char)
+		assert_equal(' ', rendered[1][2].char)
+		assert_equal('A', rendered[2][0].char)
+		assert_equal('B', rendered[2][1].char)
+		assert_equal('C', rendered[2][2].char)
+		
+		
+		# pp rendered
+		# pp rendered.map{ |y, row| row.map{ |x, content| ["#{x}:#{y}", content.char] }.to_h } #.flatten
+	end
 	
 end
