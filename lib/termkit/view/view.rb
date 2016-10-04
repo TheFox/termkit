@@ -112,50 +112,25 @@ module TheFox
 						# Redraw new position.
 						area.origin = position
 						changes_new = @parent_view.redraw_area_zindex(area)
-						# changes_new.each do |y_pos, row|
-						# 	row.each do |x_pos, content|
-						# 		# puts "#{@name} -- position= changes A #{x_pos}:#{y_pos} #{content.inspect}"
-								
-						# 		if content.nil?
-						# 			has_grid = @parent_view.grid[y_pos] && @parent_view.grid[y_pos][x_pos]
-						# 			has_grid_cache = @parent_view.grid_cache[y_pos] && @parent_view.grid_cache[y_pos][x_pos]
-									
-						# 			# puts "#{@name} -- position= content is nil G=#{has_grid ? 'Y' : 'N'} GC=#{has_grid_cache ? 'Y' : 'N'} #{has_grid_cache.inspect}"
-									
-						# 		end
-						# 	end
-						# end
-						#changes_new_a = changes_new.map{ |y_pos, row| row.keys.map{ |x_pos| "#{x_pos}:#{y_pos}" } }.flatten
 						changes_new_a = changes_new.map{ |y_pos, row| row.keys.map{ |x_pos| Point.new(x_pos, y_pos).to_s } }.flatten
-						# pp changes_new_a
-						
-						# puts '-' * 10
 						
 						# Redraw old position.
 						area.origin = old_position
 						changes_old = @parent_view.redraw_area_zindex(area)
-						# changes_old.each do |y_pos, row|
-						# 	row.each do |x_pos, content|
-						# 		puts "#{@name} -- position= changes B #{x_pos}:#{y_pos} #{content.inspect}"
-						# 	end
-						# end
-						# changes_old_a = changes_old.map{ |y_pos, row| row.keys.map{ |x_pos| "#{x_pos}:#{y_pos}" } }.flatten
 						changes_old_a = changes_old.map{ |y_pos, row| row.keys.map{ |x_pos| Point.new(x_pos, y_pos).to_s } }.flatten
-						# pp changes_old_a
 						
 						# pp changes_old_a - changes_new_a
 						# pp changes_new_a - changes_old_a
 						
 						(changes_old_a - changes_new_a).each do |point_s|
 							point = Point.from_s(point_s)
-							x_pos, y_pos = point.to_a
+							# x_pos, y_pos = point.to_a
 							
+							# has_grid = @parent_view.grid[y_pos] && @parent_view.grid[y_pos][x_pos]
+							# has_grid_cache = @parent_view.grid_cache[y_pos] && @parent_view.grid_cache[y_pos][x_pos]
 							
-							has_grid = @parent_view.grid[y_pos] && @parent_view.grid[y_pos][x_pos]
-							has_grid_cache = @parent_view.grid_cache[y_pos] && @parent_view.grid_cache[y_pos][x_pos]
-							
-							changed = @parent_view.grid_cache_erase_point(point)
-							
+							@parent_view.grid_cache_erase_point(point)
+							# changed = @parent_view.grid_cache_erase_point(point)
 							
 							#puts "#{@name} -- position= changes C G=#{has_grid ? 'Y' : 'N'} GC=#{has_grid_cache ? 'Y' : 'N'} #{has_grid_cache.inspect} #{changed.inspect}"
 						end

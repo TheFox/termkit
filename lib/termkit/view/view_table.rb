@@ -14,13 +14,11 @@ module TheFox
 			attr_reader :cursor_position
 			attr_reader :cursor_position_old
 			attr_reader :cursor_direction
-			# attr_reader :page
 			attr_reader :page_begin
 			attr_reader :page_end
 			attr_reader :page_height
 			attr_reader :cells_height_total
 			attr_reader :page_direction
-			# attr_reader :page_needs_refresh
 			
 			def initialize(name = nil)
 				super(name)
@@ -34,13 +32,11 @@ module TheFox
 				@cursor_position_old = 0
 				@cursor_direction = 0
 				
-				# @page = []
 				@page_begin = 0
 				@page_end = 0
 				@page_height = 0
 				@cells_height_total = 0
 				@page_direction = 0
-				# @page_needs_refresh = true
 			end
 			
 			def size=(size)
@@ -77,8 +73,6 @@ module TheFox
 				cell_n = 0
 				y_pos = 0
 				@data.each do |row|
-					# puts "row '#{row}'"
-					
 					cell = nil
 					cell_n += 1
 					
@@ -99,12 +93,9 @@ module TheFox
 					@cells.push(cell)
 					
 					cell.is_visible = false
-					# cell.position = Point.new(0, y_pos)
 					add_subview(cell)
 					
 					y_pos += cell.height
-					
-					# puts "#{cell_n} #{y_pos} #{cell}"
 				end
 				
 				@cells_height_total = y_pos
@@ -198,11 +189,7 @@ module TheFox
 			end
 			
 			def draw_cells
-				#remove_subviews
-				#grid_erase
-				
 				page_range = Range.new(@page_begin, @page_end)
-				# puts "page_range: #{page_range} (#{@page_height})"
 				
 				affected_cells = @cells[page_range]
 				
@@ -218,21 +205,8 @@ module TheFox
 					cell.is_visible = true
 					cell.position = Point.new(0, y_pos)
 					
-					# if @grid_cache[y_pos]
-					# 	puts "  ->  :#{y_pos} ok"
-					# 	@grid_cache[y_pos].select{ |x_pos, content| x_pos >= cell_width }.each do |x_pos, content|
-					# 		puts "  -> #{x_pos}:#{y_pos} erase"
-					# 		grid_cache_erase_point(Point.new(x_pos, y_pos))
-					# 	end
-					# end
-					
-					#add_subview(cell)
-					
 					y_pos += cell.height
 				end
-				
-				# puts
-				# puts
 			end
 			
 		end
