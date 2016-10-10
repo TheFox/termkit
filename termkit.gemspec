@@ -21,6 +21,7 @@ Gem::Specification.new do |spec|
 	spec.require_paths = ['lib']
 	spec.required_ruby_version = '>=2.1.0'
 	
+	spec.add_development_dependency 'pry', '~>0.10'
 	spec.add_development_dependency 'minitest', '~>5.8'
 	spec.add_development_dependency 'simplecov', '~>0.12'
 	spec.add_development_dependency 'simplecov-phpunit', '~>0.4'

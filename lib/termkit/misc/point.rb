@@ -36,6 +36,14 @@ module TheFox
 				@x == point.x && @y == point.y
 			end
 			
+			def +(point)
+				self.class.new(@x + point.x, @y + point.y)
+			end
+			
+			def -(point)
+				self.class.new(@x - point.x, @y - point.y)
+			end
+			
 			def to_s
 				"#{@x}:#{@y}"
 			end

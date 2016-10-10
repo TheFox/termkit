@@ -25,7 +25,7 @@ class TestView < MiniTest::Test
 		assert_equal('view1', view1.name)
 	end
 	
-	def test_is_visible
+	def test_is_visible1
 		view1 = View.new
 		assert_equal(false, view1.is_visible?)
 		
@@ -2007,6 +2007,175 @@ class TestView < MiniTest::Test
 		
 		# puts
 		# pp rendered[5]
+	end
+	
+	def test_render_position3
+		view1 = View.new('view1')
+		view1.is_visible = true
+		view1.position = Point.new(3, 3)
+		view1.draw_point([1, 5], 'A')
+		view1.draw_point([3, 6], 'B')
+		
+		view2 = View.new('view2')
+		view2.is_visible = true
+		view2.position = Point.new(7, 7)
+		view2.add_subview(view1)
+		
+		view3 = View.new('view3')
+		view3.is_visible = true
+		view3.add_subview(view2)
+		
+		
+		rendered = view3.render
+		puts; pp rendered; puts
+		
+		assert_equal(2, rendered.count)
+		assert_equal(1, rendered[15].count)
+		assert_equal(1, rendered[16].count)
+		assert_equal('A', rendered[15][11].char)
+		assert_equal('B', rendered[16][13].char)
+		
+		puts '-------- SET POS BEGIN --------'
+		view1.position = Point.new(17, 17)
+		puts '-------- SET POS END ----------'
+		puts
+		
+		puts '--- view1 ---'; pp view1.grid_cache; puts
+		puts '--- view2 ---'; pp view2.grid_cache; puts
+		puts '--- view3 ---'; pp view3.grid_cache; puts
+		
+		puts '-------- RENDER --------'
+		rendered = view3.render
+		
+		puts; pp rendered; puts
+		puts '--- view1 ---'; pp view1.grid_cache; puts
+		puts '--- view2 ---'; pp view2.grid_cache; puts
+		puts '--- view3 ---'; pp view3.grid_cache; puts
+		
+		assert_equal(4, rendered.count)
+		assert_equal(1, rendered[15].count)
+		assert_equal(1, rendered[16].count)
+		assert_equal(1, rendered[29].count)
+		assert_equal(1, rendered[30].count)
+		assert_equal(' ', rendered[15][11].char)
+		assert_equal(' ', rendered[16][13].char)
+		assert_equal('A', rendered[29][25].char)
+		assert_equal('B', rendered[30][27].char)
+	end
+	
+	def test_render_grid_cache_erase_point1
+		view1 = View.new('view1')
+		view1.is_visible = true
+		view1.position = Point.new(0, 0)
+		
+		view1.draw_point([0, 0], 'A')
+		view1.draw_point([1, 0], 'B')
+		view1.draw_point([2, 0], 'C')
+		view1.draw_point([3, 0], 'D')
+		view1.draw_point([4, 0], 'E')
+		view1.draw_point([5, 0], 'F')
+		
+		
+		view2 = View.new('view2')
+		view2.is_visible = true
+		view2.add_subview(view1)
+		
+		# puts '----- RENDER A ------'
+		rendered = view2.render
+		# puts; pp rendered; puts
+		
+		# puts '----- ERASE A ------'
+		view1.grid_cache_erase_point(Point.new(0, 0))
+		
+		# puts '----- RENDER B ------'
+		rendered = view2.render
+		# puts; pp rendered; puts
+		
+		assert_equal(1, rendered.count)
+		assert_equal(1, rendered[0].count)
+		assert_equal('A', rendered[0][0].char)
+		assert_instance_of(ViewContent, rendered[0][0])
+		
+		# puts '----- ERASE B ------'
+		view2.grid_cache_erase_point(Point.new(0, 0))
+		
+		# puts '----- RENDER C ------'
+		rendered = view2.render
+		# puts; pp rendered; puts
+		
+		assert_equal(1, rendered.count)
+		assert_equal(1, rendered[0].count)
+		assert_equal('A', rendered[0][0].char)
+		assert_instance_of(ViewContent, rendered[0][0])
+		
+		view1.grid_erase_point(Point.new(0, 0))
+		
+		rendered = view2.render
+		# puts; pp rendered; puts
+		
+		assert_equal(1, rendered.count)
+		assert_equal(1, rendered[0].count)
+		assert_equal(' ', rendered[0][0].char)
+		assert_instance_of(ClearViewContent, rendered[0][0])
+	end
+	
+	def test_render_grid_cache_erase_point2
+		view1 = View.new('view1')
+		view1.is_visible = true
+		view1.position = Point.new(3, 3)
+		view1.draw_point([0, 0], 'A')
+		view1.draw_point([1, 0], 'B')
+		
+		view2 = View.new('view2')
+		view2.is_visible = true
+		view2.position = Point.new(7, 7)
+		view2.add_subview(view1)
+		
+		view3 = View.new('view3')
+		view3.is_visible = true
+		view3.position = Point.new(13, 13)
+		view3.add_subview(view2)
+		
+		view4 = View.new('view4')
+		view4.is_visible = true
+		view4.add_subview(view3)
+		
+		view4.render
+		
+		assert_equal(1, view4.grid_cache.count)
+		assert_equal(2, view4.grid_cache[23].count)
+		assert_equal(1, view3.grid_cache.count)
+		assert_equal(2, view3.grid_cache[10].count)
+		assert_equal(1, view2.grid_cache.count)
+		assert_equal(2, view2.grid_cache[3].count)
+		assert_equal(1, view1.grid_cache.count)
+		assert_equal(2, view1.grid_cache[0].count)
+		
+		view1.grid_erase_point(Point.new(1, 0))
+		
+		# puts '--- view1 ---'; pp view1.grid_cache
+		# puts '--- view2 ---'; pp view2.grid_cache
+		# puts '--- view3 ---'; pp view3.grid_cache
+		# puts '--- view4 ---'; pp view4.grid_cache
+		
+		# puts
+		view4.render
+		# rendered = view4.render
+		# puts; pp rendered; puts
+		
+		# puts '--- view1 ---'; pp view1.grid_cache
+		# puts '--- view2 ---'; pp view2.grid_cache
+		# puts '--- view3 ---'; pp view3.grid_cache
+		# puts '--- view4 ---'; pp view4.grid_cache
+		
+		assert_equal(1, view4.grid_cache.count)
+		assert_equal(1, view4.grid_cache[23].count)
+		assert_equal(1, view3.grid_cache.count)
+		assert_equal(1, view3.grid_cache[10].count)
+		assert_equal(1, view2.grid_cache.count)
+		assert_equal(1, view2.grid_cache[3].count)
+		assert_equal(1, view1.grid_cache.count)
+		assert_equal(1, view1.grid_cache[0].count)
 	end
 	
 	def test_to_s

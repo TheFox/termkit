@@ -60,7 +60,7 @@ module TheFox
 				area = nil # @TODO: use current terminal size as area
 				
 				@render_count += 1
-				draw_line(Point.new(0, 0), "RENDER: #{@render_count}")
+				draw_line(Point.new(0, 1), "RENDER: #{@render_count}")
 				if !@active_controller.nil?
 					logger.debug('RENDER active_controller OK')
 					
@@ -68,7 +68,7 @@ module TheFox
 						row.each do |x_pos, content|
 							sleep 0.1 # @TODO: remove this line
 							
-							logger.debug("RENDER #{x_pos}:#{y_pos}: '#{content}'")
+							logger.debug("RENDER #{x_pos}:#{y_pos} '#{content}'")
 							
 							draw_point(Point.new(x_pos, y_pos), content.char)
 							
@@ -79,15 +79,21 @@ module TheFox
 				ui_refresh
 			end
 			
-			# def draw_line(point, content)
-			# 	raise NotImplementedError
-			# end
+			def draw_line(point, row)
+				x_pos = point.x
+				y_pos = point.y
+				
+				row.length.times do |n|
+					draw_point(Point.new(x_pos, y_pos), row[n])
+					x_pos += 1
+				end
+			end
 			
 			##
 			# Needs to be implemented by the sub-class.
 			#
 			# For example, CursesApp is a sub-class of UIApp. CursesApp uses `Curses.setpos` and `Curses.addstr` in `draw_point()` to draw the points.
-			def draw_point(point, content)
+			def draw_point(point, content_s)
 				raise NotImplementedError
 			end
 			

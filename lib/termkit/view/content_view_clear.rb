@@ -8,10 +8,10 @@ module TheFox
 		# If a View disappears the screen needs to be cleaned or redrawn. An instance of this class should only be used temporary.
 		class ClearViewContent < ViewContent
 			
-			def initialize(char = nil, view = nil)
+			def initialize(char = nil, view = nil, origin = nil)
 				char ||= ' '
 				
-				super(char, view)
+				super(char, view, origin)
 			end
 			
 		end

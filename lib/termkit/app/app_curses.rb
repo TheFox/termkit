@@ -37,16 +37,10 @@ module TheFox
 			end
 			
 			##
-			# See UIApp `draw_line()` method.
-			# def draw_line(point, content)
-			# 	draw_point(point, content)
-			# end
-			
-			##
 			# See UIApp `draw_point()` method.
-			def draw_point(point, content)
+			def draw_point(point, content_s)
 				Curses.setpos(point.y, point.x)
-				Curses.addstr(content)
+				Curses.addstr(content_s)
 			end
 			
 			##

@@ -15,10 +15,13 @@ module TheFox
 			# - If `false` the content of the View didn't change since the last call of `render()` and the content has already been used in `render()`.
 			attr_accessor :needs_rendering
 			
-			def initialize(char, view = nil)
+			attr_accessor :origin
+			
+			def initialize(char, view = nil, origin = nil)
 				@char = char[0]
 				@view = view
 				@needs_rendering = true
+				@origin = origin
 			end
 			
 			def to_s
@@ -26,7 +29,7 @@ module TheFox
 			end
 			
 			def inspect
-				"<#{self.class.name.split('::').last} c='#{@char}' r?=#{@needs_rendering ? 'Y' : 'N'} v=#{@view}>"
+				"<#{self.class.name.split('::').last} c='#{@char}' r?=#{@needs_rendering ? 'Y' : 'N'} v=#{@view} o=#{@origin}>"
 			end
 			
 		end

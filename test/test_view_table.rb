@@ -21,26 +21,26 @@ class TestTableView < MiniTest::Test
 		assert_equal(5, view1.page_height)
 		
 		
-		header = TextView.new("--HEADER A--\nHEADER B")
-		header.is_visible = true
-		view1.header = header
+		header1 = TextView.new("--HEADER A--\nHEADER B", 'header1')
+		header1.is_visible = true
+		view1.header = header1
 		assert_equal(3, view1.page_height)
 		
-		header.text = 'HEADER C'
+		header1.text = 'HEADER C'
 		assert_equal(3, view1.page_height)
 		
-		header = TextView.new('--HEADER D--')
-		header.is_visible = true
-		view1.header = header
+		header1 = TextView.new('--HEADER D--', 'header1')
+		header1.is_visible = true
+		view1.header = header1
 		assert_equal(4, view1.page_height)
 	end
 	
 	def test_size2
-		header = TextView.new("--HEADER A--\nHEADER B")
-		header.is_visible = true
+		header1 = TextView.new("--HEADER A--\nHEADER B", 'header1')
+		header1.is_visible = true
 		
 		view1 = TableView.new
-		view1.header = header
+		view1.header = header1
 		assert_equal(0, view1.page_height)
 		
 		view1.size = Size.new(nil, 6)
@@ -505,67 +505,65 @@ class TestTableView < MiniTest::Test
 		view1.data = ['row A1', 'row B2', 'row C3', 'row D4', 'row E']
 		
 		view1.render
+		
+		# puts '----- A -----'
+		# puts; pp view1.grid_cache; puts
 		view1.cursor_position = 4
+		# puts; pp view1.grid_cache; puts
+		
+		puts '----- B -----'
 		
 		rendered = view1.render
-		# pp rendered
+		puts; pp rendered; puts
 		
-		assert_instance_of(Hash, rendered)
-		assert_equal(3, rendered.count)
-		assert_equal(6, rendered[0].count)
-		assert_equal(6, rendered[1].count)
-		assert_equal(6, rendered[2].count)
+		# assert_instance_of(Hash, rendered)
+		# assert_equal(3, rendered.count)
+		# assert_equal(6, rendered[0].count)
+		# assert_equal(2, rendered[1].count)
+		# assert_equal(2, rendered[2].count)
 		
-		assert_equal('r', rendered[0][0].char)
-		assert_equal('o', rendered[0][1].char)
-		assert_equal('w', rendered[0][2].char)
-		assert_equal(' ', rendered[0][3].char)
-		assert_equal('C', rendered[0][4].char)
-		assert_equal('3', rendered[0][5].char)
+		# assert_equal('r', rendered[0][0].char)
+		# assert_equal('o', rendered[0][1].char)
+		# assert_equal('w', rendered[0][2].char)
+		# assert_equal(' ', rendered[0][3].char)
+		# assert_equal('C', rendered[0][4].char)
+		# assert_equal('3', rendered[0][5].char)
 		
-		assert_equal('r', rendered[1][0].char)
-		assert_equal('o', rendered[1][1].char)
-		assert_equal('w', rendered[1][2].char)
-		assert_equal(' ', rendered[1][3].char)
-		assert_equal('D', rendered[1][4].char)
-		assert_equal('4', rendered[1][5].char)
+		# assert_equal('D', rendered[1][4].char)
+		# assert_equal('4', rendered[1][5].char)
 		
-		assert_equal('r', rendered[2][0].char)
-		assert_equal('o', rendered[2][1].char)
-		assert_equal('w', rendered[2][2].char)
-		assert_equal(' ', rendered[2][3].char)
-		assert_equal('E', rendered[2][4].char)
-		assert_equal(' ', rendered[2][5].char)
+		# assert_equal('E', rendered[2][4].char)
+		# assert_equal(' ', rendered[2][5].char)
 		
 		
-		view1.cursor_position = 0
-		rendered = view1.render
+		# view1.cursor_position = 0
+		# rendered = view1.render
 		
-		assert_equal(3, rendered.count)
-		assert_equal(6, rendered[0].count)
-		assert_equal(6, rendered[1].count)
-		assert_equal(6, rendered[2].count)
+		# assert_equal(3, rendered.count)
+		# assert_equal(6, rendered[0].count)
+		# assert_equal(6, rendered[1].count)
+		# assert_equal(6, rendered[2].count)
 		
-		assert_equal('r', rendered[0][0].char)
-		assert_equal('o', rendered[0][1].char)
-		assert_equal('w', rendered[0][2].char)
-		assert_equal(' ', rendered[0][3].char)
-		assert_equal('A', rendered[0][4].char)
-		assert_equal('1', rendered[0][5].char)
+		# assert_equal('r', rendered[0][0].char)
+		# assert_equal('o', rendered[0][1].char)
+		# assert_equal('w', rendered[0][2].char)
+		# assert_equal(' ', rendered[0][3].char)
+		# assert_equal('A', rendered[0][4].char)
+		# assert_equal('1', rendered[0][5].char)
 		
-		assert_equal('r', rendered[1][0].char)
-		assert_equal('o', rendered[1][1].char)
-		assert_equal('w', rendered[1][2].char)
-		assert_equal(' ', rendered[1][3].char)
-		assert_equal('B', rendered[1][4].char)
-		assert_equal('2', rendered[1][5].char)
+		# assert_equal('r', rendered[1][0].char)
+		# assert_equal('o', rendered[1][1].char)
+		# assert_equal('w', rendered[1][2].char)
+		# assert_equal(' ', rendered[1][3].char)
+		# assert_equal('B', rendered[1][4].char)
+		# assert_equal('2', rendered[1][5].char)
 		
-		assert_equal('r', rendered[2][0].char)
-		assert_equal('o', rendered[2][1].char)
-		assert_equal('w', rendered[2][2].char)
-		assert_equal(' ', rendered[2][3].char)
-		assert_equal('C', rendered[2][4].char)
-		assert_equal('3', rendered[2][5].char)
+		# assert_equal('r', rendered[2][0].char)
+		# assert_equal('o', rendered[2][1].char)
+		# assert_equal('w', rendered[2][2].char)
+		# assert_equal(' ', rendered[2][3].char)
+		# assert_equal('C', rendered[2][4].char)
+		# assert_equal('3', rendered[2][5].char)
 		
 		# pp rendered
 		# pp rendered.map{ |y, row| row.map{ |x, content| "#{x}:#{y} => '#{content.char}'" } }.flatten
@@ -683,6 +681,232 @@ class TestTableView < MiniTest::Test
 		
 		# pp rendered
 		# pp rendered.map{ |y, row| row.map{ |x, content| ["#{x}:#{y}", content.char] }.to_h } #.flatten
+	end
+	
+	def test_render_header1
+		header1 = TextView.new('--H1--', 'header1')
+		header1.is_visible = true
+		
+		view1 = TableView.new('view1')
+		view1.size = Size.new(5, 3)
+		view1.header = header1
+		view1.data = ['row A1', 'row B2', 'row C3', 'row D4', 'row E5']
+		
+		rendered = view1.render
+		
+		assert_equal(3, rendered.count)
+		assert_equal(5, rendered[0].count)
+		assert_equal(5, rendered[1].count)
+		assert_equal(5, rendered[2].count)
+		
+		assert_equal('-', rendered[0][0].char)
+		assert_equal('-', rendered[0][1].char)
+		assert_equal('H', rendered[0][2].char)
+		assert_equal('1', rendered[0][3].char)
+		assert_equal('-', rendered[0][4].char)
+		
+		assert_equal('r', rendered[1][0].char)
+		assert_equal('o', rendered[1][1].char)
+		assert_equal('w', rendered[1][2].char)
+		assert_equal(' ', rendered[1][3].char)
+		assert_equal('A', rendered[1][4].char)
+		
+		assert_equal('r', rendered[2][0].char)
+		assert_equal('o', rendered[2][1].char)
+		assert_equal('w', rendered[2][2].char)
+		assert_equal(' ', rendered[2][3].char)
+		assert_equal('B', rendered[2][4].char)
+		
+		# pp rendered.map{ |y, row| row.map{ |x, content| "#{x}:#{y}=>'#{content.char}'" } }.flatten
+		pp rendered
+		puts
+	end
+	
+	def test_render_header2
+		header1 = TextView.new(%{--H1--\n--H2--}, 'header1')
+		header1.is_visible = true
+		
+		view1 = TableView.new('view1')
+		view1.size = Size.new(5, 4)
+		view1.header = header1
+		view1.data = ['row A1', 'row B2', 'row C3', 'row D4', 'row E5']
+		
+		rendered = view1.render
+		
+		assert_equal(4, rendered.count)
+		assert_equal(5, rendered[0].count)
+		assert_equal(5, rendered[1].count)
+		# assert_equal(5, rendered[2].count)
+		
+		assert_equal('H', rendered[0][2].char)
+		assert_equal('1', rendered[0][3].char)
+		
+		assert_equal('H', rendered[1][2].char)
+		assert_equal('2', rendered[1][3].char)
+		
+		assert_equal('A', rendered[2][4].char)
+		assert_equal('B', rendered[3][4].char)
+		
+		# pp rendered.map{ |y, row| row.map{ |x, content| "#{x}:#{y}=>'#{content.char}'" } }.flatten
+		pp rendered
+		puts
+	end
+	
+	def test_render_reset_header1
+		header1 = TextView.new('--H1--', 'header1')
+		header1.is_visible = true
+		
+		view1 = TableView.new('view1')
+		view1.size = Size.new(5, 4)
+		view1.header = header1
+		view1.data = ['row A1', 'row B2', 'row C3', 'row D4', 'row E5']
+		
+		rendered = view1.render
+		
+		assert_equal(4, rendered.count)
+		assert_equal(5, rendered[0].count)
+		assert_equal(5, rendered[1].count)
+		assert_equal(5, rendered[2].count)
+		assert_equal(5, rendered[3].count)
+		
+		assert_equal('H', rendered[0][2].char)
+		assert_equal('1', rendered[0][3].char)
+		assert_equal('A', rendered[1][4].char)
+		assert_equal('B', rendered[2][4].char)
+		assert_equal('C', rendered[3][4].char)
+		
+		
+		
+		header2 = TextView.new(%{--H1--\n--H2--}, 'header2')
+		header2.is_visible = true
+		view1.header = header2
+		
+		rendered = view1.render
+		# puts; pp rendered; puts
+		
+		assert_equal(4, rendered.count)
+		assert_equal(5, rendered[0].count)
+		assert_equal(5, rendered[1].count)
+		assert_equal(1, rendered[2].count)
+		assert_equal(1, rendered[3].count)
+		
+		assert_equal('H', rendered[0][2].char)
+		assert_equal('1', rendered[0][3].char)
+		assert_equal('H', rendered[1][2].char)
+		assert_equal('2', rendered[1][3].char)
+		assert_equal('A', rendered[2][4].char)
+		assert_equal('B', rendered[3][4].char)
+	end
+	
+	def test_render_reset_header2
+		header1 = TextView.new('--H1--', 'header1')
+		header1.is_visible = true
+		
+		view1 = TableView.new('view1')
+		view1.size = Size.new(5, 4)
+		view1.header = header1
+		view1.data = ['row A1', 'row B2', 'row C3', 'row D4', 'row E5']
+		view1.cursor_position = 3
+		
+		rendered = view1.render
+		puts; pp rendered; puts
+		
+		assert_equal(4, rendered.count)
+		assert_equal(5, rendered[0].count)
+		assert_equal(5, rendered[1].count)
+		assert_equal(5, rendered[2].count)
+		assert_equal(5, rendered[3].count)
+		
+		assert_equal('H', rendered[0][2].char)
+		assert_equal('1', rendered[0][3].char)
+		assert_equal('B', rendered[1][4].char)
+		assert_equal('C', rendered[2][4].char)
+		assert_equal('D', rendered[3][4].char)
+		
+		
+		header2 = TextView.new(%{--H1--\n--H2--}, 'header2')
+		header2.is_visible = true
+		view1.header = header2
+		
+		rendered = view1.render
+		puts; pp rendered; puts
+		
+		assert_equal(4, rendered.count)
+		assert_equal(5, rendered[0].count)
+		assert_equal(5, rendered[1].count)
+		assert_equal(1, rendered[2].count)
+		assert_equal(1, rendered[3].count)
+		
+		assert_equal('H', rendered[0][2].char)
+		assert_equal('1', rendered[0][3].char)
+		assert_equal('H', rendered[1][2].char)
+		assert_equal('2', rendered[1][3].char)
+		assert_equal('B', rendered[2][4].char)
+		assert_equal('C', rendered[3][4].char)
+	end
+	
+	def test_render_scroll_header1
+		header1 = TextView.new('--H1--', 'header1')
+		header1.is_visible = true
+		
+		view1 = TableView.new('view1')
+		view1.size = Size.new(5, 3)
+		view1.header = header1
+		view1.data = ['row A1', 'row B2', 'row C3', 'row D4', 'row E5']
+		
+		rendered = view1.render
+		# pp rendered
+		
+		assert_equal(3, rendered.count)
+		assert_equal(5, rendered[0].count)
+		assert_equal(5, rendered[1].count)
+		assert_equal(5, rendered[2].count)
+		
+		assert_equal('H', rendered[0][2].char)
+		assert_equal('1', rendered[0][3].char)
+		
+		assert_equal('A', rendered[1][4].char)
+		assert_equal('B', rendered[2][4].char)
+		
+		# puts; puts '------- GRID A -------'
+		# pp view1.grid_cache
+		
+		# puts; puts '------- SET 2 -------'
+		view1.cursor_position = 2
+		
+		# puts; puts '------- GRID B -------'
+		# pp view1.grid_cache
+		
+		# puts; puts '------- RENDER 2 -------'
+		rendered = view1.render
+		
+		assert_equal(2, rendered.count)
+		assert_equal(1, rendered[1].count)
+		assert_equal(1, rendered[2].count)
+		assert_equal('B', rendered[1][4].char)
+		assert_equal('C', rendered[2][4].char)
+		
+		
+		# pp rendered.map{ |y, row| row.map{ |x, content| "#{x}:#{y}=>'#{content.char}'" } }.flatten
+		# puts; pp rendered; puts
+		
+		
+		# puts; puts '------- SET 3 -------'
+		view1.cursor_position = 3
+		
+		# puts; puts '------- GRID 3 -------'
+		# pp view1.grid_cache
+		
+		# puts; puts '------- RENDER 3 -------'
+		rendered = view1.render
+		
+		assert_equal(2, rendered.count)
+		assert_equal(1, rendered[1].count)
+		assert_equal(1, rendered[2].count)
+		assert_equal('C', rendered[1][4].char)
+		assert_equal('D', rendered[2][4].char)
+		
+		# puts; pp rendered; puts
 	end
 	
 end

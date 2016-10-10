@@ -9,24 +9,27 @@ module TheFox
 		class TableView < View
 			
 			attr_reader :header
+			# attr_reader :table
 			attr_reader :data
 			attr_reader :cells
+			attr_reader :cells_height_total
 			attr_reader :cursor_position
 			attr_reader :cursor_position_old
 			attr_reader :cursor_direction
 			attr_reader :page_begin
 			attr_reader :page_end
 			attr_reader :page_height
-			attr_reader :cells_height_total
 			attr_reader :page_direction
 			
 			def initialize(name = nil)
+				puts "TableView initialize '#{name.inspect}'"
 				super(name)
 				
 				@header = nil
 				@header_height = 0
 				@data = []
 				@cells = []
+				@cells_height_total = 0
 				
 				@cursor_position = 0
 				@cursor_position_old = 0
@@ -35,8 +38,11 @@ module TheFox
 				@page_begin = 0
 				@page_end = 0
 				@page_height = 0
-				@cells_height_total = 0
 				@page_direction = 0
+				
+				@table = View.new("#{@name}_table")
+				@table.is_visible = true
+				add_subview(@table)
 			end
 			
 			def size=(size)
@@ -48,16 +54,31 @@ module TheFox
 			end
 			
 			def header=(header)
-				if !header.is_a?(View)
+				unless header.is_a?(View)
 					raise ArgumentError, "Argument is not a View -- #{header.class} given"
 				end
 				
-				if !@header.nil?
+				unless @header.nil?
 					remove_subview(@header)
 				end
+				
 				@header = header
-				add_subview(@header)
-				@header_height = @header.height
+				unless header.nil?
+					@header_height = @header.height
+					
+					add_subview(@header)
+				end
+				
+				@table.position = Point.new(0, @header_height)
+				
+				calc_page_height
+			end
+			
+			def remove_header
+				@header = nil
+				@header_height = 0
+				
+				@table.position = Point.new(0, @header_height)
 				
 				calc_page_height
 			end
@@ -76,14 +97,15 @@ module TheFox
 					cell = nil
 					cell_n += 1
 					
+					row_name = "row_#{cell_n}"
+					
 					case row
 					when String
-						text_view = TextView.new
+						text_view = TextView.new(row, "text_#{row_name}")
 						text_view.is_visible = true
-						text_view.text = row
+						# text_view.text = row
 						
-						cell = CellTableView.new(text_view)
-						cell.name = "cell_#{cell_n}"
+						cell = CellTableView.new(text_view, "cell_#{row_name}")
 					when CellTableView
 						cell = row
 					else
@@ -93,7 +115,7 @@ module TheFox
 					@cells.push(cell)
 					
 					cell.is_visible = false
-					add_subview(cell)
+					@table.add_subview(cell)
 					
 					y_pos += cell.height
 				end
@@ -102,7 +124,7 @@ module TheFox
 				
 				calc_cursor
 				calc_page
-				draw_cells
+				# draw_cells
 			end
 			
 			def cursor_position=(cursor_position)
@@ -111,11 +133,17 @@ module TheFox
 				
 				calc_cursor
 				calc_page
-				draw_cells
+				# draw_cells
 			end
 			
 			def is_cursor_at_bottom?
 				@cursor_position == @cells_height_total - 1
+			end
+			
+			def render(area = nil)
+				draw_cells
+				
+				super(area)
 			end
 			
 			private
@@ -140,15 +168,15 @@ module TheFox
 				# -1 up
 				#  0 unchanged
 				# +1 down
-				cds = '='
+				# cds = '='
 				if @cursor_position == @cursor_position_old
 					@cursor_direction = 0
 				elsif @cursor_position > @cursor_position_old
 					@cursor_direction = 1
-					cds = 'v'
+					# cds = 'v'
 				else
 					@cursor_direction = -1
-					cds = '^'
+					# cds = '^'
 				end
 				
 				# puts "cursor n='#{@cursor_position}' o='#{@cursor_position_old}' d='#{cursor_direction}' t='#{cds}'"
@@ -158,13 +186,13 @@ module TheFox
 				# -1 up
 				#  0 unchanged
 				# +1 down
-				pds = '='
+				# pds = '='
 				if @cursor_position > @page_end
 					@page_direction = 1
-					pds = 'v'
+					# pds = 'v'
 				elsif @cursor_position < @page_begin
 					@page_direction = -1
-					pds = '^'
+					# pds = '^'
 				else
 					@page_direction = 0
 				end
@@ -191,21 +219,45 @@ module TheFox
 			def draw_cells
 				page_range = Range.new(@page_begin, @page_end)
 				
+				puts; puts; puts "#{@name} -- draw_cells #{page_range}"
+				
 				affected_cells = @cells[page_range]
 				
-				(@cells - affected_cells).select{ |cell| cell.is_visible? }.each do |cell|
-					# puts "  - hide #{cell} y=#{cell.position.y}"
-					cell.is_visible = false
-				end
+				# puts; pp @grid_cache; puts
 				
+				#y_pos = @header_height
 				y_pos = 0
 				affected_cells.each do |cell|
-					# puts "  + draw #{cell} y=#{y_pos}"
+					puts "#{@name} -- [+] #{cell} y=#{y_pos}"
 					
+					# puts "#{@name} -- [+] #{cell} y=#{y_pos} is_visible"
 					cell.is_visible = true
+					
+					# puts "#{@name} -- [+] #{cell} y=#{y_pos} set position"
 					cell.position = Point.new(0, y_pos)
 					
+					
+					
+					puts "#{@name} -- [+] #{cell} y=#{y_pos} END -----"
+					puts
+					puts
+					
+					pp @grid_cache
+					
 					y_pos += cell.height
+				end
+				
+				puts; pp @grid_cache; puts
+				
+				# Hide out-of-scope cell(s) here. In the best case it's only ONE cell that will
+				# be hidden. If you scroll down the top cell will be hidden, if you scroll up
+				# only the bottom cell will be hidden.
+				(@cells - affected_cells).select{ |cell| cell.is_visible? }.each do |cell|
+					puts "#{@name} -- [-] #{cell} y=#{cell.position.y} #{cell.needs_rendering?}"
+					cell.is_visible = false
+					puts "#{@name} -- [-] #{cell} y=#{cell.position.y} END -----"
+					puts
+					puts
 				end
 			end
 			
