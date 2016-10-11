@@ -1,0 +1,65 @@
+before_script:
+    - apt-get update -yqq
+    - 'which ssh-agent || ( apt-get install openssh-client -y )'
+    - 'which rsync || ( apt-get install rsync -yqq --force-yes )'
+    - eval $(ssh-agent -s)
+    - ssh-add <(echo "$SSH_PRIVATE_KEY")
+    - mkdir -p ~/.ssh
+    - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
+    - ruby -v
+    - gem update --system
+    - gem install bundler -v '~>1.11'
+    - bundler --version
+
+stages:
+    - test
+    - deploy
+
+test_21:
+    image: ruby:2.1
+    stage: test
+    only:
+        - master
+    script:
+        - make
+        - make test
+
+test_22:
+    image: ruby:2.2
+    stage: test
+    only:
+        - master
+    script:
+        - make
+        - make test
+
+test_23:
+    image: ruby:2.3
+    stage: test
+    only:
+        - master
+    script:
+        - make
+        - make test
+
+deploy_cov:
+    image: ruby:2.3
+    stage: deploy
+    environment: production
+    only:
+        - master
+    script:
+        - make
+        - make cov
+        - 'rsync ${RSYNC_OPTIONS} coverage ${RSYNC_USER}@${RSYNC_HOST}:${RSYNC_REMOTE_PATH}'
+
+deploy_doc:
+    image: ruby:2.3
+    stage: deploy
+    environment: production
+    only:
+        - master
+    script:
+        - make
+        - make doc
+        - 'rsync ${RSYNC_OPTIONS} doc ${RSYNC_USER}@${RSYNC_HOST}:${RSYNC_REMOTE_PATH}'
