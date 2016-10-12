@@ -25,6 +25,7 @@ module TheFox
 			attr_accessor :grid_cache
 			
 			attr_reader :position
+			attr_reader :is_init_position
 			
 			# Defines a maximum `width` and `height` (see Size) for a View to be rendered.
 			attr_reader :size
@@ -43,6 +44,7 @@ module TheFox
 				
 				@is_visible = false
 				@position = Point.new(0, 0)
+				@is_init_position = true
 				@size = nil
 				@zindex = 1
 			end
@@ -109,81 +111,113 @@ module TheFox
 						# Move it.
 						@position = new_position
 						
-						area = Rect.new(nil, nil, x_max + 1, y_max + 1)
+						new_area = Rect.new(nil, nil, x_max + 1, y_max + 1)
+						new_area.origin = new_position
+						new_area_points = new_area.to_points
+						new_area_points_s = new_area_points.map{ |point| point.to_s }
 						
-						puts "#{@name} -- plain area #{area.inspect}"
+						old_area = Rect.new(nil, nil, x_max + 1, y_max + 1)
+						old_area.origin = old_position
 						
-						# # Redraw new position.
-						# area.origin = new_position
-						# changes_new = @parent_view.redraw_area_zindex(area)
-						# changes_new_a = changes_new.map{ |y_pos, row| row.keys.map{ |x_pos| Point.new(x_pos, y_pos).to_s } }.flatten
-						# pp changes_new_a
-						
-						# # Redraw old position.
-						# area.origin = old_position
-						# changes_old = @parent_view.redraw_area_zindex(area)
-						# changes_old_a = changes_old.map{ |y_pos, row| row.keys.map{ |x_pos| Point.new(x_pos, y_pos).to_s } }.flatten
-						# pp changes_old_a
-						
-						
-						# puts "#{@name} -- position= CHANGES START"
-						
-						# (changes_old_a - changes_new_a).each do |point_s|
-						# 	point = Point.from_s(point_s)
-						# 	x_pos, y_pos = point.to_a
-							
-						# 	has_grid = @parent_view.grid[y_pos] && @parent_view.grid[y_pos][x_pos]
-						# 	has_grid_cache = @parent_view.grid_cache[y_pos] && @parent_view.grid_cache[y_pos][x_pos]
-							
-						# 	puts "#{@name} -- position= CHANGES, #{point} START"
-							
-						# 	changed = @parent_view.grid_cache_erase_point(point)
-							
-						# 	puts "#{@name} -- position= CHANGES, #{point} END"
-						# end
+						# puts "#{@name} -- plain area a=#{area.inspect}"
 						
 						# Redraw new position.
-						area.origin = new_position
-						puts "#{@name} -- new area #{area.inspect}"
-						changes_new = @parent_view.redraw_area_zindex(area)
+						puts "#{@name} -- new area #{new_area.inspect}"
+						changes_new = @parent_view.redraw_area_zindex(new_area)
+						# puts "#{@name} -- redraw_area_zindex OK #{new_area.inspect}"
+						# STDIN.gets
+						
 						changes_new.each do |y_pos, row|
-							row.select{ |x_pos, content| !content.nil? }.each do |x_pos, content|
-							# row.each do |x_pos, content|
-								puts "#{@name} -- new content #{x_pos}:#{y_pos} #{content.inspect}"
+							#row.select{ |x_pos, content| !content.nil? }.each do |x_pos, content|
+							row.each do |x_pos, content|
+								new_point = Point.new(x_pos, y_pos)
+								
+								puts "#{@name} -- new content #{new_point} c=#{content.inspect}"
 							end
 						end
 						
 						puts
-						puts
+						puts "#{@name} -- @is_init_position = #{@is_init_position}"
 						puts
 						
 						# Redraw old position.
-						area.origin = old_position
-						parent_view = @parent_view
-						while parent_view
-							puts "#{@name} -- #{parent_view} -- old area #{area.inspect} #{area.x_range} #{area.y_range}"
-							changes_old = parent_view.redraw_area_zindex(area)
-							puts "#{@name} -- #{parent_view} -- changed rows: #{changes_old.count}"
-							changes_old.each do |y_pos, row|
-								# puts "#{@name} -- #{parent_view} -- old row #{y_pos}, #{row.count} #{row.values.map{ |content| content.nil? ? nil : content.char }}"
-								row.each do |x_pos, content|
-									point = Point.new(x_pos, y_pos)
-									# changed = false
+						if !@is_init_position
+							parent_view = @parent_view
+							parent_level = 0
+							point_offset = Point.new(0, 0)
+							while parent_view
+								puts "#{@name} -- l=#{parent_level} '#{parent_view}' -- old area #{old_area.inspect} #{point_offset}"
+								old_points = old_area.to_points
+								
+								top_points = new_area_points.map{ |point| (point + point_offset) }
+								#bottom_points = old_points.map{ |point| (point - point_offset).to_s }
+								# rest_points = bottom_points - new_area_points
+								rest_points_s = old_points.map{ |point| point.to_s } - top_points.map{ |point| point.to_s }
+								rest_points = rest_points_s.map{ |point| Point.from_s(point) }
+								#rest_points = old_points - top_points
+								
+								#puts "#{@name} -- original points #{old_area.to_points}"
+								# puts "#{@name} -- top      points #{top_points}"
+								# puts "#{@name} -- bottom   points #{bottom_points}"
+								# puts "#{@name} -- new      points #{new_area_points}"
+								# puts "#{@name} -- rest     points #{rest_points}"
+								# puts "#{@name} -- rest s   points #{rest_points_s}"
+								
+								rest_points.each do |point|
+									puts "#{@name} -- #{parent_view} -- old content #{point}"
 									changed = parent_view.grid_cache_erase_point(point)
-									
-									puts "#{@name} -- #{parent_view} -- old content #{point} #{content.inspect} #{changed.inspect}"
-									# puts "#{@name} -- #{parent_view} -- old content #{point} #{content.inspect}"
+									puts "#{@name} -- #{parent_view} -- old content #{point} c=#{changed.inspect}"
 								end
+								
+								# changes_old = {}
+								#changes_old = parent_view.redraw_area_zindex(old_area)
+								# STDIN.gets
+								
+								# puts "#{@name} -- #{parent_view} -- changed rows: #{changes_old.count}"
+								# changes_old.each do |y_pos, row|
+								# 	# puts "#{@name} -- #{parent_view} -- old row #{y_pos}, #{row.count} #{row.values.map{ |content| content.nil? ? nil : content.char }}"
+								# 	row.each do |x_pos, content|
+								# 		point = Point.new(x_pos, y_pos)
+										
+								# 		bottom_point = point - point_offset
+								# 		bottom_point_x_pos, bottom_point_y_pos = bottom_point.to_a
+										
+								# 		new_content = changes_new[bottom_point_y_pos] && changes_new[bottom_point_y_pos][bottom_point_x_pos]
+								# 		#puts "#{@name} -- #{parent_view} -- old content #{point} #{point_offset} #{bottom_point} n=#{new_content.inspect} c=#{content.inspect}"
+										
+								# 		unless new_content
+								# 			changed = nil
+								# 			# changed = parent_view.grid_cache_erase_point(point) # if point.to_s != '6:5' && point.to_s != '13:16'
+											
+								# 			# if content || changed
+								# 			# 	puts "#{@name} -- #{parent_view} -- old content #{point} #{point_offset} #{bottom_point} co=#{content.inspect} ch=#{changed.inspect}"
+								# 			# end
+											
+								# 		else
+								# 			# puts "#{@name} -- #{parent_view} -- old content #{point} #{point_offset} #{bottom_point}, new"
+								# 		end
+								# 	end
+								# end
+								old_area.origin += parent_view.position
+								point_offset += parent_view.position
+								# puts "#{@name} -- #{parent_view} -- pos parent #{parent_view.position} -> #{old_area.inspect} #{point_offset.inspect}"
+								# puts
+								
+								parent_view = parent_view.parent_view
+								parent_level += 1
+								
+								puts
+								
 							end
-							area.origin += parent_view.position
-							puts "#{@name} -- #{parent_view} -- pos parent #{parent_view.position} -> #{area.inspect}"
-							puts
-							parent_view = parent_view.parent_view
-							# break
+							
 						end
+						
+						puts
 						
 					end
 				end
+				
+				@is_init_position = false
 			end
 			
 			def top_position
@@ -354,7 +388,7 @@ module TheFox
 					content.origin = point
 				end
 				
-				puts "#{@name} -- draw #{point} #{content.inspect}"
+				# puts "#{@name} -- draw #{point} #{content.inspect}"
 				
 				new_point = Point.new(x_pos, y_pos)
 				
@@ -421,7 +455,7 @@ module TheFox
 						
 						@grid_cache.each do |y_pos, row|
 							row.each do |x_pos, content|
-								puts "#{@name} -- redraw parent, hide (#{@position.x}:#{@position.y}) #{x_pos}:#{y_pos}"
+								# puts "#{@name} -- redraw parent, hide (#{@position.x}:#{@position.y}) #{x_pos}:#{y_pos}"
 								
 								view = @parent_view
 								view_x_pos = x_pos + @position.x
@@ -506,20 +540,21 @@ module TheFox
 					# puts "#{@name} -- erase point #{point}, redraw point zindex"
 					changed = redraw_point_zindex(point)
 					
-					puts "#{@name} -- erase point #{point}, changed=#{changed ? 'Y' : 'N'}  #{changed.inspect}"
+					# puts "#{@name} -- erase point #{point}, changed=#{changed ? 'Y' : 'N'}  #{changed.inspect}"
 					
 					# When nothing has changed.
 					unless changed
-						puts "#{@name} -- erase point #{point}, nothing changed"
+						# puts "#{@name} -- erase point #{point}, nothing changed"
 						
 						content = ClearViewContent.new(nil, self, point)
 						
 						# puts "#{@name} -- erase point #{point}, set ClearViewContent"
-						set_grid_cache(point, content)
+						changed = set_grid_cache(point, content)
+						# puts "#{@name} -- erase point #{point}, set ClearViewContent: #{changed.inspect}"
 						
-						changed = content
+						#changed = content
 					else
-						#puts "#{@name} -- erase point #{point}, CHANGED #{changed.inspect}"
+						# puts "#{@name} -- erase point #{point}, CHANGED #{changed.inspect}"
 						#set_grid_cache(point, changed)
 					end
 				else
@@ -556,7 +591,7 @@ module TheFox
 				x_pos = point.x
 				y_pos = point.y
 				
-				# puts "#{@name} -- redraw point zindex, #{point}"
+				# puts "#{@name} -- redraw point zindex #{point}"
 				
 				views = @subviews
 					.select{ |subview| subview.is_visible? && subview.zindex >= 1 }
@@ -580,16 +615,27 @@ module TheFox
 				content = nil
 				
 				if view.nil?
-					# When no subview was found draw the current view,
+					# When no subview was found, draw the current view
 					# if a point on the current view's grid exist.
 					
-					# puts "#{@name} -- redraw point zindex, no view found"
+					# puts "#{@name} -- redraw point zindex #{point}, no view found"
 					
 					if @grid[y_pos] && @grid[y_pos][x_pos]
-						# puts "#{@name} -- redraw point zindex, found something on the grid: '#{@grid[y_pos][x_pos]}'"
+						# puts "#{@name} -- redraw point zindex #{point}, found something on the grid: '#{@grid[y_pos][x_pos]}'"
 						content = @grid[y_pos][x_pos]
 					else
-						# puts "#{@name} -- redraw point zindex, nothing on grid @ #{x_pos}:#{y_pos}"
+						# puts "#{@name} -- redraw point zindex #{point}, nothing on grid @ #{x_pos}:#{y_pos}"
+						
+						if @grid_cache[y_pos] && @grid_cache[y_pos][x_pos]
+							content = @grid_cache[y_pos][x_pos]
+							
+							unless content.is_a?(ClearViewContent)
+								# puts "#{@name} -- redraw point zindex #{point}, found something on the grid_cache: '#{@grid_cache[y_pos][x_pos]}', DELETE"
+								content = ClearViewContent.new(nil, self, point)
+							end
+						else
+							# puts "#{@name} -- redraw point zindex #{point}, nothing on grid_cache @ #{x_pos}:#{y_pos}"
+						end
 					end
 				else
 					subview_x_pos = x_pos - view.position.x
@@ -597,20 +643,20 @@ module TheFox
 					
 					content = view.grid_cache[subview_y_pos][subview_x_pos]
 					
-					# puts "#{@name} -- redraw point zindex, last view: '#{view}' #{subview_x_pos}:#{subview_y_pos}  #{content.inspect}"
+					# puts "#{@name} -- redraw point zindex #{point}, last view: '#{view}' #{subview_x_pos}:#{subview_y_pos}  #{content.inspect}"
 				end
 				
 				changed = nil
 				unless content.nil?
-					# puts "#{@name} -- redraw point zindex, set grid cache"
+					# puts "#{@name} -- redraw point zindex #{point}, set grid cache"
 					changed = set_grid_cache(point, content)
 				end
 				
 				if changed
-					# puts "#{@name} -- redraw point zindex, changed"
+					# puts "#{@name} -- redraw point zindex #{point}, changed #{content.inspect}"
 					parent_draw_point(point, content)
 				else
-					# puts "#{@name} -- redraw point zindex, NOT changed"
+					# puts "#{@name} -- redraw point zindex #{point}, NOT changed"
 				end
 				
 				changed
@@ -641,7 +687,7 @@ module TheFox
 			##
 			# Set a single Point on the cached Grid (`@grid_cache`).  
 			# This method returns `true` only if the content of the `point` has changed.
-			def set_grid_cache(point, content)
+			def set_grid_cache(point, new_content)
 				x_pos, y_pos = point.to_a
 				
 				if !@grid_cache[y_pos]
@@ -650,15 +696,16 @@ module TheFox
 				
 				changed =
 					if @grid_cache[y_pos][x_pos]
+						old_content = @grid_cache[y_pos][x_pos]
 						# puts "#{@name} -- set grid #{point}, x + y   ok"
-						if @grid_cache[y_pos][x_pos] == content
-							# puts "#{@name} -- set grid #{point}, equals, #{@grid_cache[y_pos][x_pos].inspect} == #{content.inspect}"
+						if old_content == new_content # && old_content.class == new_content.class
+							# puts "#{@name} -- set grid #{point}, equals, #{old_content.inspect} == #{new_content.inspect}"
 							false
 						else
 							# puts "#{@name} -- set grid #{point}, diff"
-							if @grid_cache[y_pos][x_pos].char == content.char && @grid_cache[y_pos][x_pos].class == content.class
-								content.needs_rendering = false
-								@grid_cache[y_pos][x_pos] = content
+							if old_content.char == new_content.char && old_content.class == new_content.class
+								new_content.needs_rendering = false
+								@grid_cache[y_pos][x_pos] = new_content
 								false
 							else
 								true
@@ -668,11 +715,11 @@ module TheFox
 						true
 					end
 				
-				# puts "#{@name} -- set grid #{point} '#{content}' changed=#{changed ? 'Y' : 'N'}"
+				# puts "#{@name} -- set grid #{point} '#{new_content}' changed=#{changed ? 'Y' : 'N'}"
 				
 				if changed
-					content.needs_rendering = true
-					@grid_cache[y_pos][x_pos] = content
+					new_content.needs_rendering = true
+					@grid_cache[y_pos][x_pos] = new_content
 				end
 			end
 			

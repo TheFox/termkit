@@ -1,4 +1,6 @@
 
+require 'pry'
+
 module TheFox
 	module TermKit
 		
@@ -95,7 +97,6 @@ module TheFox
 				y_pos = 0
 				@data.each do |row|
 					cell = nil
-					cell_n += 1
 					
 					row_name = "row_#{cell_n}"
 					
@@ -115,16 +116,17 @@ module TheFox
 					@cells.push(cell)
 					
 					cell.is_visible = false
+					# cell.position = Point.new(0, y_pos)
 					@table.add_subview(cell)
 					
 					y_pos += cell.height
+					cell_n += 1
 				end
 				
 				@cells_height_total = y_pos
 				
 				calc_cursor
 				calc_page
-				# draw_cells
 			end
 			
 			def cursor_position=(cursor_position)
@@ -133,7 +135,6 @@ module TheFox
 				
 				calc_cursor
 				calc_page
-				# draw_cells
 			end
 			
 			def is_cursor_at_bottom?
@@ -219,7 +220,7 @@ module TheFox
 			def draw_cells
 				page_range = Range.new(@page_begin, @page_end)
 				
-				puts; puts; puts "#{@name} -- draw_cells #{page_range}"
+				puts; puts; puts "#{@name} -- draw_cells r=#{page_range}"
 				
 				affected_cells = @cells[page_range]
 				
@@ -230,33 +231,21 @@ module TheFox
 				affected_cells.each do |cell|
 					puts "#{@name} -- [+] #{cell} y=#{y_pos}"
 					
-					# puts "#{@name} -- [+] #{cell} y=#{y_pos} is_visible"
 					cell.is_visible = true
-					
-					# puts "#{@name} -- [+] #{cell} y=#{y_pos} set position"
 					cell.position = Point.new(0, y_pos)
 					
-					
-					
-					puts "#{@name} -- [+] #{cell} y=#{y_pos} END -----"
 					puts
-					puts
-					
-					pp @grid_cache
 					
 					y_pos += cell.height
 				end
-				
-				puts; pp @grid_cache; puts
 				
 				# Hide out-of-scope cell(s) here. In the best case it's only ONE cell that will
 				# be hidden. If you scroll down the top cell will be hidden, if you scroll up
 				# only the bottom cell will be hidden.
 				(@cells - affected_cells).select{ |cell| cell.is_visible? }.each do |cell|
-					puts "#{@name} -- [-] #{cell} y=#{cell.position.y} #{cell.needs_rendering?}"
+					puts "#{@name} -- [-] #{cell} y=#{cell.position.y} r?=#{cell.needs_rendering? ? 'Y' : 'N'}"
 					cell.is_visible = false
-					puts "#{@name} -- [-] #{cell} y=#{cell.position.y} END -----"
-					puts
+					# puts "#{@name} -- [-] #{cell} y=#{cell.position.y} END -----"
 					puts
 				end
 			end

@@ -33,8 +33,20 @@ module TheFox
 			end
 			
 			def ==(point)
+				# puts "Point == compare"
 				@x == point.x && @y == point.y
 			end
+			
+			# def ===(point)
+			# 	puts "Point === compare"
+			# 	#@x == point.x && @y == point.y
+			# 	false
+			# end
+			
+			# def eql?(point)
+			# 	puts "Point eql? compare"
+			# 	false
+			# end
 			
 			def +(point)
 				self.class.new(@x + point.x, @y + point.y)
@@ -57,6 +69,10 @@ module TheFox
 				y_s = y.nil? ? 'NIL' : y
 				
 				"<Point x=#{x_s} y=#{y_s}>"
+			end
+			
+			def missing_function
+				
 			end
 			
 			def self.from_s(s)

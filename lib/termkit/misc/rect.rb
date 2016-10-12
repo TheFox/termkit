@@ -70,6 +70,16 @@ module TheFox
 				@origin.x.nil? && @origin.y.nil? && @size.width.nil? && @size.height.nil?
 			end
 			
+			def to_points
+				points = []
+				@x_range.each do |x_pos|
+					@y_range.each do |y_pos|
+						points << Point.new(x_pos, y_pos)
+					end
+				end
+				points
+			end
+			
 			def to_s
 				x_s = x.nil? ? 'NIL' : x
 				y_s = y.nil? ? 'NIL' : y
