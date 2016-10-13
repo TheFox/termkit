@@ -29,6 +29,64 @@ class TestPoint < MiniTest::Test
 		assert_same(42, point1.y)
 	end
 	
+	def test_plus
+		point1 = Point.new
+		point2 = Point.new
+		point3 = point1 + point2
+		assert_nil(point3.x)
+		assert_nil(point3.y)
+		
+		point1 = Point.new(1, 2)
+		point2 = Point.new
+		point3 = point1 + point2
+		assert_equal(1, point3.x)
+		assert_equal(2, point3.y)
+		
+		point1 = Point.new
+		point2 = Point.new(2, 1)
+		point3 = point1 + point2
+		assert_equal(2, point3.x)
+		assert_equal(1, point3.y)
+		
+		point1 = Point.new(1, 2)
+		point2 = Point.new(3, 4)
+		point3 = point1 + point2
+		assert_equal(4, point3.x)
+		assert_equal(6, point3.y)
+	end
+	
+	def test_minus
+		point1 = Point.new
+		point2 = Point.new
+		point3 = point1 - point2
+		assert_nil(point3.x)
+		assert_nil(point3.y)
+		
+		point1 = Point.new(1, 2)
+		point2 = Point.new
+		point3 = point1 - point2
+		assert_equal(1, point3.x)
+		assert_equal(2, point3.y)
+		
+		point1 = Point.new
+		point2 = Point.new(2, 1)
+		point3 = point1 - point2
+		assert_equal(-2, point3.x)
+		assert_equal(-1, point3.y)
+		
+		point1 = Point.new(1, 2)
+		point2 = Point.new(3, 4)
+		point3 = point1 - point2
+		assert_equal(-2, point3.x)
+		assert_equal(-2, point3.y)
+		
+		point1 = Point.new(10, 5)
+		point2 = Point.new(3, 2)
+		point3 = point1 - point2
+		assert_equal(7, point3.x)
+		assert_equal(3, point3.y)
+	end
+	
 	def test_to_s
 		point1 = Point.new
 		assert_equal(':', point1.to_s)
@@ -63,16 +121,16 @@ class TestPoint < MiniTest::Test
 	
 	def test_inspect
 		point1 = Point.new
-		assert_equal('<Point x=NIL y=NIL>', point1.inspect)
+		assert_equal('#<Point x=NIL y=NIL>', point1.inspect)
 		
 		point1 = Point.new(1)
-		assert_equal('<Point x=1 y=NIL>', point1.inspect)
+		assert_equal('#<Point x=1 y=NIL>', point1.inspect)
 		
 		point1 = Point.new(nil, 1)
-		assert_equal('<Point x=NIL y=1>', point1.inspect)
+		assert_equal('#<Point x=NIL y=1>', point1.inspect)
 		
 		point1 = Point.new(1, 2)
-		assert_equal('<Point x=1 y=2>', point1.inspect)
+		assert_equal('#<Point x=1 y=2>', point1.inspect)
 	end
 	
 	def test_from_s

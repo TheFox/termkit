@@ -48,6 +48,29 @@ class TestView < MiniTest::Test
 		assert_raises(ArgumentError){ view1.position = 'INVALID' }
 	end
 	
+	def test_top_position
+		view1 = View.new
+		view1.position = Point.new(1, 4)
+		
+		view2 = View.new
+		view2.position = Point.new(2, 5)
+		view2.add_subview(view1)
+		
+		view3 = View.new
+		view3.position = Point.new(3, 6)
+		view3.add_subview(view2)
+		
+		assert_instance_of(Point, view1.top_position)
+		assert_instance_of(Point, view2.top_position)
+		assert_instance_of(Point, view3.top_position)
+		assert_equal(3, view1.top_position.x)
+		assert_equal(6, view1.top_position.y)
+		assert_equal(3, view2.top_position.x)
+		assert_equal(6, view2.top_position.y)
+		assert_equal(3, view3.top_position.x)
+		assert_equal(6, view3.top_position.y)
+	end
+	
 	def test_size_exception
 		view1 = View.new
 		
@@ -149,6 +172,21 @@ class TestView < MiniTest::Test
 		
 		assert_raises(ArgumentError){ view1.remove_subview(view1) }
 		assert_raises(ArgumentError){ view1.remove_subview('INVALID') }
+	end
+	
+	def test_remove_subviews
+		view1 = View.new
+		view2 = View.new
+		view3 = View.new
+		view4 = View.new
+		
+		view1.add_subview(view2)
+		view1.add_subview(view3)
+		view1.add_subview(view4)
+		assert_equal(3, view1.subviews.count)
+		
+		view1.remove_subviews
+		assert_equal(0, view1.subviews.count)
 	end
 	
 	def test_draw_point_simple
@@ -633,16 +671,19 @@ class TestView < MiniTest::Test
 		assert_nil(view1.redraw_point_zindex(Point.new(3, 3)))
 	end
 	
+	def test_redraw_point_zindex_exception
+		view1 = View.new('view1')
+		assert_raises(ArgumentError){ view1.redraw_area_zindex('INVALID') }
+	end
+	
 	def test_set_grid_cache
 		content1 = ViewContent.new('A')
 		content2 = ViewContent.new('B')
 		content3 = ViewContent.new('B')
-		content4 = ViewContent.new('B')
 		
 		content1.needs_rendering = false
 		content2.needs_rendering = false
 		content3.needs_rendering = false
-		content4.needs_rendering = true
 		
 		view1 = View.new('view1')
 		
@@ -655,11 +696,8 @@ class TestView < MiniTest::Test
 		assert_instance_of(ViewContent, view1.set_grid_cache(Point.new(0, 0), content2))
 		assert_equal(true, content2.needs_rendering)
 		
-		assert_nil(view1.set_grid_cache(Point.new(0, 0), content3))
-		assert_equal(false, content3.needs_rendering)
-		
-		assert_nil(view1.set_grid_cache(Point.new(0, 0), content4))
-		assert_equal(false, content4.needs_rendering)
+		assert_instance_of(ViewContent, view1.set_grid_cache(Point.new(0, 0), content3))
+		assert_equal(true, content3.needs_rendering)
 	end
 	
 	def test_render_simple
@@ -2027,7 +2065,7 @@ class TestView < MiniTest::Test
 		
 		
 		rendered = view3.render
-		puts; pp rendered; puts
+		# puts; pp rendered; puts
 		
 		assert_equal(2, rendered.count)
 		assert_equal(1, rendered[15].count)
@@ -2035,22 +2073,22 @@ class TestView < MiniTest::Test
 		assert_equal('A', rendered[15][11].char)
 		assert_equal('B', rendered[16][13].char)
 		
-		puts '-------- SET POS BEGIN --------'
+		# puts '-------- SET POS BEGIN --------'
 		view1.position = Point.new(17, 17)
-		puts '-------- SET POS END ----------'
-		puts
+		# puts '-------- SET POS END ----------'
+		# puts
 		
-		puts '--- view1 ---'; pp view1.grid_cache; puts
-		puts '--- view2 ---'; pp view2.grid_cache; puts
-		puts '--- view3 ---'; pp view3.grid_cache; puts
+		# puts '--- view1 ---'; pp view1.grid_cache; puts
+		# puts '--- view2 ---'; pp view2.grid_cache; puts
+		# puts '--- view3 ---'; pp view3.grid_cache; puts
 		
-		puts '-------- RENDER --------'
+		# puts '-------- RENDER --------'
 		rendered = view3.render
 		
-		puts; pp rendered; puts
-		puts '--- view1 ---'; pp view1.grid_cache; puts
-		puts '--- view2 ---'; pp view2.grid_cache; puts
-		puts '--- view3 ---'; pp view3.grid_cache; puts
+		# puts; pp rendered; puts
+		# puts '--- view1 ---'; pp view1.grid_cache; puts
+		# puts '--- view2 ---'; pp view2.grid_cache; puts
+		# puts '--- view3 ---'; pp view3.grid_cache; puts
 		
 		assert_equal(4, rendered.count)
 		assert_equal(1, rendered[15].count)
@@ -2069,7 +2107,7 @@ class TestView < MiniTest::Test
 		view1.position = Point.new(3, 5)
 		view1.draw_point([1, 0], 'A')
 		view1.draw_point([2, 0], 'B')
-		view1.draw_point([3, 0], 'B')
+		content3 = view1.draw_point([3, 0], 'B')
 		view1.draw_point([4, 0], 'C')
 		
 		view2 = View.new('view2')
@@ -2083,7 +2121,7 @@ class TestView < MiniTest::Test
 		
 		
 		rendered = view3.render
-		puts; pp rendered; puts
+		# puts; pp rendered; puts
 		
 		# pp view1.grid_cache
 		# pp view2.grid_cache
@@ -2104,10 +2142,18 @@ class TestView < MiniTest::Test
 		rendered = view3.render
 		puts; pp rendered; puts
 		
+		# pp view1.grid_cache.sort.to_h
+		# puts
+		# pp view2.grid_cache.sort.to_h
+		# puts
+		# pp view3.grid_cache.sort.to_h
+		# puts
+		
 		assert_equal(1, rendered.count)
-		assert_equal(4, rendered[16].count)
+		assert_equal(5, rendered[16].count)
 		assert_equal(' ', rendered[16][11].char)
 		assert_equal('A', rendered[16][12].char)
+		assert_equal('B', rendered[16][13].char)
 		assert_equal('B', rendered[16][14].char)
 		assert_equal('C', rendered[16][15].char)
 	end
@@ -2132,36 +2178,61 @@ class TestView < MiniTest::Test
 		
 		
 		rendered = view3.render
-		puts; pp rendered; puts
+		# puts; pp rendered; puts
 		
 		# pp view1.grid_cache
 		# pp view2.grid_cache
 		# pp view3.grid_cache
 		
-		puts '-------- SET POS BEGIN --------'
+		# puts '-------- SET POS BEGIN --------'
 		view1.position = Point.new(3, 6)
-		puts '-------- SET POS END ----------'
-		puts
+		# puts '-------- SET POS END ----------'
+		# puts
 		
-		pp view1.grid_cache.sort.to_h
-		puts
-		pp view2.grid_cache.sort.to_h
-		puts
-		pp view3.grid_cache.sort.to_h
-		puts
+		# pp view1.grid_cache.sort.to_h
+		# puts
+		# pp view2.grid_cache.sort.to_h
+		# puts
+		# pp view3.grid_cache.sort.to_h
+		# puts
 		
 		rendered = view3.render
-		puts; pp rendered; puts
+		# puts; pp rendered; puts
 		
-		assert_equal(4, rendered.count)
+		assert_equal(5, rendered.count)
 		assert_equal(1, rendered[17].count)
 		assert_equal(1, rendered[18].count)
 		assert_equal(1, rendered[20].count)
 		assert_equal(1, rendered[21].count)
 		assert_equal(' ', rendered[17][10].char)
 		assert_equal('A', rendered[18][10].char)
+		assert_equal('B', rendered[19][10].char)
 		assert_equal('B', rendered[20][10].char)
 		assert_equal('C', rendered[21][10].char)
+	end
+	
+	def test_render_position_negative
+		view1 = View.new('view1')
+		view1.is_visible = true
+		view1.position = Point.new(0, -1)
+		view1.draw_point([0, 0], 'A')
+		
+		view2 = View.new('view2')
+		view2.is_visible = true
+		view2.position = Point.new(0, -2)
+		view2.draw_point([0, 0], 'B')
+		
+		view3 = View.new('view3')
+		view3.is_visible = true
+		view3.add_subview(view1)
+		view3.add_subview(view2)
+		
+		rendered = view3.render
+		puts; pp rendered; puts
+		
+		assert_equal(2, rendered.count)
+		assert_equal(1, rendered[-1].count)
+		assert_equal(1, rendered[-2].count)
 	end
 	
 	def test_render_grid_cache_erase_point1
@@ -2285,6 +2356,27 @@ class TestView < MiniTest::Test
 		
 		view1 = View.new('view1')
 		assert_equal('view1', view1.to_s)
+	end
+	
+	def test_inspect
+		view1 = View.new
+		assert_equal('#<View name= w=0>', view1.inspect)
+		
+		view1 = View.new('view1')
+		assert_equal('#<View name=view1 w=0>', view1.inspect)
+		
+		view1 = View.new('view1')
+		view1.draw_point([0, 0], 'A')
+		assert_equal('#<View name=view1 w=1>', view1.inspect)
+		
+		view1.draw_point([0, 0], 'A')
+		assert_equal('#<View name=view1 w=1>', view1.inspect)
+		
+		view1.draw_point([0, 1], 'B')
+		assert_equal('#<View name=view1 w=1>', view1.inspect)
+		
+		view1.draw_point([1, 0], 'C')
+		assert_equal('#<View name=view1 w=2>', view1.inspect)
 	end
 	
 end

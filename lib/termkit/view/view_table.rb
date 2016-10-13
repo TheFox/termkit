@@ -1,5 +1,5 @@
 
-require 'pry'
+# require 'pry'
 
 module TheFox
 	module TermKit
@@ -11,6 +11,7 @@ module TheFox
 		class TableView < View
 			
 			attr_reader :header
+			attr_reader :header_height
 			# attr_reader :table
 			attr_reader :data
 			attr_reader :cells
@@ -24,7 +25,7 @@ module TheFox
 			attr_reader :page_direction
 			
 			def initialize(name = nil)
-				puts "TableView initialize '#{name.inspect}'"
+				# puts "TableView initialize '#{name.inspect}'"
 				super(name)
 				
 				@header = nil
@@ -41,6 +42,7 @@ module TheFox
 				@page_end = 0
 				@page_height = 0
 				@page_direction = 0
+				@page_range = nil
 				
 				@table = View.new("#{@name}_table")
 				@table.is_visible = true
@@ -115,9 +117,10 @@ module TheFox
 					
 					@cells.push(cell)
 					
-					cell.is_visible = false
-					# cell.position = Point.new(0, y_pos)
-					@table.add_subview(cell)
+					#cell.is_visible = false
+					cell.is_visible = true
+					#cell.position = Point.new(0, y_pos)
+					#@table.add_subview(cell)
 					
 					y_pos += cell.height
 					cell_n += 1
@@ -218,36 +221,55 @@ module TheFox
 			end
 			
 			def draw_cells
-				page_range = Range.new(@page_begin, @page_end)
+				new_page_range = Range.new(@page_begin, @page_end)
 				
-				puts; puts; puts "#{@name} -- draw_cells r=#{page_range}"
-				
-				affected_cells = @cells[page_range]
-				
-				# puts; pp @grid_cache; puts
-				
-				#y_pos = @header_height
-				y_pos = 0
-				affected_cells.each do |cell|
-					puts "#{@name} -- [+] #{cell} y=#{y_pos}"
+				if new_page_range != @page_range
+					puts; puts; puts "#{@name} -- draw_cells r=#{new_page_range}"
 					
-					cell.is_visible = true
-					cell.position = Point.new(0, y_pos)
+					affected_cells = @cells[new_page_range]
 					
-					puts
+					# pp @grid_cache; STDIN.gets
 					
-					y_pos += cell.height
+					#y_pos = @header_height
+					y_pos = 0
+					affected_cells.each do |cell|
+						puts "#{@name} -- [+] #{cell} y=#{y_pos}"
+						
+						# puts "#{@name} -- [+] #{cell} y=#{y_pos} is_visible"
+						# cell.is_visible = true
+						#pp @table.grid_cache
+						
+						puts "#{@name} -- [+] #{cell} y=#{y_pos} position"
+						cell.position = Point.new(0, y_pos)
+						
+						unless @table.is_subview?(cell)
+							puts "#{@name} -- [+] #{cell} y=#{y_pos} add_subview"
+							@table.add_subview(cell)
+						end
+						
+						puts "#{@name} -- [+] #{cell} y=#{y_pos} END"
+						#puts
+						
+						y_pos += cell.height
+						
+						# pp @table.grid_cache; STDIN.gets
+					end
+					
+					# Hide out-of-scope cell(s) here. In the best case it's only ONE cell that will
+					# be hidden. If you scroll down the top cell will be hidden, if you scroll up
+					# only the bottom cell will be hidden.
+					(@cells - affected_cells).select{ |cell| cell.is_visible? }.each do |cell|
+						
+						
+						puts "#{@name} -- [-] #{cell} y=#{cell.position.y} r?=#{cell.needs_rendering? ? 'Y' : 'N'}"
+						#cell.is_visible = false
+						@table.remove_subview(cell)
+						# puts "#{@name} -- [-] #{cell} y=#{cell.position.y} END -----"
+						# puts
+					end
 				end
 				
-				# Hide out-of-scope cell(s) here. In the best case it's only ONE cell that will
-				# be hidden. If you scroll down the top cell will be hidden, if you scroll up
-				# only the bottom cell will be hidden.
-				(@cells - affected_cells).select{ |cell| cell.is_visible? }.each do |cell|
-					puts "#{@name} -- [-] #{cell} y=#{cell.position.y} r?=#{cell.needs_rendering? ? 'Y' : 'N'}"
-					cell.is_visible = false
-					# puts "#{@name} -- [-] #{cell} y=#{cell.position.y} END -----"
-					puts
-				end
+				@page_range = new_page_range
 			end
 			
 		end

@@ -80,19 +80,36 @@ class TestRect < MiniTest::Test
 	
 	def test_to_s
 		rect1 = Rect.new
-		assert_equal('<Rect x=NIL y=NIL w=NIL h=NIL>', rect1.to_s)
+		assert_equal('NIL:NIL[NIL:NIL]', rect1.to_s)
 		
 		rect1 = Rect.new(7)
-		assert_equal('<Rect x=7 y=NIL w=NIL h=NIL>', rect1.to_s)
+		assert_equal('7:NIL[NIL:NIL]', rect1.to_s)
 		
 		rect1 = Rect.new(7, 21)
-		assert_equal('<Rect x=7 y=21 w=NIL h=NIL>', rect1.to_s)
+		assert_equal('7:21[NIL:NIL]', rect1.to_s)
 		
 		rect1 = Rect.new(7, 21, 24)
-		assert_equal('<Rect x=7 y=21 w=24 h=NIL>', rect1.to_s)
+		assert_equal('7:21[24:NIL]', rect1.to_s)
 		
 		rect1 = Rect.new(7, 21, 24, 42)
-		assert_equal('<Rect x=7 y=21 w=24 h=42>', rect1.to_s)
+		assert_equal('7:21[24:42]', rect1.to_s)
+	end
+	
+	def test_inspect
+		rect1 = Rect.new
+		assert_equal('#<Rect x=NIL y=NIL w=NIL h=NIL>', rect1.inspect)
+		
+		rect1 = Rect.new(7)
+		assert_equal('#<Rect x=7 y=NIL w=NIL h=NIL>', rect1.inspect)
+		
+		rect1 = Rect.new(7, 21)
+		assert_equal('#<Rect x=7 y=21 w=NIL h=NIL>', rect1.inspect)
+		
+		rect1 = Rect.new(7, 21, 24)
+		assert_equal('#<Rect x=7 y=21 w=24 h=NIL>', rect1.inspect)
+		
+		rect1 = Rect.new(7, 21, 24, 42)
+		assert_equal('#<Rect x=7 y=21 w=24 h=42>', rect1.inspect)
 	end
 	
 end

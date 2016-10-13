@@ -23,16 +23,16 @@ class TestSize < MiniTest::Test
 	
 	def test_inspect
 		size1 = Size.new
-		assert_equal('<Size w=NIL h=NIL>', size1.inspect)
+		assert_equal('#<Size w=NIL h=NIL>', size1.inspect)
 		
 		size1 = Size.new(24)
-		assert_equal('<Size w=24 h=NIL>', size1.inspect)
+		assert_equal('#<Size w=24 h=NIL>', size1.inspect)
 		
 		size1 = Size.new(nil, 42)
-		assert_equal('<Size w=NIL h=42>', size1.inspect)
+		assert_equal('#<Size w=NIL h=42>', size1.inspect)
 		
 		size1 = Size.new(24, 42)
-		assert_equal('<Size w=24 h=42>', size1.inspect)
+		assert_equal('#<Size w=24 h=42>', size1.inspect)
 	end
 	
 end

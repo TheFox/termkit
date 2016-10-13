@@ -25,11 +25,11 @@ class TestViewContent < MiniTest::Test
 	
 	def test_inspect
 		content1 = ViewContent.new('A')
-		assert_equal(%{<ViewContent c='A' r?=Y v=>}, content1.inspect)
+		assert_equal(%{#<ViewContent c='A' r?=Y v= o=>}, content1.inspect)
 		
 		view1 = View.new('view1')
 		content1 = ViewContent.new('A', view1)
-		assert_equal(%{<ViewContent c='A' r?=Y v=view1>}, content1.inspect)
+		assert_equal(%{#<ViewContent c='A' r?=Y v=view1 o=>}, content1.inspect)
 	end
 	
 end

@@ -86,9 +86,9 @@ module TheFox
 				Curses.init_pair(Curses::COLOR_RED, Curses::COLOR_WHITE, Curses::COLOR_RED)
 				Curses.init_pair(Curses::COLOR_GREEN, Curses::COLOR_BLACK, Curses::COLOR_GREEN)
 				
-				Curses.setpos(0, 0)
-				Curses.addstr('INIT OK')
-				Curses.refresh
+				# Curses.setpos(0, 0)
+				# Curses.addstr('INIT OK')
+				# Curses.refresh
 			end
 			
 			##
@@ -99,10 +99,10 @@ module TheFox
 				raise 'ui already closed' if @ui_closed
 				@ui_closed = true
 				
-				Curses.setpos(10, 0)
-				Curses.addstr('CLOSE   ')
-				Curses.refresh
-				sleep(2)
+				# Curses.setpos(10, 0)
+				# Curses.addstr('CLOSE   ')
+				# Curses.refresh
+				# sleep(2)
 				
 				Curses.refresh
 				Curses.stdscr.clear

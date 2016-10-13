@@ -49,11 +49,33 @@ module TheFox
 			# end
 			
 			def +(point)
-				self.class.new(@x + point.x, @y + point.y)
+				x = nil
+				y = nil
+				
+				if !@x.nil? || !point.x.nil?
+					x = @x.to_i + point.x.to_i
+				end
+				
+				if !@y.nil? || !point.y.nil?
+					y = @y.to_i + point.y.to_i
+				end
+				
+				self.class.new(x, y)
 			end
 			
 			def -(point)
-				self.class.new(@x - point.x, @y - point.y)
+				x = nil
+				y = nil
+				
+				if !@x.nil? || !point.x.nil?
+					x = @x.to_i - point.x.to_i
+				end
+				
+				if !@y.nil? || !point.y.nil?
+					y = @y.to_i - point.y.to_i
+				end
+				
+				self.class.new(x, y)
 			end
 			
 			def to_s
@@ -68,7 +90,7 @@ module TheFox
 				x_s = x.nil? ? 'NIL' : x
 				y_s = y.nil? ? 'NIL' : y
 				
-				"<Point x=#{x_s} y=#{y_s}>"
+				"#<Point x=#{x_s} y=#{y_s}>"
 			end
 			
 			def missing_function

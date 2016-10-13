@@ -29,7 +29,7 @@ module TheFox
 			end
 			
 			def inspect
-				"<#{self.class.name.split('::').last} c='#{@char}' r?=#{@needs_rendering ? 'Y' : 'N'} v=#{@view} o=#{@origin}>"
+				"#<#{self.class.name.split('::').last} c='#{@char}' r?=#{@needs_rendering ? 'Y' : 'N'} v=#{@view} o=#{@origin}>"
 			end
 			
 		end

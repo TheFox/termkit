@@ -87,11 +87,17 @@ module TheFox
 				w_s = width.nil? ? 'NIL' : width
 				h_s = height.nil? ? 'NIL' : height
 				
-				"<Rect x=#{x_s} y=#{y_s} w=#{w_s} h=#{h_s}>"
+				"#{x_s}:#{y_s}[#{w_s}:#{h_s}]"
 			end
 			
 			def inspect
-				to_s
+				x_s = x.nil? ? 'NIL' : x
+				y_s = y.nil? ? 'NIL' : y
+				
+				w_s = width.nil? ? 'NIL' : width
+				h_s = height.nil? ? 'NIL' : height
+				
+				"#<Rect x=#{x_s} y=#{y_s} w=#{w_s} h=#{h_s}>"
 			end
 			
 			private

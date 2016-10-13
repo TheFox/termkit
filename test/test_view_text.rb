@@ -43,16 +43,16 @@ class TestTextView < MiniTest::Test
 		assert_equal('C', rendered[0][2].char)
 		
 		
-		assert_equal(1, view1.draw_text('AXC'))
+		assert_equal(3, view1.draw_text('AXC'))
 		
 		rendered = view1.render
 		
-		# pp rendered.map{ |y, row| row.map{ |x, content| "#{x}:#{y}=>'#{content.char}'" } }.flatten
-		
 		assert_equal(1, rendered.count)
-		assert_equal(1, rendered[0].count)
+		assert_equal(3, rendered[0].count)
 		
+		assert_equal('A', rendered[0][0].char)
 		assert_equal('X', rendered[0][1].char)
+		assert_equal('C', rendered[0][2].char)
 	end
 	
 	def test_render_multi_line

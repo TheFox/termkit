@@ -47,6 +47,16 @@ class TestTableView < MiniTest::Test
 		assert_equal(4, view1.page_height)
 	end
 	
+	def test_header
+		view1 = TableView.new
+		view1.header = View.new
+		assert_instance_of(View, view1.header)
+		
+		view1.remove_header
+		assert_nil(view1.header)
+		assert_equal(0, view1.header_height)
+	end
+	
 	def test_header_exception
 		view1 = TableView.new
 		assert_raises(ArgumentError){ view1.header = 'INVALID' }
@@ -61,9 +71,9 @@ class TestTableView < MiniTest::Test
 		assert_instance_of(CellTableView, cells[0])
 		assert_instance_of(CellTableView, cells[1])
 		assert_instance_of(CellTableView, cells[2])
-		assert_equal('cell_1', cells[0].name)
-		assert_equal('cell_2', cells[1].name)
-		assert_equal('cell_3', cells[2].name)
+		assert_equal('cell_row_0', cells[0].name)
+		assert_equal('cell_row_1', cells[1].name)
+		assert_equal('cell_row_2', cells[2].name)
 	end
 	
 	def test_data2
@@ -72,7 +82,7 @@ class TestTableView < MiniTest::Test
 		view2.text = 'Foo Bar'
 		
 		cell1 = CellTableView.new(view2)
-		cell1.name = 'cell_x'
+		cell1.name = 'cell_row_x'
 		
 		
 		view1 = TableView.new('view1')
@@ -83,9 +93,9 @@ class TestTableView < MiniTest::Test
 		assert_instance_of(CellTableView, cells[0])
 		assert_instance_of(CellTableView, cells[1])
 		assert_instance_of(CellTableView, cells[2])
-		assert_equal('cell_1', cells[0].name)
-		assert_equal('cell_2', cells[1].name)
-		assert_equal('cell_x', cells[2].name)
+		assert_equal('cell_row_0', cells[0].name)
+		assert_equal('cell_row_1', cells[1].name)
+		assert_equal('cell_row_x', cells[2].name)
 	end
 	
 	def test_data_exception
@@ -516,17 +526,21 @@ class TestTableView < MiniTest::Test
 		
 		assert_instance_of(Hash, rendered)
 		assert_equal(3, rendered.count)
-		assert_equal(2, rendered[0].count)
-		assert_equal(2, rendered[1].count)
+		assert_equal(6, rendered[0].count)
+		assert_equal(6, rendered[1].count)
 		assert_equal(6, rendered[2].count)
 		
-		# assert_equal('r', rendered[0][0].char)
-		# assert_equal('o', rendered[0][1].char)
-		# assert_equal('w', rendered[0][2].char)
-		# assert_equal(' ', rendered[0][3].char)
+		assert_equal('r', rendered[0][0].char)
+		assert_equal('o', rendered[0][1].char)
+		assert_equal('w', rendered[0][2].char)
+		assert_equal(' ', rendered[0][3].char)
 		assert_equal('C', rendered[0][4].char)
 		assert_equal('3', rendered[0][5].char)
 		
+		assert_equal('r', rendered[1][0].char)
+		assert_equal('o', rendered[1][1].char)
+		assert_equal('w', rendered[1][2].char)
+		assert_equal(' ', rendered[1][3].char)
 		assert_equal('D', rendered[1][4].char)
 		assert_equal('4', rendered[1][5].char)
 		
@@ -546,14 +560,14 @@ class TestTableView < MiniTest::Test
 		puts; pp rendered; puts
 		
 		assert_equal(3, rendered.count)
-		assert_equal(2, rendered[0].count)
+		assert_equal(6, rendered[0].count)
 		assert_equal(6, rendered[1].count)
-		assert_equal(2, rendered[2].count)
+		assert_equal(6, rendered[2].count)
 		
-		# assert_equal('r', rendered[0][0].char)
-		# assert_equal('o', rendered[0][1].char)
-		# assert_equal('w', rendered[0][2].char)
-		# assert_equal(' ', rendered[0][3].char)
+		assert_equal('r', rendered[0][0].char)
+		assert_equal('o', rendered[0][1].char)
+		assert_equal('w', rendered[0][2].char)
+		assert_equal(' ', rendered[0][3].char)
 		assert_equal('A', rendered[0][4].char)
 		assert_equal('1', rendered[0][5].char)
 		
@@ -564,11 +578,12 @@ class TestTableView < MiniTest::Test
 		assert_equal('B', rendered[1][4].char)
 		assert_equal('2', rendered[1][5].char)
 		
+		assert_equal('r', rendered[2][0].char)
+		assert_equal('o', rendered[2][1].char)
+		assert_equal('w', rendered[2][2].char)
+		assert_equal(' ', rendered[2][3].char)
 		assert_equal('C', rendered[2][4].char)
 		assert_equal('3', rendered[2][5].char)
-		
-		# pp rendered
-		# pp rendered.map{ |y, row| row.map{ |x, content| "#{x}:#{y} => '#{content.char}'" } }.flatten
 		
 		
 		puts '----- SET 4 BEGIN -----'
@@ -579,13 +594,21 @@ class TestTableView < MiniTest::Test
 		puts; pp rendered; puts
 		
 		assert_equal(3, rendered.count)
-		assert_equal(2, rendered[0].count)
-		assert_equal(2, rendered[1].count)
+		assert_equal(6, rendered[0].count)
+		assert_equal(6, rendered[1].count)
 		assert_equal(6, rendered[2].count)
 		
+		assert_equal('r', rendered[0][0].char)
+		assert_equal('o', rendered[0][1].char)
+		assert_equal('w', rendered[0][2].char)
+		assert_equal(' ', rendered[0][3].char)
 		assert_equal('C', rendered[0][4].char)
 		assert_equal('3', rendered[0][5].char)
 		
+		assert_equal('r', rendered[1][0].char)
+		assert_equal('o', rendered[1][1].char)
+		assert_equal('w', rendered[1][2].char)
+		assert_equal(' ', rendered[1][3].char)
 		assert_equal('D', rendered[1][4].char)
 		assert_equal('4', rendered[1][5].char)
 		
@@ -607,6 +630,7 @@ class TestTableView < MiniTest::Test
 		
 		view1.cursor_position = 0
 		rendered = view1.render
+		assert_equal(3, rendered.count)
 		
 		
 		view1.cursor_position = 1
@@ -623,99 +647,97 @@ class TestTableView < MiniTest::Test
 		view1.cursor_position = 3
 		puts %(--- SET 3 END -----)
 		
-		# puts; pp view1.grid_cache
-		
 		rendered = view1.render
 		puts; pp rendered
 		
 		
+		assert_equal(3, rendered.count)
+		assert_equal(2, rendered[0].count)
+		assert_equal(3, rendered[1].count)
+		assert_equal(3, rendered[2].count)
+		
+		assert_equal('A', rendered[0][0].char)
+		assert_equal('B', rendered[0][1].char)
+		assert_equal('A', rendered[1][0].char)
+		assert_equal('B', rendered[1][1].char)
+		assert_equal('C', rendered[1][2].char)
+		assert_equal('A', rendered[2][0].char)
+		assert_equal('B', rendered[2][1].char)
+		assert_equal(' ', rendered[2][2].char)
+		
+		
+		puts %(--- set 4 ---)
+		view1.cursor_position = 4
+		rendered = view1.render
+		pp rendered
 		
 		assert_equal(3, rendered.count)
-		# assert_equal(2, rendered[0].count)
-		# assert_equal(3, rendered[1].count)
-		# assert_equal(3, rendered[2].count)
+		assert_equal(3, rendered[0].count)
+		assert_equal(3, rendered[1].count)
+		assert_equal(2, rendered[2].count)
 		
-		# assert_equal('A', rendered[0][0].char)
-		# assert_equal('B', rendered[0][1].char)
-		# assert_equal('A', rendered[1][0].char)
-		# assert_equal('B', rendered[1][1].char)
-		# assert_equal('C', rendered[1][2].char)
-		# assert_equal('A', rendered[2][0].char)
-		# assert_equal('B', rendered[2][1].char)
-		# assert_equal(' ', rendered[2][2].char)
-		
-		
-		# # puts %(--- set 4 ---)
-		# view1.cursor_position = 4
-		# rendered = view1.render
-		# pp rendered
-		
-		# assert_equal(3, rendered.count)
-		# assert_equal(2, rendered[0].count)
-		# assert_equal(3, rendered[1].count)
-		# assert_equal(2, rendered[2].count)
-		
-		# assert_equal('A', rendered[0][0].char)
-		# assert_equal('C', rendered[0][2].char)
-		# assert_equal('A', rendered[1][0].char)
-		# assert_equal('B', rendered[1][1].char)
-		# assert_equal(' ', rendered[1][2].char)
-		# assert_equal('A', rendered[2][0].char)
-		# assert_equal(' ', rendered[2][1].char)
+		assert_equal('A', rendered[0][0].char)
+		assert_equal('B', rendered[0][1].char)
+		assert_equal('C', rendered[0][2].char)
+		assert_equal('A', rendered[1][0].char)
+		assert_equal('B', rendered[1][1].char)
+		assert_equal(' ', rendered[1][2].char)
+		assert_equal('A', rendered[2][0].char)
+		assert_equal(' ', rendered[2][1].char)
 		
 		
-		# # puts %(--- set 3 ---)
-		# view1.cursor_position = 3
-		# rendered = view1.render
-		# assert_equal(0, rendered.count)
+		puts %(--- set 3 ---)
+		view1.cursor_position = 3
+		rendered = view1.render
+		assert_equal(0, rendered.count)
 		
 		
-		# # puts %(--- set 2 ---)
-		# view1.cursor_position = 2
-		# rendered = view1.render
-		# assert_equal(0, rendered.count)
+		puts %(--- set 2 ---)
+		view1.cursor_position = 2
+		rendered = view1.render
+		assert_equal(0, rendered.count)
 		
 		
-		# # puts %(--- set 1 ---)
-		# view1.cursor_position = 1
-		# rendered = view1.render
+		puts %(--- set 1 ---)
+		view1.cursor_position = 1
+		rendered = view1.render
+		pp rendered
 		
-		# assert_equal(3, rendered.count)
-		# assert_equal(3, rendered[0].count)
-		# assert_equal(3, rendered[1].count)
-		# assert_equal(2, rendered[2].count)
+		assert_equal(3, rendered.count)
+		assert_equal(3, rendered[0].count)
+		assert_equal(3, rendered[1].count)
+		assert_equal(2, rendered[2].count)
 		
-		# assert_equal('A', rendered[0][0].char)
-		# assert_equal('B', rendered[0][1].char)
-		# assert_equal(' ', rendered[0][2].char)
-		# assert_equal('A', rendered[1][0].char)
-		# assert_equal('B', rendered[1][1].char)
-		# assert_equal('C', rendered[1][2].char)
-		# assert_equal('A', rendered[2][0].char)
-		# assert_equal('B', rendered[2][1].char)
-		
-		
-		# # puts %(--- set 0 ---)
-		# view1.cursor_position = 0
-		# rendered = view1.render
-		
-		# assert_equal(3, rendered.count)
-		# assert_equal(2, rendered[0].count)
-		# assert_equal(3, rendered[1].count)
-		# assert_equal(3, rendered[2].count)
-		
-		# assert_equal('A', rendered[0][0].char)
-		# assert_equal(' ', rendered[0][1].char)
-		# assert_equal('A', rendered[1][0].char)
-		# assert_equal('B', rendered[1][1].char)
-		# assert_equal(' ', rendered[1][2].char)
-		# assert_equal('A', rendered[2][0].char)
-		# assert_equal('B', rendered[2][1].char)
-		# assert_equal('C', rendered[2][2].char)
+		assert_equal('A', rendered[0][0].char)
+		assert_equal('B', rendered[0][1].char)
+		assert_equal(' ', rendered[0][2].char)
+		assert_equal('A', rendered[1][0].char)
+		assert_equal('B', rendered[1][1].char)
+		assert_equal('C', rendered[1][2].char)
+		assert_equal('A', rendered[2][0].char)
+		assert_equal('B', rendered[2][1].char)
 		
 		
-		# pp rendered
-		# pp rendered.map{ |y, row| row.map{ |x, content| ["#{x}:#{y}", content.char] }.to_h } #.flatten
+		puts %(--- set 0 ---)
+		view1.cursor_position = 0
+		rendered = view1.render
+		pp rendered
+		
+		assert_equal(3, rendered.count)
+		assert_equal(2, rendered[0].count)
+		assert_equal(3, rendered[1].count)
+		assert_equal(3, rendered[2].count)
+		
+		assert_equal('A', rendered[0][0].char)
+		assert_equal(' ', rendered[0][1].char)
+		assert_equal('A', rendered[1][0].char)
+		assert_equal('B', rendered[1][1].char)
+		assert_equal(' ', rendered[1][2].char)
+		assert_equal('A', rendered[2][0].char)
+		assert_equal('B', rendered[2][1].char)
+		assert_equal('C', rendered[2][2].char)
+		
+		# puts
 	end
 	
 	def test_render_header1
@@ -822,8 +844,8 @@ class TestTableView < MiniTest::Test
 		assert_equal(4, rendered.count)
 		assert_equal(5, rendered[0].count)
 		assert_equal(5, rendered[1].count)
-		assert_equal(1, rendered[2].count)
-		assert_equal(1, rendered[3].count)
+		assert_equal(5, rendered[2].count)
+		assert_equal(5, rendered[3].count)
 		
 		assert_equal('H', rendered[0][2].char)
 		assert_equal('1', rendered[0][3].char)
@@ -869,8 +891,8 @@ class TestTableView < MiniTest::Test
 		assert_equal(4, rendered.count)
 		assert_equal(5, rendered[0].count)
 		assert_equal(5, rendered[1].count)
-		assert_equal(1, rendered[2].count)
-		assert_equal(1, rendered[3].count)
+		assert_equal(5, rendered[2].count)
+		assert_equal(5, rendered[3].count)
 		
 		assert_equal('H', rendered[0][2].char)
 		assert_equal('1', rendered[0][3].char)
@@ -903,45 +925,29 @@ class TestTableView < MiniTest::Test
 		assert_equal('A', rendered[1][4].char)
 		assert_equal('B', rendered[2][4].char)
 		
-		# puts; puts '------- GRID A -------'
-		# pp view1.grid_cache
 		
-		# puts; puts '------- SET 2 -------'
 		view1.cursor_position = 2
 		
-		# puts; puts '------- GRID B -------'
-		# pp view1.grid_cache
-		
-		# puts; puts '------- RENDER 2 -------'
 		rendered = view1.render
+		puts; pp rendered; puts
 		
 		assert_equal(2, rendered.count)
-		assert_equal(1, rendered[1].count)
-		assert_equal(1, rendered[2].count)
+		assert_equal(5, rendered[1].count)
+		assert_equal(5, rendered[2].count)
 		assert_equal('B', rendered[1][4].char)
 		assert_equal('C', rendered[2][4].char)
 		
 		
-		# pp rendered.map{ |y, row| row.map{ |x, content| "#{x}:#{y}=>'#{content.char}'" } }.flatten
-		# puts; pp rendered; puts
-		
-		
-		# puts; puts '------- SET 3 -------'
 		view1.cursor_position = 3
 		
-		# puts; puts '------- GRID 3 -------'
-		# pp view1.grid_cache
-		
-		# puts; puts '------- RENDER 3 -------'
 		rendered = view1.render
+		puts; pp rendered; puts
 		
 		assert_equal(2, rendered.count)
-		assert_equal(1, rendered[1].count)
-		assert_equal(1, rendered[2].count)
+		assert_equal(5, rendered[1].count)
+		assert_equal(5, rendered[2].count)
 		assert_equal('C', rendered[1][4].char)
 		assert_equal('D', rendered[2][4].char)
-		
-		# puts; pp rendered; puts
 	end
 	
 end
