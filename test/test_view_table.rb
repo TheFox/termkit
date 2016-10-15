@@ -421,6 +421,13 @@ class TestTableView < MiniTest::Test
 		assert_equal(3, view1.cursor_position)
 		assert_equal(1, view1.page_begin)
 		assert_equal(3, view1.page_end)
+		
+		view1.remove_header
+		
+		assert_equal(5, view1.cells_height_total)
+		assert_equal(3, view1.cursor_position)
+		assert_equal(1, view1.page_begin)
+		assert_equal(3, view1.page_end)
 	end
 	
 	def test_cursor_position_change_header_one_line2
@@ -442,6 +449,13 @@ class TestTableView < MiniTest::Test
 		assert_equal(3, view1.page_end)
 		
 		view1.header = header2
+		
+		assert_equal(5, view1.cells_height_total)
+		assert_equal(3, view1.cursor_position)
+		assert_equal(2, view1.page_begin)
+		assert_equal(3, view1.page_end)
+		
+		view1.remove_header
 		
 		assert_equal(5, view1.cells_height_total)
 		assert_equal(3, view1.cursor_position)
@@ -469,6 +483,13 @@ class TestTableView < MiniTest::Test
 		assert_equal(3, view1.cursor_position)
 		assert_equal(1, view1.page_begin)
 		assert_equal(3, view1.page_end)
+		
+		view1.remove_header
+		
+		assert_equal(5, view1.cells_height_total)
+		assert_equal(3, view1.cursor_position)
+		assert_equal(1, view1.page_begin)
+		assert_equal(3, view1.page_end)
 	end
 	
 	def test_cursor_position_change_header_multiple_lines2
@@ -490,6 +511,13 @@ class TestTableView < MiniTest::Test
 		assert_equal(3, view1.page_end)
 		
 		view1.header = header2
+		
+		assert_equal(5, view1.cells_height_total)
+		assert_equal(3, view1.cursor_position)
+		assert_equal(3, view1.page_begin)
+		assert_equal(3, view1.page_end)
+		
+		view1.remove_header
 		
 		assert_equal(5, view1.cells_height_total)
 		assert_equal(3, view1.cursor_position)
