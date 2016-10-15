@@ -1,6 +1,5 @@
 /.bundle/
 .setup
-/bin/
 CHANGELOG-*.txt
 /coverage/
 /doc/

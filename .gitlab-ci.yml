@@ -53,7 +53,7 @@ deploy_to_production:
         - make
         - make cov
         - make doc
-        - 'printf "%s %s %s\n\ntermkit: %s (%s)\nid: %s\nref: %s@%s\nstage: %s\nserver: %s %s\n" $(date +"%F %T %z") $(ruby -I lib -rtermkit -e "puts %{#{TheFox::TermKit::VERSION} #{TheFox::TermKit::DATE}}") $CI_BUILD_ID $CI_BUILD_REF $CI_BUILD_REF_NAME $CI_BUILD_STAGE $CI_SERVER_NAME $CI_SERVER_VERSION > build.txt'
+        - bin/build_info.sh > build.txt
         - 'rsync ${RSYNC_OPTIONS} coverage ${RSYNC_USER}@${RSYNC_HOST}:${RSYNC_REMOTE_PATH}'
         - 'rsync ${RSYNC_OPTIONS} doc ${RSYNC_USER}@${RSYNC_HOST}:${RSYNC_REMOTE_PATH}'
         - 'rsync ${RSYNC_OPTIONS} build.txt ${RSYNC_USER}@${RSYNC_HOST}:${RSYNC_REMOTE_PATH}'
