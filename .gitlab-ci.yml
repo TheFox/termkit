@@ -14,6 +14,7 @@ before_script:
 stages:
     - test
     - deploy
+    - build
 
 test_21:
     image: ruby:2.1
@@ -45,7 +46,6 @@ test_23:
 deploy_cov:
     image: ruby:2.3
     stage: deploy
-    environment: production
     only:
         - master
     script:
@@ -56,10 +56,19 @@ deploy_cov:
 deploy_doc:
     image: ruby:2.3
     stage: deploy
-    environment: production
     only:
         - master
     script:
         - make
         - make doc
         - 'rsync ${RSYNC_OPTIONS} doc ${RSYNC_USER}@${RSYNC_HOST}:${RSYNC_REMOTE_PATH}'
+
+build_infos:
+    image: ruby:2.3
+    stage: build
+    environment: production
+    only:
+        - master
+    script:
+        - 'printf "%s %s %s\n\ntermkit: %s (%s)\nid: %s\nref: %s@%s\nstage: %s\nserver: %s %s\n" $(date +"%F %T %z") $(ruby -I lib -rtermkit -e "puts %{#{TheFox::TermKit::VERSION} #{TheFox::TermKit::DATE}}") $CI_BUILD_ID $CI_BUILD_REF $CI_BUILD_REF_NAME $CI_BUILD_STAGE $CI_SERVER_NAME $CI_SERVER_VERSION > build.txt'
+        - 'rsync ${RSYNC_OPTIONS} build.txt ${RSYNC_USER}@${RSYNC_HOST}:${RSYNC_REMOTE_PATH}'

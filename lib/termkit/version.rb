@@ -2,7 +2,7 @@
 module TheFox
 	module TermKit
 		
-		VERSION = '0.1.0-dev.10'
+		VERSION = '0.1.0-dev.11'
 		DATE = '2016-10-15'
 		HOMEPAGE = 'https://termkit.fox21.at/'
 		
