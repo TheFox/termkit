@@ -2107,7 +2107,7 @@ class TestView < MiniTest::Test
 		view1.position = Point.new(3, 5)
 		view1.draw_point([1, 0], 'A')
 		view1.draw_point([2, 0], 'B')
-		content3 = view1.draw_point([3, 0], 'B')
+		view1.draw_point([3, 0], 'B')
 		view1.draw_point([4, 0], 'C')
 		
 		view2 = View.new('view2')
@@ -2127,20 +2127,20 @@ class TestView < MiniTest::Test
 		# pp view2.grid_cache
 		# pp view3.grid_cache
 		
-		puts '-------- SET POS BEGIN --------'
+		# puts '-------- SET POS BEGIN --------'
 		view1.position = Point.new(4, 5)
-		puts '-------- SET POS END ----------'
-		puts
+		# puts '-------- SET POS END ----------'
+		# puts
 		
-		pp view1.grid_cache.sort.to_h
-		puts
-		pp view2.grid_cache.sort.to_h
-		puts
-		pp view3.grid_cache.sort.to_h
-		puts
+		# pp view1.grid_cache.sort.to_h
+		# puts
+		# pp view2.grid_cache.sort.to_h
+		# puts
+		# pp view3.grid_cache.sort.to_h
+		# puts
 		
 		rendered = view3.render
-		puts; pp rendered; puts
+		# puts; pp rendered; puts
 		
 		# pp view1.grid_cache.sort.to_h
 		# puts
@@ -2228,7 +2228,7 @@ class TestView < MiniTest::Test
 		view3.add_subview(view2)
 		
 		rendered = view3.render
-		puts; pp rendered; puts
+		# puts; pp rendered; puts
 		
 		assert_equal(2, rendered.count)
 		assert_equal(1, rendered[-1].count)

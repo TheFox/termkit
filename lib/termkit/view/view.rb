@@ -129,18 +129,17 @@ module TheFox
 						# Redraw new position.
 						# puts "#{@name} -- new area #{new_area.inspect}"
 						# changes_new = {}
-						changes_new = @parent_view.redraw_area_zindex(new_area)
+						# changes_new = @parent_view.redraw_area_zindex(new_area)
+						@parent_view.redraw_area_zindex(new_area)
 						# puts "#{@name} -- redraw_area_zindex OK #{new_area.inspect}"
 						# STDIN.gets
 						
-						changes_new.each do |y_pos, row|
-							#row.select{ |x_pos, content| !content.nil? }.each do |x_pos, content|
-							row.each do |x_pos, content|
-								new_point = Point.new(x_pos, y_pos)
-								
-								# puts "#{@name} -- new content #{new_point} c=#{content.inspect}"
-							end
-						end
+						# changes_new.each do |y_pos, row|
+						# 	row.each do |x_pos, content|
+						# 		new_point = Point.new(x_pos, y_pos)
+						# 		puts "#{@name} -- new content #{new_point} c=#{content.inspect}"
+						# 	end
+						# end
 						
 						# puts
 						# puts "#{@name} -- @is_init_position = #{@is_init_position}"
@@ -173,7 +172,8 @@ module TheFox
 								rest_points.each do |point|
 									# puts "#{@name} -- #{parent_view} -- old content #{point}"
 									# changed = false
-									changed = parent_view.grid_cache_erase_point(point)
+									# changed = parent_view.grid_cache_erase_point(point)
+									parent_view.grid_cache_erase_point(point)
 									# puts "#{@name} -- #{parent_view} -- old content #{point} c=#{changed.inspect}"
 								end
 								

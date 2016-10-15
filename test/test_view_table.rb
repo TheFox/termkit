@@ -401,6 +401,50 @@ class TestTableView < MiniTest::Test
 		assert_equal(5, view1.page_end)
 	end
 	
+	def test_cursor_position_change_header_one_line1
+		header1 = TextView.new('--H1--', 'header1')
+		header1.is_visible = true
+		
+		view1 = TableView.new('view1')
+		view1.size = Size.new(nil, 3)
+		view1.data = ['row A', 'row B', 'row C', 'row D', 'row E']
+		view1.cursor_position = 3 # [B, C, D]
+		
+		assert_equal(5, view1.cells_height_total)
+		assert_equal(3, view1.cursor_position)
+		assert_equal(1, view1.page_begin)
+		
+		view1.header = header1
+		
+		assert_equal(5, view1.cells_height_total)
+		assert_equal(3, view1.cursor_position)
+		assert_equal(1, view1.page_begin)
+	end
+	
+	def test_cursor_position_change_header_one_line2
+		header1 = TextView.new('--H1--', 'header1')
+		header1.is_visible = true
+		
+		header2 = TextView.new('--H2--', 'header2')
+		header2.is_visible = true
+		
+		view1 = TableView.new('view1')
+		view1.size = Size.new(nil, 3)
+		view1.header = header1
+		view1.data = ['row A', 'row B', 'row C', 'row D', 'row E']
+		view1.cursor_position = 3 # [B, C, D]
+		
+		assert_equal(5, view1.cells_height_total)
+		assert_equal(3, view1.cursor_position)
+		assert_equal(2, view1.page_begin)
+		
+		view1.header = header2
+		
+		assert_equal(5, view1.cells_height_total)
+		assert_equal(3, view1.cursor_position)
+		assert_equal(2, view1.page_begin)
+	end
+	
 	def test_is_cursor_at_bottom
 		view1 = TableView.new('view1')
 		view1.size = Size.new(nil, 3)
