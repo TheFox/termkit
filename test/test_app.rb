@@ -4,7 +4,7 @@ require 'minitest/autorun'
 require 'termkit'
 require_relative 'app'
 
-class TestUIApp < MiniTest::Test
+class TestApp < MiniTest::Test
 	
 	include TheFox::TermKit
 	

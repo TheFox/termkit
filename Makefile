@@ -3,6 +3,10 @@ GEM_NAME = termkit
 
 include Makefile.common
 
+.PHONY: dev
+dev:
+	$(BUNDLER) exec ./bin/dev
+
 .PHONY: test
 test:
 	RUBYOPT=-w TZ=Europe/Vienna $(BUNDLER) exec ./test/suite_all.rb -v

@@ -279,6 +279,114 @@ class TestTableView < MiniTest::Test
 		assert_equal(0, view1.page_direction)
 	end
 	
+	def test_cursor_position_scroll3
+		view1 = TableView.new('view1')
+		view1.data = ['row A', 'row B', 'row C', 'row D', 'row E', 'row F', 'row G']
+		
+		assert_equal(7, view1.cells_height_total)
+		
+		view1.cursor_position = 1
+		assert_equal(1, view1.cursor_position)
+		assert_equal(0, view1.cursor_position_old)
+		assert_equal(1, view1.cursor_direction)
+		assert_equal(0, view1.page_begin)
+		assert_equal(6, view1.page_end)
+		assert_equal(0, view1.page_direction)
+		assert_equal(7, view1.page_height)
+		
+		view1.cursor_position = 2
+		assert_equal(2, view1.cursor_position)
+		assert_equal(1, view1.cursor_position_old)
+		assert_equal(1, view1.cursor_direction)
+		assert_equal(0, view1.page_begin)
+		assert_equal(6, view1.page_end)
+		assert_equal(0, view1.page_direction)
+		assert_equal(7, view1.page_height)
+		
+		view1.cursor_position = 3
+		assert_equal(3, view1.cursor_position)
+		assert_equal(2, view1.cursor_position_old)
+		assert_equal(1, view1.cursor_direction)
+		assert_equal(0, view1.page_begin)
+		assert_equal(6, view1.page_end)
+		assert_equal(0, view1.page_direction)
+		assert_equal(7, view1.page_height)
+		
+		view1.cursor_position = 6
+		assert_equal(6, view1.cursor_position)
+		assert_equal(3, view1.cursor_position_old)
+		assert_equal(1, view1.cursor_direction)
+		assert_equal(0, view1.page_begin)
+		assert_equal(6, view1.page_end)
+		assert_equal(0, view1.page_direction)
+		assert_equal(7, view1.page_height)
+		
+		view1.cursor_position = 0
+		assert_equal(0, view1.cursor_position)
+		assert_equal(6, view1.cursor_position_old)
+		assert_equal(-1, view1.cursor_direction)
+		assert_equal(0, view1.page_begin)
+		assert_equal(6, view1.page_end)
+		assert_equal(0, view1.page_direction)
+		assert_equal(7, view1.page_height)
+	end
+	
+	def test_cursor_position_scroll4
+		header1 = TextView.new('--H1--', 'header1')
+		header1.is_visible = true
+		
+		view1 = TableView.new('view1')
+		view1.header = header1
+		view1.data = ['row A', 'row B', 'row C', 'row D', 'row E', 'row F', 'row G']
+		
+		assert_equal(7, view1.cells_height_total)
+		
+		view1.cursor_position = 1
+		assert_equal(1, view1.cursor_position)
+		assert_equal(0, view1.cursor_position_old)
+		assert_equal(1, view1.cursor_direction)
+		assert_equal(0, view1.page_begin)
+		assert_equal(6, view1.page_end)
+		assert_equal(0, view1.page_direction)
+		assert_equal(7, view1.page_height)
+		
+		view1.cursor_position = 2
+		assert_equal(2, view1.cursor_position)
+		assert_equal(1, view1.cursor_position_old)
+		assert_equal(1, view1.cursor_direction)
+		assert_equal(0, view1.page_begin)
+		assert_equal(6, view1.page_end)
+		assert_equal(0, view1.page_direction)
+		assert_equal(7, view1.page_height)
+		
+		view1.cursor_position = 3
+		assert_equal(3, view1.cursor_position)
+		assert_equal(2, view1.cursor_position_old)
+		assert_equal(1, view1.cursor_direction)
+		assert_equal(0, view1.page_begin)
+		assert_equal(6, view1.page_end)
+		assert_equal(0, view1.page_direction)
+		assert_equal(7, view1.page_height)
+		
+		view1.cursor_position = 6
+		assert_equal(6, view1.cursor_position)
+		assert_equal(3, view1.cursor_position_old)
+		assert_equal(1, view1.cursor_direction)
+		assert_equal(0, view1.page_begin)
+		assert_equal(6, view1.page_end)
+		assert_equal(0, view1.page_direction)
+		assert_equal(7, view1.page_height)
+		
+		view1.cursor_position = 0
+		assert_equal(0, view1.cursor_position)
+		assert_equal(6, view1.cursor_position_old)
+		assert_equal(-1, view1.cursor_direction)
+		assert_equal(0, view1.page_begin)
+		assert_equal(6, view1.page_end)
+		assert_equal(0, view1.page_direction)
+		assert_equal(7, view1.page_height)
+	end
+	
 	def test_cursor_position_change_data1
 		view1 = TableView.new('view1')
 		view1.size = Size.new(nil, 3)
@@ -640,13 +748,9 @@ class TestTableView < MiniTest::Test
 		
 		view1.render
 		
-		# puts '----- A -----'
-		# puts; pp view1.grid_cache; puts
 		view1.cursor_position = 4
-		# puts; pp view1.grid_cache; puts
-		
 		rendered = view1.render
-		puts; pp rendered; puts
+		pp rendered
 		
 		assert_instance_of(Hash, rendered)
 		assert_equal(3, rendered.count)
@@ -676,12 +780,8 @@ class TestTableView < MiniTest::Test
 		assert_equal(' ', rendered[2][5].char)
 		
 		
-		puts '----- SET 0 BEGIN -----'
 		view1.cursor_position = 0
-		puts '----- SET 0 END -------'
-		
 		rendered = view1.render
-		puts; pp rendered; puts
 		
 		assert_equal(3, rendered.count)
 		assert_equal(6, rendered[0].count)
@@ -710,12 +810,8 @@ class TestTableView < MiniTest::Test
 		assert_equal('3', rendered[2][5].char)
 		
 		
-		puts '----- SET 4 BEGIN -----'
 		view1.cursor_position = 4
-		puts '----- SET 4 END -------'
-		
 		rendered = view1.render
-		puts; pp rendered; puts
 		
 		assert_equal(3, rendered.count)
 		assert_equal(6, rendered[0].count)
@@ -767,12 +863,12 @@ class TestTableView < MiniTest::Test
 		assert_equal(0, rendered.count)
 		
 		
-		puts %(--- SET 3 BEGIN ---)
+		# puts %(--- SET 3 BEGIN ---)
 		view1.cursor_position = 3
-		puts %(--- SET 3 END -----)
+		# puts %(--- SET 3 END -----)
 		
 		rendered = view1.render
-		puts; pp rendered
+		# puts; pp rendered
 		
 		
 		assert_equal(3, rendered.count)
@@ -790,10 +886,10 @@ class TestTableView < MiniTest::Test
 		assert_equal(' ', rendered[2][2].char)
 		
 		
-		puts %(--- set 4 ---)
+		# puts %(--- set 4 ---)
 		view1.cursor_position = 4
 		rendered = view1.render
-		pp rendered
+		# pp rendered
 		
 		assert_equal(3, rendered.count)
 		assert_equal(3, rendered[0].count)
@@ -810,22 +906,22 @@ class TestTableView < MiniTest::Test
 		assert_equal(' ', rendered[2][1].char)
 		
 		
-		puts %(--- set 3 ---)
+		# puts %(--- set 3 ---)
 		view1.cursor_position = 3
 		rendered = view1.render
 		assert_equal(0, rendered.count)
 		
 		
-		puts %(--- set 2 ---)
+		# puts %(--- set 2 ---)
 		view1.cursor_position = 2
 		rendered = view1.render
 		assert_equal(0, rendered.count)
 		
 		
-		puts %(--- set 1 ---)
+		# puts %(--- set 1 ---)
 		view1.cursor_position = 1
 		rendered = view1.render
-		pp rendered
+		# pp rendered
 		
 		assert_equal(3, rendered.count)
 		assert_equal(3, rendered[0].count)
@@ -842,10 +938,10 @@ class TestTableView < MiniTest::Test
 		assert_equal('B', rendered[2][1].char)
 		
 		
-		puts %(--- set 0 ---)
+		# puts %(--- set 0 ---)
 		view1.cursor_position = 0
 		rendered = view1.render
-		pp rendered
+		# pp rendered
 		
 		assert_equal(3, rendered.count)
 		assert_equal(2, rendered[0].count)
@@ -899,8 +995,8 @@ class TestTableView < MiniTest::Test
 		assert_equal('B', rendered[2][4].char)
 		
 		# pp rendered.map{ |y, row| row.map{ |x, content| "#{x}:#{y}=>'#{content.char}'" } }.flatten
-		pp rendered
-		puts
+		# pp rendered
+		# puts
 	end
 	
 	def test_render_header2
@@ -929,8 +1025,8 @@ class TestTableView < MiniTest::Test
 		assert_equal('B', rendered[3][4].char)
 		
 		# pp rendered.map{ |y, row| row.map{ |x, content| "#{x}:#{y}=>'#{content.char}'" } }.flatten
-		pp rendered
-		puts
+		# pp rendered
+		# puts
 	end
 	
 	def test_render_reset_header1
@@ -990,7 +1086,7 @@ class TestTableView < MiniTest::Test
 		view1.cursor_position = 3
 		
 		rendered = view1.render
-		puts; pp rendered; puts
+		# puts; pp rendered; puts
 		
 		assert_equal(4, rendered.count)
 		assert_equal(5, rendered[0].count)
@@ -1010,7 +1106,7 @@ class TestTableView < MiniTest::Test
 		view1.header = header2
 		
 		rendered = view1.render
-		puts; pp rendered; puts
+		# puts; pp rendered; puts
 		
 		assert_equal(4, rendered.count)
 		assert_equal(5, rendered[0].count)
@@ -1053,7 +1149,7 @@ class TestTableView < MiniTest::Test
 		view1.cursor_position = 2
 		
 		rendered = view1.render
-		puts; pp rendered; puts
+		# puts; pp rendered; puts
 		
 		assert_equal(2, rendered.count)
 		assert_equal(5, rendered[1].count)
@@ -1065,7 +1161,7 @@ class TestTableView < MiniTest::Test
 		view1.cursor_position = 3
 		
 		rendered = view1.render
-		puts; pp rendered; puts
+		# puts; pp rendered; puts
 		
 		assert_equal(2, rendered.count)
 		assert_equal(5, rendered[1].count)

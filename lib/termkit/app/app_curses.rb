@@ -38,9 +38,42 @@ module TheFox
 			
 			##
 			# See UIApp `draw_point()` method.
-			def draw_point(point, content_s)
-				Curses.setpos(point.y, point.x)
-				Curses.addstr(content_s)
+			def draw_point(point, content)
+				# @logger.debug("draw_point #{point} #{content.inspect}")
+				
+				content_s = content
+				foreground_color = nil
+				background_color = nil
+				if content.is_a?(ViewContent)
+					# @logger.debug("draw_point #{point} content is ViewContent")
+					
+					content_s = content.char
+					
+					# @logger.debug("draw_point #{point} #{content.foreground_color} #{content.background_color}")
+					
+					foreground_color = CursesColor::COLORS[content.foreground_color]
+					background_color = CursesColor::COLORS[content.background_color]
+				end
+				
+				c_attr = Curses::A_NORMAL
+				
+				if !foreground_color.nil? && !background_color.nil?
+					Curses.init_pair(1, foreground_color, background_color)
+					c_attr = Curses.color_pair(1)
+				end
+				
+				# @logger.debug("draw_point #{point} '#{content_s}' #{foreground_color.inspect} #{background_color.inspect}")
+				
+				begin
+					Curses.setpos(point.y, point.x)
+					Curses.attron(c_attr) do
+						Curses.addstr(content_s)
+					end
+				rescue Exception => e
+					@logger.error("draw_point: #{e}")
+				end
+				
+				# @logger.debug("draw_point #{point} #{content.inspect} DONE")
 			end
 			
 			##
@@ -73,6 +106,8 @@ module TheFox
 				
 				super()
 				
+				# @logger.debug("init Curses")
+				
 				Curses.noecho
 				Curses.timeout = @curses_timeout
 				Curses.curs_set(0)
@@ -82,9 +117,9 @@ module TheFox
 				Curses.crmode
 				Curses.stdscr.keypad(true)
 				
-				Curses.init_pair(Curses::COLOR_BLUE, Curses::COLOR_WHITE, Curses::COLOR_BLUE)
-				Curses.init_pair(Curses::COLOR_RED, Curses::COLOR_WHITE, Curses::COLOR_RED)
-				Curses.init_pair(Curses::COLOR_GREEN, Curses::COLOR_BLACK, Curses::COLOR_GREEN)
+				# @logger.debug("color_pairs: #{Curses.color_pairs}")
+				
+				# Curses.init_pair(1, Curses::COLOR_BLACK, Curses::COLOR_GREEN)
 				
 				# Curses.setpos(0, 0)
 				# Curses.addstr('INIT OK')

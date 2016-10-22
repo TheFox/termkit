@@ -53,26 +53,25 @@ module TheFox
 			##
 			# Handles the actual rendering and drawing of the UI layer. Calls `draw_point()` for all points of `@active_controller`.
 			def render
-				logger.debug('--- RENDER ---')
-				
-				sleep 1 # @TODO: remove this line
+				#sleep 1 # @TODO: remove this line
 				
 				area = nil # @TODO: use current terminal size as area
 				
 				@render_count += 1
-				draw_line(Point.new(0, 1), "RENDER: #{@render_count}")
+				# @logger.debug("--- RENDER: #{@render_count} ---")
 				if !@active_controller.nil?
-					logger.debug('RENDER active_controller OK')
+					# @logger.debug("RENDER active_controller OK: #{@active_controller.inspect}")
+					# @logger.debug("RENDER active_controller view grid_cache: #{@active_controller.view.grid_cache.inspect}")
 					
 					@active_controller.render(area).each do |y_pos, row|
 						row.each do |x_pos, content|
-							sleep 0.1 # @TODO: remove this line
+							#sleep 0.1 # @TODO: remove this line
 							
-							logger.debug("RENDER #{x_pos}:#{y_pos} '#{content}'")
+							# @logger.debug("RENDER #{x_pos}:#{y_pos} '#{content}'")
 							
-							draw_point(Point.new(x_pos, y_pos), content.char)
+							draw_point(Point.new(x_pos, y_pos), content)
 							
-							ui_refresh # @TODO: remove this line
+							#ui_refresh # @TODO: remove this line
 						end
 					end
 				end
@@ -84,7 +83,7 @@ module TheFox
 				y_pos = point.y
 				
 				row.length.times do |n|
-					draw_point(Point.new(x_pos, y_pos), row[n])
+					draw_point(Point.new(x_pos, y_pos), ViewContent.new(row[n]))
 					x_pos += 1
 				end
 			end
@@ -93,7 +92,7 @@ module TheFox
 			# Needs to be implemented by the sub-class.
 			#
 			# For example, CursesApp is a sub-class of UIApp. CursesApp uses `Curses.setpos` and `Curses.addstr` in `draw_point()` to draw the points.
-			def draw_point(point, content_s)
+			def draw_point(point, content)
 				raise NotImplementedError
 			end
 			
@@ -133,13 +132,17 @@ module TheFox
 					begin
 						@active_controller.handle_event(event)
 					rescue Exception::UnhandledKeyEventException => e
+						@logger.warn("#{self.class} UnhandledKeyEventException: #{e}")
+						
 						if @app_controller.nil?
+							@logger.warn("#{self.class} UnhandledKeyEventException: no app controller set, raise")
+							
 							raise e
 						end
 						
 						@app_controller.handle_event(e.event)
 					rescue Exception::UnhandledEventException => e
-						draw_line(Point.new(0, 0), 'UnhandledEventException')
+						@logger.warn("#{self.class} UnhandledEventException: #{e}")
 					end
 				end
 			end

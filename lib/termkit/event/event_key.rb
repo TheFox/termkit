@@ -12,16 +12,19 @@ module TheFox
 				super()
 				
 				@key = nil
-				
-				#puts "KeyEvent initialize"
 			end
 			
 			def to_s
-				ord_s = ''
-				if !@key.nil?
-					ord_s = "->#{@key.ord}[#{@key}]"
+				@key.to_s
+			end
+			
+			def inspect
+				s = "#<#{self.class}"
+				unless @key.nil?
+					s << "->#{@key.ord}[#{@key}]"
 				end
-				"#{self.class}#{ord_s}"
+				s << '>'
+				s
 			end
 			
 		end

@@ -8,49 +8,60 @@ before_script:
     - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
     - ruby -v
     - gem update --system
-    - gem install bundler -v '~>1.11'
+    - gem install bundler -v '~>1.13'
     - bundler --version
+    - make
 
 stages:
     - test
+    - release
     - deploy
-    - build
 
 test_21:
     image: ruby:2.1
     stage: test
+    environment: test
     only:
-        - master
+        - tags
     script:
-        - make
         - make test
 
 test_22:
     image: ruby:2.2
     stage: test
+    environment: test
     only:
-        - master
+        - tags
     script:
-        - make
         - make test
 
 test_23:
     image: ruby:2.3
     stage: test
+    environment: test
     only:
-        - master
+        - tags
     script:
-        - make
         - make test
 
-deploy_to_production:
+release_gem:
+    image: ruby:2.3
+    stage: release
+    environment: gem
+    only:
+        - tags
+    script:
+        - mkdir -p ~/.gem
+        - 'printf "%s\n:rubygems_api_key: %s" "---" "${RUBYGEMSORG_API_KEY}" > ~/.gem/credentials; chmod 0600 ~/.gem/credentials'
+        - make release
+
+deploy_homepage:
     image: ruby:2.3
     stage: deploy
-    environment: production
+    environment: homepage
     only:
-        - master
+        - tags
     script:
-        - make
         - make cov
         - make doc
         - bin/build_info.sh > build.txt

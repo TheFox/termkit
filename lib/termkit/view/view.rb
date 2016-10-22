@@ -39,8 +39,11 @@ module TheFox
 				@name = name # FOR DEBUG ONLY
 				@parent_view = nil
 				@subviews = Set.new
-				@grid = Hash.new
-				@grid_cache = Hash.new
+				
+				# @grid = Hash.new
+				@grid = ViewGrid.new
+				# @grid_cache = Hash.new
+				@grid_cache = ViewGrid.new
 				
 				@is_visible = false
 				@position = Point.new(0, 0)

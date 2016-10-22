@@ -17,11 +17,32 @@ module TheFox
 			
 			attr_accessor :origin
 			
+			attr_reader :foreground_color
+			attr_reader :background_color
+			
 			def initialize(char, view = nil, origin = nil)
 				@char = char[0]
 				@view = view
 				@needs_rendering = true
 				@origin = origin
+				@foreground_color = nil
+				@background_color = nil
+			end
+			
+			def foreground_color=(foreground_color)
+				if @foreground_color != foreground_color
+					@foreground_color = foreground_color
+					
+					@needs_rendering = true
+				end
+			end
+			
+			def background_color=(background_color)
+				if @background_color != background_color
+					@background_color = background_color
+					
+					@needs_rendering = true
+				end
 			end
 			
 			def to_s

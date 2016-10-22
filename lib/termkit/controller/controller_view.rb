@@ -4,6 +4,7 @@ module TheFox
 		
 		class ViewController < Controller
 			
+			attr_accessor :app
 			attr_accessor :view
 			
 			def initialize(view = nil)
@@ -13,6 +14,7 @@ module TheFox
 				
 				super()
 				
+				@app = nil
 				@view = view
 			end
 			
