@@ -46,6 +46,8 @@ module TheFox
 				@page_direction = 0
 				@page_range = nil
 				
+				@needs_refresh = true
+				
 				@table = View.new("#{@name}_table")
 				@table.is_visible = true
 				add_subview(@table)
@@ -54,6 +56,7 @@ module TheFox
 			def size=(size)
 				super(size)
 				
+				@needs_refresh = true
 				calc_page_height
 				calc_cursor
 				calc_page
@@ -77,6 +80,7 @@ module TheFox
 				
 				@table.position = Point.new(0, @header_height)
 				
+				@needs_refresh = true
 				calc_page_height
 			end
 			
@@ -86,6 +90,7 @@ module TheFox
 				
 				@table.position = Point.new(0, @header_height)
 				
+				@needs_refresh = true
 				calc_page_height
 			end
 			
@@ -130,6 +135,7 @@ module TheFox
 				
 				@cells_height_total = y_pos
 				
+				@needs_refresh = true
 				calc_page_height
 				calc_cursor
 				calc_page
@@ -139,6 +145,7 @@ module TheFox
 				@cursor_position_old = @cursor_position
 				@cursor_position = cursor_position
 				
+				@needs_refresh = true
 				calc_cursor
 				calc_page
 			end
@@ -156,7 +163,10 @@ module TheFox
 			end
 			
 			def render(area = nil)
-				# refresh
+				puts "#{@name} -- render r?=#{@needs_refresh ? 'Y' : 'N'}"
+				if @needs_refresh
+					refresh
+				end
 				
 				super(area)
 			end
@@ -164,49 +174,46 @@ module TheFox
 			def refresh
 				new_page_range = Range.new(@page_begin, @page_end)
 				
-				#if new_page_range != @page_range
-					# puts; puts; puts "#{@name} -- draw_cells r=#{new_page_range}"
+				affected_cells = @cells[new_page_range]
+				
+				y_pos = 0
+				cell_n = 0
+				affected_cells.each do |cell|
+					highlighted = @cursor_position == (cell_n + @page_begin)
 					
-					affected_cells = @cells[new_page_range]
+					# puts "#{@name} -- [+] #{cell} n=#{cell_n} y=#{y_pos} h=#{highlighted ? 'Y' : 'N'}/#{cell.highlighted ? 'Y' : 'N'}"
+					cell.highlighted = highlighted
 					
-					y_pos = 0
-					cell_n = 0
-					affected_cells.each do |cell|
-						highlighted = @cursor_position == (cell_n + @page_begin)
-						
-						# puts "#{@name} -- [+] #{cell} n=#{cell_n} y=#{y_pos} h=#{highlighted ? 'Y' : 'N'}/#{cell.highlighted ? 'Y' : 'N'}"
-						cell.highlighted = highlighted
-						
-						if highlighted
-							@highlighted_cell = cell
-						end
-						
-						# cell.size = Size.new(@size.width, nil)
-						
-						# puts "#{@name} -- [+] #{cell} y=#{y_pos} position"
-						cell.position = Point.new(0, y_pos)
-						
-						unless @table.is_subview?(cell)
-							# puts "#{@name} -- [+] #{cell} y=#{y_pos} add_subview"
-							@table.add_subview(cell)
-						end
-						
-						# puts "#{@name} -- [+] #{cell} y=#{y_pos} END"
-						
-						y_pos += cell.height
-						cell_n += 1
+					if highlighted
+						@highlighted_cell = cell
 					end
 					
-					# Hide out-of-scope cell(s) here. In the best case it's only ONE cell that will
-					# be hidden. If you scroll down the top cell will be hidden, if you scroll up
-					# only the bottom cell will be hidden.
-					(@cells - affected_cells).select{ |cell| cell.is_visible? }.each do |cell|
-						# puts "#{@name} -- [-] #{cell} y=#{cell.position.y} r?=#{cell.needs_rendering? ? 'Y' : 'N'}"
-						@table.remove_subview(cell)
+					# cell.size = Size.new(@size.width, nil)
+					
+					# puts "#{@name} -- [+] #{cell} y=#{y_pos} position"
+					cell.position = Point.new(0, y_pos)
+					
+					unless @table.is_subview?(cell)
+						# puts "#{@name} -- [+] #{cell} y=#{y_pos} add_subview"
+						@table.add_subview(cell)
 					end
-				#end
+					
+					# puts "#{@name} -- [+] #{cell} y=#{y_pos} END"
+					
+					y_pos += cell.height
+					cell_n += 1
+				end
+				
+				# Hide out-of-scope cell(s) here. In the best case it's only ONE cell that will
+				# be hidden. If you scroll down the top cell will be hidden, if you scroll up
+				# only the bottom cell will be hidden.
+				(@cells - affected_cells).select{ |cell| cell.is_visible? }.each do |cell|
+					# puts "#{@name} -- [-] #{cell} y=#{cell.position.y} r?=#{cell.needs_rendering? ? 'Y' : 'N'}"
+					@table.remove_subview(cell)
+				end
 				
 				@page_range = new_page_range
+				@needs_refresh = false
 			end
 			
 			private
@@ -216,8 +223,10 @@ module TheFox
 				if @size.nil? || @size.height.nil?
 					# puts "calc_page_height size is nil"
 					@page_height = @cells_height_total
+					# puts "#{@name} -- calc_page_height A #{@page_height}"
 				else
 					@page_height = @size.height - @header_height
+					# puts "#{@name} -- calc_page_height B #{@page_height} = #{@size.height} - #{@header_height}"
 				end
 			end
 			
@@ -226,47 +235,45 @@ module TheFox
 				
 				if @cursor_position > @cells_height_total - 1
 					@cursor_position = @cells_height_total - 1
+					# puts "#{@name} -- calc_cursor A #{@cursor_position}"
 				end
 				if @cursor_position < 0
 					@cursor_position = 0
+					# puts "#{@name} -- calc_cursor B #{@cursor_position}"
 				end
 				
 				# -1 up
 				#  0 unchanged
 				# +1 down
-				# cds = '='
 				if @cursor_position == @cursor_position_old
 					@cursor_direction = 0
 				elsif @cursor_position > @cursor_position_old
 					@cursor_direction = 1
-					# cds = 'v'
 				else
 					@cursor_direction = -1
-					# cds = '^'
 				end
 				
-				# puts "cursor n='#{@cursor_position}' o='#{@cursor_position_old}' d='#{cursor_direction}' t='#{cds}'"
+				# puts "cursor n='#{@cursor_position}' o='#{@cursor_position_old}' d='#{cursor_direction}'"
 			end
 			
 			def calc_page
 				# -1 up
 				#  0 unchanged
 				# +1 down
-				# pds = '='
 				if @cursor_position > @page_end
 					@page_direction = 1
-					# pds = 'v'
 				elsif @cursor_position < @page_begin
 					@page_direction = -1
-					# pds = '^'
 				else
 					@page_direction = 0
 				end
 				
 				if @page_direction == 1
 					@page_begin = @cursor_position - @page_height + 1
+					# puts "#{@name} -- calc_page page_begin A #{page_begin} = #{@cursor_position} - #{@page_height} + 1"
 				elsif @page_direction == -1
 					@page_begin = @cursor_position
+					# puts "#{@name} -- calc_page page_begin B #{page_begin}"
 				end
 				
 				page_begin_max = @cells_height_total - @page_height
@@ -275,11 +282,12 @@ module TheFox
 				end
 				if @page_begin > page_begin_max
 					@page_begin = page_begin_max
+					# puts "#{@name} -- calc_page page_begin C #{page_begin}"
 				end
 				
 				@page_end = @page_begin + @page_height - 1
 				
-				#puts "page   b=#{@page_begin} e=#{@page_end} m=#{page_begin_max} e=#{@page_end} h=#{@page_height} t=#{pds}"
+				# puts "#{@name} -- calc_page b=#{@page_begin} e=#{@page_end} h=#{@page_height} d=#{@page_direction}"
 			end
 			
 		end

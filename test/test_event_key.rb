@@ -14,11 +14,20 @@ class TestKeyEvent < MiniTest::Test
 	
 	def test_to_s
 		event1 = KeyEvent.new
-		assert_equal('TheFox::TermKit::KeyEvent', event1.to_s)
+		assert_equal('', event1.to_s)
 		
 		event1 = KeyEvent.new
 		event1.key = 'A'
-		assert_equal('TheFox::TermKit::KeyEvent->65[A]', event1.to_s)
+		assert_equal('A', event1.to_s)
+	end
+	
+	def test_inspect
+		event1 = KeyEvent.new
+		assert_equal('#<TheFox::TermKit::KeyEvent>', event1.inspect)
+		
+		event1 = KeyEvent.new
+		event1.key = 'A'
+		assert_equal('#<TheFox::TermKit::KeyEvent->65[A]>', event1.inspect)
 	end
 	
 end

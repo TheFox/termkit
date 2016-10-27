@@ -488,21 +488,25 @@ class TestTableView < MiniTest::Test
 		view1.data = ['row A', 'row B', 'row C', 'row D', 'row E', 'row F', 'row G']
 		view1.cursor_position = 2
 		
+		# puts "------ SET 3 ------"
 		view1.size = Size.new(nil, 3)
 		assert_equal(2, view1.cursor_position)
-		assert_equal(2, view1.page_begin)
-		assert_equal(4, view1.page_end)
+		assert_equal(0, view1.page_begin)
+		assert_equal(2, view1.page_end)
 		
+		# puts "------ SET 2 ------"
 		view1.size = Size.new(nil, 2)
 		assert_equal(2, view1.cursor_position)
-		assert_equal(2, view1.page_begin)
-		assert_equal(3, view1.page_end)
+		assert_equal(0, view1.page_begin)
+		assert_equal(1, view1.page_end)
 		
+		# puts "------ SET 1 ------"
 		view1.size = Size.new(nil, 1)
 		assert_equal(2, view1.cursor_position)
 		assert_equal(2, view1.page_begin)
 		assert_equal(2, view1.page_end)
 		
+		# puts "------ SET 4 ------"
 		view1.size = Size.new(nil, 4)
 		assert_equal(2, view1.cursor_position)
 		assert_equal(2, view1.page_begin)
@@ -845,9 +849,6 @@ class TestTableView < MiniTest::Test
 		view1.size = Size.new(nil, 3)
 		view1.data = ['A', 'AB', 'ABC', 'AB', 'A']
 		
-		# puts %(--- init done ---)
-		# puts
-		
 		view1.cursor_position = 0
 		rendered = view1.render
 		assert_equal(3, rendered.count)
@@ -855,21 +856,31 @@ class TestTableView < MiniTest::Test
 		
 		view1.cursor_position = 1
 		rendered = view1.render
-		assert_equal(0, rendered.count)
+		assert_equal(2, rendered.count)
+		assert_equal(1, rendered[0].count)
+		assert_equal(2, rendered[1].count)
+		
+		assert_equal('A', rendered[0][0].char)
+		assert_equal('A', rendered[1][0].char)
+		assert_equal('B', rendered[1][1].char)
 		
 		
 		view1.cursor_position = 2
 		rendered = view1.render
-		assert_equal(0, rendered.count)
+		# pp rendered
+		assert_equal(2, rendered.count)
+		assert_equal(2, rendered[1].count)
+		assert_equal(3, rendered[2].count)
+		
+		assert_equal('A', rendered[1][0].char)
+		assert_equal('B', rendered[1][1].char)
+		assert_equal('A', rendered[2][0].char)
+		assert_equal('B', rendered[2][1].char)
+		assert_equal('C', rendered[2][2].char)
 		
 		
-		# puts %(--- SET 3 BEGIN ---)
 		view1.cursor_position = 3
-		# puts %(--- SET 3 END -----)
-		
 		rendered = view1.render
-		# puts; pp rendered
-		
 		
 		assert_equal(3, rendered.count)
 		assert_equal(2, rendered[0].count)
@@ -886,10 +897,8 @@ class TestTableView < MiniTest::Test
 		assert_equal(' ', rendered[2][2].char)
 		
 		
-		# puts %(--- set 4 ---)
 		view1.cursor_position = 4
 		rendered = view1.render
-		# pp rendered
 		
 		assert_equal(3, rendered.count)
 		assert_equal(3, rendered[0].count)
@@ -906,22 +915,18 @@ class TestTableView < MiniTest::Test
 		assert_equal(' ', rendered[2][1].char)
 		
 		
-		# puts %(--- set 3 ---)
 		view1.cursor_position = 3
 		rendered = view1.render
-		assert_equal(0, rendered.count)
+		assert_equal(2, rendered.count)
 		
 		
-		# puts %(--- set 2 ---)
 		view1.cursor_position = 2
 		rendered = view1.render
-		assert_equal(0, rendered.count)
+		assert_equal(2, rendered.count)
 		
 		
-		# puts %(--- set 1 ---)
 		view1.cursor_position = 1
 		rendered = view1.render
-		# pp rendered
 		
 		assert_equal(3, rendered.count)
 		assert_equal(3, rendered[0].count)
@@ -938,10 +943,8 @@ class TestTableView < MiniTest::Test
 		assert_equal('B', rendered[2][1].char)
 		
 		
-		# puts %(--- set 0 ---)
 		view1.cursor_position = 0
 		rendered = view1.render
-		# pp rendered
 		
 		assert_equal(3, rendered.count)
 		assert_equal(2, rendered[0].count)
@@ -956,8 +959,6 @@ class TestTableView < MiniTest::Test
 		assert_equal('A', rendered[2][0].char)
 		assert_equal('B', rendered[2][1].char)
 		assert_equal('C', rendered[2][2].char)
-		
-		# puts
 	end
 	
 	def test_render_header1
