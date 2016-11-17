@@ -3,7 +3,7 @@
 require 'minitest/autorun'
 require 'termkit'
 
-class TestAppController < MiniTest::Test
+class TestController < MiniTest::Test
 	
 	include TheFox::TermKit
 	

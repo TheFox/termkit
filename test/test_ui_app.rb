@@ -2,7 +2,7 @@
 
 require 'minitest/autorun'
 require 'termkit'
-require_relative 'app_ui'
+require_relative 'ui_app'
 
 class TestUIApp < MiniTest::Test
 	

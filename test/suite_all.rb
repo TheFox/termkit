@@ -1,8 +1,5 @@
 #!/usr/bin/env ruby
 
-# require 'minitest/reporters'
-# Minitest::Reporters.use!
-
 if ENV['COVERAGE'] && ENV['COVERAGE'].to_i != 0
 	require 'simplecov'
 	require 'simplecov-phpunit'
@@ -14,20 +11,19 @@ if ENV['COVERAGE'] && ENV['COVERAGE'].to_i != 0
 end
 
 require_relative 'test_app'
-# require_relative 'test_app_curses'
-require_relative 'test_app_ui'
-require_relative 'test_content_view'
-require_relative 'test_content_view_clear'
+require_relative 'test_app_controller'
+require_relative 'test_cell_table_view'
+require_relative 'test_clear_view_content'
 require_relative 'test_controller'
-require_relative 'test_controller_app'
-require_relative 'test_controller_view'
-require_relative 'test_event_key'
-require_relative 'test_exception_event_unhandled'
-require_relative 'test_exception_initialized_not_class_parent'
+require_relative 'test_key_event'
+require_relative 'test_parent_class_not_initialized_exception'
 require_relative 'test_point'
 require_relative 'test_rect'
 require_relative 'test_size'
+require_relative 'test_table_view'
+require_relative 'test_text_view'
+require_relative 'test_ui_app'
+require_relative 'test_unhandled_event_exception'
 require_relative 'test_view'
-require_relative 'test_view_table'
-require_relative 'test_view_table_cell'
-require_relative 'test_view_text'
+require_relative 'test_view_content'
+require_relative 'test_view_controller'

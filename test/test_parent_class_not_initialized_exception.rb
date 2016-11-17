@@ -7,7 +7,7 @@ class TestParentClassNotInitializedException < MiniTest::Test
 	
 	include TheFox::TermKit::Exception
 	
-	def test_exception_initialized_not_class_parent
+	def test_parent_class_not_initialized_exception
 		assert_raises(ParentClassNotInitializedException){ raise ParentClassNotInitializedException, 'Foo Bar' }
 	end
 	

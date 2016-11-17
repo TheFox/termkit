@@ -7,7 +7,7 @@ class TestCellTableView < MiniTest::Test
 	
 	include TheFox::TermKit
 	
-	def test_table_view
+	def test_cell_table_view
 		view1 = View.new
 		
 		view2 = CellTableView.new(view1)

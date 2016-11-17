@@ -7,7 +7,7 @@ class TestKeyEvent < MiniTest::Test
 	
 	include TheFox::TermKit
 	
-	def test_curses_app
+	def test_key_event
 		event1 = KeyEvent.new
 		assert_instance_of(KeyEvent, event1)
 	end
