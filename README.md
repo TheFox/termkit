@@ -7,11 +7,15 @@ A Model-View-Controller Framework for Terminal applications.
 The preferred method of installation is via RubyGems.org:  
 <https://rubygems.org/gems/termkit>
 
-	gem install termkit
+```bash
+gem install termkit
+```
 
 or via `Gemfile`:
 
-	gem 'termkit', '~>0.0'
+```bash
+gem 'termkit', '~>0.0'
+```
 
 ## Project Links
 
