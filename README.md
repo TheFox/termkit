@@ -6,7 +6,7 @@ A Model-View-Controller Framework for Terminal applications written in Ruby.
 
 The project outlines as described in my blog post about [Open Source Software Collaboration](https://blog.fox21.at/2019/02/21/open-source-software-collaboration.html).
 
-- The main purpose of this software is to provide a Model-View-Controller Framework for Ruby Terminal applications.
+- The main purpose of this software is to provide a Ruby Model-View-Controller Framework for Terminal applications.
 - This list is open. Feel free to request features.
 
 ## Installation
