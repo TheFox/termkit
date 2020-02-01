@@ -15,7 +15,7 @@ The preferred method of installation is via RubyGems.org:
 <https://rubygems.org/gems/termkit>
 
 ```bash
-$ gem install termkit
+gem install termkit
 ```
 
 or via `Gemfile`:
